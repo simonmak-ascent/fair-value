@@ -198,9 +198,9 @@ def assess_credit_stage(pd_12m: float, significant_increase: bool = False) -> st
         Stage ('Stage 1', 'Stage 2', or 'Stage 3')
     """
     # Threshold for significant increase: PD > 0.5% or increase > 0.3%
-    if pd_12m > 0.10 or significant_increase:
+    if pd_12m > 0.10:
         return 'Stage 3'
-    elif pd_12m > 0.005 or significant_increase:
+    elif significant_increase or pd_12m > 0.005:
         return 'Stage 2'
     else:
         return 'Stage 1'

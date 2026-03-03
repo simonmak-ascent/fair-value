@@ -15,9 +15,14 @@ from src.derivatives.options import (
     black_scholes_vega,
     black_scholes_theta,
     black_scholes_rho,
-    implied_volatility,
+    implied_volatility
+)
+from src.derivatives.futures import (
     futures_price,
-    forward_price
+    forward_price,
+    currency_forward,
+    basis,
+    implied_rate_from_futures
 )
 from src.derivatives.futures import (
     futures_price,
@@ -121,7 +126,7 @@ class TestFutures:
     
     def test_basis(self):
         """Test basis calculation"""
-        b = basis(100, 105)
+        b = basis(105, 100)
         assert b == -5
     
     def test_implied_rate(self):

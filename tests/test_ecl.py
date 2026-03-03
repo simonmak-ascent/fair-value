@@ -54,7 +54,7 @@ class TestECL:
     def test_lgd_from_recovery(self):
         """Test LGD from recovery rate"""
         lgd = get_lgd_from_recovery(0.55)
-        assert lgd == 0.45
+        assert lgd == pytest.approx(0.45)
     
     def test_default_lgd(self):
         """Test default LGD by seniority"""
