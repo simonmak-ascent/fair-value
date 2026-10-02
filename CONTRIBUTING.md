@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-git clone https://github.com/simonplmak-cloud/valuation_skills.git
+git clone https://github.com/simonmak-ascent/valuation_skills.git
 cd valuation_skills
 ```
 
