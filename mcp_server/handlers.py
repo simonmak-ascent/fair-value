@@ -943,6 +943,31 @@ def _structured(method: str, **kw):
             kw["volatility"],
             kw["option_type"],
         )
+    if method == "cbbc_residual":
+        return sp.cbbc_residual(
+            kw["notional"],
+            kw["spot"],
+            kw["call_price"],
+            kw["entitlement"],
+            kw["barrier"],
+            kw["barrier_type"],
+            kw["maturity"],
+            kw["risk_free"],
+            kw["volatility"],
+            kw["option_type"],
+        )
+    if method == "inline_warrant_avg":
+        return sp.range_digital_average(
+            kw["notional"],
+            kw["spot"],
+            kw["lower_strike"],
+            kw["upper_strike"],
+            kw["maturity"],
+            kw["risk_free"],
+            kw["volatility"],
+            kw["payout"],
+            kw["fixing_days"],
+        )
     if method == "derivative_warrant":
         return sp.geometric_asian(
             kw["notional"],
@@ -1024,8 +1049,10 @@ _register(
         m: (lambda m=m, **kw: _structured(m, **kw))
         for m in (
             "cbbc",
+            "cbbc_residual",
             "derivative_warrant",
             "inline_warrant",
+            "inline_warrant_avg",
             "eli",
             "eln",
             "autocallable",

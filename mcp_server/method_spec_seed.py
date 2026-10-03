@@ -758,6 +758,23 @@ _STRUCTURED = (
         "First-passage barrier with mandatory call and residual value",
     ),
     MethodSpec(
+        "cbbc_residual",
+        "CBBC with HKEX knock-out residual value",
+        (
+            "notional",
+            "spot",
+            "call_price",
+            "entitlement",
+            "barrier",
+            "barrier_type",
+            "maturity",
+            "risk_free",
+            "volatility",
+            "option_type",
+        ),
+        "First-passage barrier; residual = (trigger-call)/entitlement on knock-out",
+    ),
+    MethodSpec(
         "derivative_warrant",
         "cash-settled derivative warrant (averaged settlement)",
         (
@@ -786,6 +803,22 @@ _STRUCTURED = (
             "payout",
         ),
         "Range digital",
+    ),
+    MethodSpec(
+        "inline_warrant_avg",
+        "inline range warrant settled on an n-day average",
+        (
+            "notional",
+            "spot",
+            "lower_strike",
+            "upper_strike",
+            "maturity",
+            "risk_free",
+            "volatility",
+            "payout",
+            "fixing_days",
+        ),
+        "Range digital on averaged fixings (HKEX settlement)",
     ),
     MethodSpec(
         "eli",

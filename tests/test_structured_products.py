@@ -111,3 +111,34 @@ def test_dispatch_structured_cbbc_ok():
     )
     assert res["status"] == "ok", res
     assert res["value"] > 0
+
+
+def test_cbbc_residual_knock_out_value():
+    res = sp.cbbc_residual(
+        notional=100.0, spot=100.0, call_price=70.0, entitlement=1.0, barrier=80.0,
+        barrier_type="knock_out", maturity=1.0, risk_free=0.03, volatility=0.30,
+        option_type="call",
+    )
+    assert res["value"] > 0
+    assert res["knock_out_residual"] == 10.0  # (80 - 70) / 1
+
+
+def test_inline_warrant_avg_close_to_single_fixing():
+    single = sp.range_digital(100.0, 100.0, 90.0, 110.0, 1.0, 0.03, 0.30, 1.0)["value"]
+    avg = sp.range_digital_average(100.0, 100.0, 90.0, 110.0, 1.0, 0.03, 0.30, 1.0, 1)["value"]
+    assert avg > 0
+    assert abs(avg - single) / single < 0.05
+
+
+def test_dispatch_hkex_methods_ok():
+    for method, extra in (
+        ("cbbc_residual", {"call_price": 70.0, "entitlement": 1.0, "barrier": 80.0,
+                            "barrier_type": "knock_out", "option_type": "call"}),
+        ("inline_warrant_avg", {"lower_strike": 90.0, "upper_strike": 110.0, "payout": 1.0,
+                                 "fixing_days": 3}),
+    ):
+        args = {"method": method, "notional": 100.0, "spot": 100.0, "maturity": 1.0,
+                "risk_free": 0.03, "volatility": 0.30, **extra}
+        res = dispatch("calculate_structured_product", args)
+        assert res["status"] == "ok", res
+        assert res["value"] > 0

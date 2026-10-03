@@ -6,7 +6,7 @@ taxonomy is served at `valuation://standards`. Both are derived from the
 method-spec registry (`mcp_server/method_spec.py` + `method_spec_seed.py`).
 
 Each `calculate_*` tool takes a required `method` plus exactly that method's
-inputs (no defaults). 127 methods are registered across 16 tools.
+inputs (no defaults). 129 methods are registered across 16 tools.
 
 | Tool | Methods | Standards |
 |------|---------|-----------|
@@ -25,7 +25,7 @@ inputs (no defaults). 127 methods are registered across 16 tools.
 | `calculate_report_review` | 1 (`audit`) | IVS 2025, IFRS 13 |
 | `calculate_residual` | 10 (`goodwill`, `ppa`, `impairment_fvlcd`, `impairment_viu`, `inventory_nrv`, `held_for_sale`, `debt_waterfall`, `cap_table`, `sotp`, `spac_redemption`) | IFRS 3, IAS 36, IAS 2, IFRS 5, IFRS 10, IAS 28, IAS 32 |
 | `calculate_sector_metrics` | 15 (`ltv`, `cac`, `arr`, `nrr`, `magic_number`, `rule_of_40`, `take_rate`, `gmv_multiple`, `retention`, `trl`, `break_even`, `gross_margin`, `token`, `nvt`, `metcalfe`) | — |
-| `calculate_structured_product` | 11 (`cbbc`, `derivative_warrant`, `inline_warrant`, `eli`, `eln`, `autocallable`, `credit_linked_note`, `accumulator`, `decumulator`, `trs`, `cfd`) | IFRS 9 |
+| `calculate_structured_product` | 13 (`cbbc`, `cbbc_residual`, `derivative_warrant`, `inline_warrant`, `inline_warrant_avg`, `eli`, `eln`, `autocallable`, `credit_linked_note`, `accumulator`, `decumulator`, `trs`, `cfd`) | IFRS 9 |
 
 Two convertible-bond discretizations (`finite_difference`, `quantlib`) are
 registered but deferred to an optional engine and return a typed error

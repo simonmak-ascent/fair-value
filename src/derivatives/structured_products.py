@@ -240,3 +240,71 @@ def cfd(
 ) -> Dict[str, Any]:
     units = notional / spot
     return {"value": units * (spot - strike * math.exp(-risk_free * maturity))}
+
+
+def cbbc_residual(
+    notional: float,
+    spot: float,
+    call_price: float,
+    entitlement: float,
+    barrier: float,
+    barrier_type: str,
+    maturity: float,
+    risk_free: float,
+    volatility: float,
+    option_type: str,
+) -> Dict[str, Any]:
+    """CBBC including the HKEX knock-out residual value.
+
+    Bull (call): payoff = max((S - call)/entitlement, 0); residual on knock-out
+    = max((barrier - call)/entitlement, 0). Bear (put) is symmetric.
+    """
+    if entitlement <= 0:
+        raise ValueError("entitlement must be positive")
+    rng = np.random.default_rng(_SEED)
+    steps = 252
+    dt = maturity / steps
+    drift = (risk_free - 0.5 * volatility ** 2) * dt
+    diff = volatility * math.sqrt(dt)
+    paths = spot * np.exp(np.cumsum(drift + diff * rng.standard_normal((_PATHS, steps)), axis=1))
+    down = barrier <= spot
+    if barrier_type == "knock_out":
+        touched = (paths.min(axis=1) <= barrier) if down else (paths.max(axis=1) >= barrier)
+    else:
+        touched = (paths.min(axis=1) <= barrier) if down else (paths.max(axis=1) >= barrier)
+    s_t = paths[:, -1]
+    if option_type == "call":
+        expiry = np.maximum((s_t - call_price) / entitlement, 0.0)
+        residual = max((barrier - call_price) / entitlement, 0.0)
+    else:
+        expiry = np.maximum((call_price - s_t) / entitlement, 0.0)
+        residual = max((call_price - barrier) / entitlement, 0.0)
+    payoff = np.where(touched, residual, expiry)
+    value = notional * math.exp(-risk_free * maturity) * float(payoff.mean())
+    return {"value": value, "model": "cbbc_residual", "knock_out_residual": residual}
+
+
+def range_digital_average(
+    notional: float,
+    spot: float,
+    lower_strike: float,
+    upper_strike: float,
+    maturity: float,
+    risk_free: float,
+    volatility: float,
+    payout: float,
+    fixing_days: int,
+) -> Dict[str, Any]:
+    """Inline range warrant settled on the average of ``fixing_days`` closes."""
+    if fixing_days < 1:
+        raise ValueError("fixing_days must be >= 1")
+    rng = np.random.default_rng(_SEED)
+    dt = maturity / fixing_days
+    drift = (risk_free - 0.5 * volatility ** 2) * dt
+    diff = volatility * math.sqrt(dt)
+    paths = spot * np.exp(np.cumsum(drift + diff * rng.standard_normal((_PATHS, fixing_days)), axis=1))
+    average = paths.mean(axis=1)
+    inside = (average >= lower_strike) & (average <= upper_strike)
+    probability = float(inside.mean())
+    value = notional * payout * math.exp(-risk_free * maturity) * probability
+    return {"value": value, "probability": probability, "model": "inline_average"}

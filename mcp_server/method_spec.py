@@ -252,6 +252,9 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "t1": _n("Forward period start in years (>=0)."),
     "t2": _n("Forward period end in years (> t1)."),
     "rate": _n("A single interest/zero rate (decimal)."),
+    "call_price": _n("CBBC call price (mandatory-call trigger level)."),
+    "entitlement": _n("CBBC entitlement: units of underlying per contract."),
+    "fixing_days": _i("Number of closing fixings averaged for settlement (>=1)."),
     "conversion_ratio": _n("Shares received per bond on conversion."),
     "call_schedule": _objs(
         "Issuer call schedule [{date_years, price}]; pass [] when there is none."

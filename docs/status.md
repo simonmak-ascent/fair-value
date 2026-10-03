@@ -12,11 +12,11 @@ and IFRS. The previous sibling-delegation model was retired.
 
 | Area | Result |
 |------|--------|
-| Tools / methods | 16 tools, 127 methods |
-| Implemented | 125/127 (2 deferred: `finite_difference`, `quantlib`) |
+| Tools / methods | 16 tools, 129 methods |
+| Implemented | 127/129 (2 deferred: `finite_difference`, `quantlib`) |
 | Lint / types | ruff clean; mypy clean (17 files) |
-| Tests | 280 passed, 2 skipped |
-| Conformance | `16 tools; 125/127 implemented, 2 explicitly deferred` |
+| Tests | 283 passed, 2 skipped |
+| Conformance | `16 tools; 127/129 implemented, 2 explicitly deferred` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
 | TDQS coherence | 4.3–4.5 (naming 5, completeness 4–5, disambiguation 4, tool_count 4) |
@@ -68,8 +68,8 @@ compute box).
 ### P2 — HK-market depth
 - HIBOR/HKD curve construction — **done**: `calculate_fixed_income`
   `zero_curve`/`forward_rate`/`pv_curve` (and `discount_factor`).
-- HKEX structured-product conventions (CBBC residual-value schedules,
-  inline-warrant fixing calendars).
+- HKEX structured-product conventions — **done**: `cbbc_residual` (knock-out
+  residual value) and `inline_warrant_avg` (averaged fixings).
 - HKFRS-specific report-review checklists beyond the current IFRS mapping.
 
 ### P2 — Release & deployment
