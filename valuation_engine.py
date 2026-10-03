@@ -128,9 +128,7 @@ def run_valuation(ticker: str, method: str, params: Optional[Dict] = None) -> Di
         return run_nav(ticker, params)
     if normalized == "cca":
         return run_cca(ticker, params)
-    return _error(
-        "UNKNOWN_METHOD", f"Unknown method: {method}", method=method, ticker=ticker
-    )
+    return _error("UNKNOWN_METHOD", f"Unknown method: {method}", method=method, ticker=ticker)
 
 
 def run_dcf(ticker: str, params: Dict) -> Dict:
@@ -151,13 +149,9 @@ def run_dcf(ticker: str, params: Dict) -> Dict:
                 years=params.get("years", 5),
             )
     except TypeError as exc:
-        return _error(
-            "MISSING_INPUT", f"Invalid DCF inputs: {exc}", method="DCF", ticker=ticker
-        )
+        return _error("MISSING_INPUT", f"Invalid DCF inputs: {exc}", method="DCF", ticker=ticker)
     except Exception as exc:  # data/provider failure
-        return _error(
-            "DATA_UNAVAILABLE", f"DCF failed: {exc}", method="DCF", ticker=ticker
-        )
+        return _error("DATA_UNAVAILABLE", f"DCF failed: {exc}", method="DCF", ticker=ticker)
 
     if not result or result.get("error"):
         reason = (result or {}).get("error", "no data available")
@@ -210,17 +204,12 @@ def run_nav(ticker: str, params: Dict) -> Dict:
                 shares_outstanding=params.get("shares_outstanding", 1),
             )
         except Exception as exc:
-            return _error(
-                "DATA_UNAVAILABLE", f"NAV failed: {exc}", method="NAV", ticker=ticker
-            )
+            return _error("DATA_UNAVAILABLE", f"NAV failed: {exc}", method="NAV", ticker=ticker)
         nav_per_share = result.get("nav_per_share")
-        return _ok(
-            "NAV", ticker, nav_per_share=nav_per_share, value_per_share=nav_per_share
-        )
+        return _ok("NAV", ticker, nav_per_share=nav_per_share, value_per_share=nav_per_share)
 
     has_assets = (
-        params.get("listed_securities") is not None
-        or params.get("unlisted_assets") is not None
+        params.get("listed_securities") is not None or params.get("unlisted_assets") is not None
     )
     if has_assets:
         if not params.get("listed_securities") and not params.get("unlisted_assets"):
@@ -241,13 +230,9 @@ def run_nav(ticker: str, params: Dict) -> Dict:
                 minority_interest=params.get("minority_interest", 0),
                 minority_discount=params.get("minority_discount", 0.0),
             )
-            per_share = calculate_nav_per_share(
-                nav, params.get("shares_outstanding", 1)
-            )
+            per_share = calculate_nav_per_share(nav, params.get("shares_outstanding", 1))
         except Exception as exc:
-            return _error(
-                "DATA_UNAVAILABLE", f"NAV failed: {exc}", method="NAV", ticker=ticker
-            )
+            return _error("DATA_UNAVAILABLE", f"NAV failed: {exc}", method="NAV", ticker=ticker)
         return _ok(
             "NAV",
             ticker,
@@ -274,14 +259,10 @@ def run_cca(ticker: str, params: Dict) -> Dict:
         try:
             target_metrics = _get_market_metrics(ticker)
         except Exception as exc:
-            return _error(
-                "DATA_UNAVAILABLE", f"CCA failed: {exc}", method="CCA", ticker=ticker
-            )
+            return _error("DATA_UNAVAILABLE", f"CCA failed: {exc}", method="CCA", ticker=ticker)
 
     if peer_metrics is not None and len(peer_metrics) == 0:
-        return _error(
-            "DATA_UNAVAILABLE", "no peer data available", method="CCA", ticker=ticker
-        )
+        return _error("DATA_UNAVAILABLE", "no peer data available", method="CCA", ticker=ticker)
 
     try:
         if peer_metrics is None:
@@ -289,9 +270,7 @@ def run_cca(ticker: str, params: Dict) -> Dict:
         else:
             result = cca_valuation(ticker, target_metrics, peer_metrics)
     except Exception as exc:
-        return _error(
-            "DATA_UNAVAILABLE", f"CCA failed: {exc}", method="CCA", ticker=ticker
-        )
+        return _error("DATA_UNAVAILABLE", f"CCA failed: {exc}", method="CCA", ticker=ticker)
 
     valuations = (result or {}).get("valuations") or {}
     implied = valuations.get("average_valuation")
@@ -328,10 +307,22 @@ def review_report(file_path: str) -> Dict:
         return _error("INVALID_ARGUMENT", "file_path is required", method="review")
 
     path = Path(file_path)
-    if not path.exists():
-        return _error("FILE_NOT_FOUND", f"file not found: {file_path}", method="review")
+    from src.report_review import guards
+
+    try:
+        guards.validate_path(str(path))
+    except guards.InputValidationError as exc:
+        return _error(exc.code, exc.message, method="review")
 
     suffix = path.suffix.lower()
+    if suffix in _SUPPORTED_SPREADSHEETS or suffix in _SUPPORTED_WORDS:
+        macro = guards.detect_macros(str(path))
+        if macro.get("has_macros") or macro.get("is_macro_capable"):
+            return _error(
+                "MACROS_DETECTED",
+                "macro-enabled documents are rejected by the report-review guard",
+                method="review",
+            )
     if suffix in _SUPPORTED_SPREADSHEETS:
         return review_excel(str(path))
     if suffix in _SUPPORTED_PDFS:
@@ -340,9 +331,7 @@ def review_report(file_path: str) -> Dict:
         return review_word(str(path))
     if suffix in _SUPPORTED_IMAGES:
         return review_image(str(path))
-    return _error(
-        "UNSUPPORTED_FILE_TYPE", f"Unsupported file type: {suffix}", method="review"
-    )
+    return _error("UNSUPPORTED_FILE_TYPE", f"Unsupported file type: {suffix}", method="review")
 
 
 def review_excel(file_path: str) -> Dict:
@@ -351,9 +340,7 @@ def review_excel(file_path: str) -> Dict:
 
         return _with_disclaimer(excel_analyzer.analyze_excel_model(file_path))
     except Exception as exc:
-        return _error(
-            "DATA_UNAVAILABLE", f"Excel review failed: {exc}", method="review"
-        )
+        return _error("DATA_UNAVAILABLE", f"Excel review failed: {exc}", method="review")
 
 
 def review_pdf(file_path: str) -> Dict:
@@ -380,9 +367,7 @@ def review_image(file_path: str) -> Dict:
 
         return _with_disclaimer(image_analyzer.extract_valuation_data(file_path))
     except Exception as exc:
-        return _error(
-            "DATA_UNAVAILABLE", f"Image review failed: {exc}", method="review"
-        )
+        return _error("DATA_UNAVAILABLE", f"Image review failed: {exc}", method="review")
 
 
 # ---------------------------------------------------------------------------
@@ -419,8 +404,7 @@ def scan_directory(directory: str = ".") -> List[Dict]:
         found_files.extend(path.glob(f"**/*{pattern}"))
 
     return [
-        {"path": str(f), "type": f.suffix.lower(), "size": f.stat().st_size}
-        for f in found_files
+        {"path": str(f), "type": f.suffix.lower(), "size": f.stat().st_size} for f in found_files
     ]
 
 

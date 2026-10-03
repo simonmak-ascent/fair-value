@@ -3,8 +3,15 @@ Excel Valuation Model Analyzer
 Reviews and validates Excel valuation models
 """
 
-from typing import Dict
+from typing import Dict, List
 import logging
+
+from .guards import (
+    InputValidationError,
+    detect_macros,
+    find_injection_indicators,
+    validate_path,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +24,23 @@ try:
 except ImportError:
     OPENPYXL_AVAILABLE = False
     logger.warning("openpyxl not available for Excel analysis")
+
+_ALLOWED_EXTENSIONS = {".xlsx", ".xls"}
+
+
+def scan_for_injection(workbook) -> List[Dict]:
+    """Return cells whose value contains external-content / injection tokens."""
+    findings: List[Dict] = []
+    for sheet_name in workbook.sheetnames:
+        sheet = workbook[sheet_name]
+        for row in sheet.iter_rows():
+            for cell in row:
+                tokens = find_injection_indicators(cell.value)
+                if tokens:
+                    findings.append(
+                        {"sheet": sheet_name, "cell": cell.coordinate, "tokens": tokens}
+                    )
+    return findings
 
 
 def analyze_excel_model(file_path: str) -> Dict:
@@ -36,6 +60,27 @@ def analyze_excel_model(file_path: str) -> Dict:
             "message": "openpyxl not installed. Run: pip install openpyxl",
         }
 
+    # A-011: input-validation + macro guard before parsing.
+    try:
+        validate_path(file_path, allowed_exts=_ALLOWED_EXTENSIONS)
+    except InputValidationError as exc:
+        return {
+            "file": file_path,
+            "status": "error",
+            "code": exc.code,
+            "message": exc.message,
+        }
+
+    macros = detect_macros(file_path)
+    if macros.get("has_macros") or macros.get("is_macro_capable"):
+        return {
+            "file": file_path,
+            "status": "error",
+            "code": "MACROS_DETECTED",
+            "message": "macro-enabled workbook rejected by the report-review guard",
+            "security": {"macros": macros},
+        }
+
     try:
         # Load workbook
         workbook = load_workbook(file_path, data_only=False)
@@ -51,6 +96,10 @@ def analyze_excel_model(file_path: str) -> Dict:
             "terminal_value_check": validate_terminal_value(workbook),
             "assumptions": extract_assumptions(workbook),
             "data_sources": check_data_sources(workbook),
+            "security": {
+                "macros": macros,
+                "injection_indicators": scan_for_injection(workbook),
+            },
         }
 
         # Generate review report
