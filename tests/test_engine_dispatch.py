@@ -87,22 +87,25 @@ def test_unimplemented_method_is_typed_error():
     assert res["error"]["code"] == "NOT_IMPLEMENTED"
 
 
-def test_margin_ramp_reports_steps():
+def test_margin_ramp_dcf_reports_dispersion():
     res = dispatch(
-        "calculate_dcf",
+        "calculate_loss_making_company",
         {
-            "method": "margin_ramp",
-            "revenue": 100.0,
-            "growth_rate": 0.2,
-            "start_margin": -0.1,
-            "target_margin": 0.2,
-            "ramp_years": 3,
-            "discount_rate": 0.1,
+            "method": "margin_ramp_dcf",
+            "revenue": 1000.0,
+            "growth_rate": 0.10,
+            "start_margin": -0.05,
+            "target_margin": 0.15,
+            "ramp_years": 5,
+            "discount_rate": 0.12,
             "years": 5,
+            "shares_outstanding": 100.0,
+            "net_debt": 0.0,
+            "range_method": "central",
         },
     )
     assert res["status"] == "ok"
-    assert len(res["steps"]) == 5
+    assert "dispersion" in res
 
 
 def test_option_call_and_put():
@@ -135,3 +138,15 @@ def test_option_call_and_put():
     import math
 
     assert abs((call["value"] - put["value"]) - (100.0 - 100.0 * math.exp(-0.05))) < 1e-6
+
+
+def test_non_financial_asset_fair_value_methods():
+    cases = [
+        ("investment_property", {"noi": 100.0, "cap_rate": 0.05}, 2000.0),
+        ("ppe_revaluation", {"replacement_cost": 1000.0, "accumulated_depreciation": 300.0}, 700.0),
+        ("biological_asset", {"expected_price": 10.0, "quantity": 5.0, "costs_to_sell": 8.0}, 42.0),
+    ]
+    for method, params, expected in cases:
+        res = dispatch("calculate_residual", {"method": method, **params})
+        assert res["status"] == "ok", res
+        assert abs(res["value"] - expected) < 1e-9

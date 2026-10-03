@@ -668,7 +668,6 @@ _register(
         "perpetuity": _perpetuity,
         "terminal_gordon": _terminal_gordon,
         "terminal_multiple": _terminal_multiple,
-        "margin_ramp": _margin_ramp,
         "viu_pre_tax": _viu_pre_tax,
         "rnpv": _rnpv,
         "lease_pv": _lease_pv,
@@ -704,8 +703,6 @@ _register(
         "regression": _regression,
         "royalty_cap": _royalty_cap,
         "ddm": _ddm,
-        "residual_income": _residual_income,
-        "justified_pb": _justified_pb,
     },
 )
 _register(
@@ -729,6 +726,15 @@ _register(
         "cap_table": _debt_waterfall,
         "sotp": _sotp,
         "spac_redemption": _spac_redemption,
+        "investment_property": lambda noi, cap_rate: {"value": noi / cap_rate},
+        "ppe_revaluation": lambda replacement_cost, accumulated_depreciation: {
+            "value": replacement_cost - accumulated_depreciation
+        },
+        "biological_asset": lambda expected_price, quantity, costs_to_sell: {
+            "value": expected_price * quantity - costs_to_sell
+        },
+        "residual_income": _residual_income,
+        "justified_pb": _justified_pb,
     },
 )
 
@@ -823,7 +829,6 @@ _register(
     {
         "discrete": _ev_discrete,
         "scenario": _ev_scenario,
-        "provision": _ev_provision,
         "football_field": _ev_football_field,
         "continuous": _ev_continuous,
         "monte_carlo": _ev_monte_carlo,

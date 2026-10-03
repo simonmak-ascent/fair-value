@@ -22,8 +22,8 @@ _TOOL_META = {
         "Market-multiple engine. Apply peer multiples (P/E, P/B, EV/EBITDA, EV/Sales, PEG and more) or derive implied multiples to price a company on a comparable basis. Use this for market-approach pricing where peers exist; for intrinsic value use calculate_dcf. Read-only and deterministic. Returns the shared result envelope.",
     ),
     "calculate_residual": (
-        "Residual income and excess return models",
-        "Residual-income engine. Value equity from book value plus the present value of residual income, or from economic profit and abnormal earnings, including justified price-to-book. Use this for financial and asset-anchored businesses where book value is economically meaningful. Read-only and deterministic. Returns the shared result envelope.",
+        "IFRS measurement, residual income and non-financial fair value",
+        "IFRS/HKFRS measurement engine. Compute goodwill and purchase-price allocation, impairment (IAS 36), inventory net realisable value, held-for-sale, debt waterfalls, cap tables, sum-of-the-parts and SPAC redemption; residual income and justified price-to-book; and non-financial asset fair value: investment property (IAS 40 / HKAS 40), PP&E revaluation via depreciated replacement cost (IAS 16) and biological assets at fair value less costs to sell (IAS 41). Use this for accounting-basis measurement of assets and equity; for going-concern cash flow use calculate_dcf and for peer multiples use calculate_market_multiple.",
     ),
     "calculate_option": (
         "Option and warrant pricing",
@@ -118,21 +118,6 @@ _DCF = (
         "exit-multiple terminal value",
         ("final_cash_flow", "exit_multiple"),
         "TV = FCF*exit_multiple",
-    ),
-    MethodSpec(
-        "margin_ramp",
-        "margin ramps from start to target over ramp_years (loss-making companies)",
-        (
-            "revenue",
-            "growth_rate",
-            "start_margin",
-            "target_margin",
-            "ramp_years",
-            "discount_rate",
-            "years",
-        ),
-        "FCFF = after-tax EBIT - reinvestment; margin interpolated linearly",
-        ("IFRS 13",),
     ),
     MethodSpec(
         "viu_pre_tax",
@@ -293,18 +278,6 @@ _MARKET_MULTIPLE = (
         ("dividend_per_share", "cost_equity", "growth_rate"),
         "V = D1/(ke - g)",
     ),
-    MethodSpec(
-        "residual_income",
-        "residual income model",
-        ("book_value", "net_income", "cost_equity"),
-        "V = BV + (NI - ke*BV)/ke",
-    ),
-    MethodSpec(
-        "justified_pb",
-        "justified price-to-book from ROE",
-        ("roe", "cost_equity", "growth_rate"),
-        "P/B = (ROE - g)/(ke - g)",
-    ),
 )
 
 _RESIDUAL = (
@@ -375,6 +348,39 @@ _RESIDUAL = (
         ("trust_cash", "shares_outstanding", "redemption_price"),
         "redemption value = min(trust cash / shares, redemption price)",
         ("IAS 32",),
+    ),
+    MethodSpec(
+        "investment_property",
+        "investment property at fair value",
+        ("noi", "cap_rate"),
+        "V = NOI / cap rate (IAS 40 / HKAS 40 income approach)",
+        ("IAS 40",),
+    ),
+    MethodSpec(
+        "ppe_revaluation",
+        "PP&E revaluation via depreciated replacement cost",
+        ("replacement_cost", "accumulated_depreciation"),
+        "V = replacement cost - accumulated depreciation (IAS 16)",
+        ("IAS 16",),
+    ),
+    MethodSpec(
+        "biological_asset",
+        "biological assets at fair value less costs to sell",
+        ("expected_price", "quantity", "costs_to_sell"),
+        "V = price * quantity - costs to sell (IAS 41)",
+        ("IAS 41",),
+    ),
+    MethodSpec(
+        "residual_income",
+        "residual income model",
+        ("book_value", "net_income", "cost_equity"),
+        "V = BV + (NI - ke*BV)/ke",
+    ),
+    MethodSpec(
+        "justified_pb",
+        "justified price-to-book from ROE",
+        ("roe", "cost_equity", "growth_rate"),
+        "P/B = (ROE - g)/(ke - g)",
     ),
 )
 
@@ -488,13 +494,6 @@ _EXPECTED_VALUE = (
         "expected value over a decision tree",
         ("tree",),
         "roll back chance/decision nodes",
-    ),
-    MethodSpec(
-        "provision",
-        "best-estimate provision, discounted",
-        ("outcomes", "probabilities", "discount_rate", "periods"),
-        "IAS 37 expected value, discounted",
-        ("IAS 37",),
     ),
     MethodSpec(
         "football_field",
