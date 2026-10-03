@@ -1,0 +1,16 @@
+site_name: Fair Value
+site_description: Corporate, startup, and intangible valuation MCP server (DCF/NAV/CCA, cost of capital, derivatives, IFRS 9 credit risk, report review).
+repo_url: https://github.com/simonmak-ascent/fair-value
+repo_name: simonmak-ascent/fair-value
+
+nav:
+  - Home: index.md
+  - MCP Server: mcp.md
+  - Methods: methods.md
+
+theme:
+  name: readthedocs
+
+markdown_extensions:
+  - admonition
+  - fenced_code

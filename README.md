@@ -82,7 +82,7 @@ src/
 
 ## Documentation
 
-See IMPLEMENTATION_PLAN.md for detailed specifications.
+See [SKILL.md](./SKILL.md) for the capability spec; the machine-readable method catalog is served by the MCP server at the `valuation://methods` resource, and a docs site is configured via `mkdocs.yml`.
 
 ## Standards Compliance
 

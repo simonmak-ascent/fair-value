@@ -156,7 +156,41 @@ def build_server() -> Any:
         except TypeError:  # older FastMCP signature
             server.add_tool(fn, name=spec.name, description=spec.description)
     register_delegated_tools(server)
+    register_prompts(server)
+    register_resources(server)
     return server
+
+
+def register_prompts(server: Any) -> List[str]:
+    """Register the guided prompts (A-013) on ``server``; return registered names."""
+    from . import prompts as _prompts
+
+    registered: List[str] = []
+    for name, fn in _prompts.GUIDED_PROMPTS.items():
+        try:
+            server.prompt(name=name, description=fn.__doc__)(fn)
+        except TypeError:  # older FastMCP signature
+            server.prompt(fn)
+        registered.append(name)
+    return registered
+
+
+def register_resources(server: Any) -> List[str]:
+    """Register the machine-readable method catalog (A-013); return URIs."""
+    from .catalog import catalog_json
+
+    def method_catalog() -> str:
+        """Machine-readable catalog of valuation methods, formulas, and standards."""
+        return catalog_json()
+
+    uri = "valuation://methods"
+    try:
+        server.resource(uri, name="valuation_methods", description=method_catalog.__doc__)(
+            method_catalog
+        )
+    except TypeError:  # older FastMCP signature
+        server.resource(uri)(method_catalog)
+    return [uri]
 
 
 def main(argv: Optional[List[str]] = None) -> int:
