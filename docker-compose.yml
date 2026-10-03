@@ -1,0 +1,9 @@
+services:
+  fair-value-mcp:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+    restart: unless-stopped

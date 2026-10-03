@@ -6,7 +6,9 @@ repo_name: simonmak-ascent/fair-value
 nav:
   - Home: index.md
   - MCP Server: mcp.md
+  - Hosting: hosting.md
   - Methods: methods.md
+  - Observability: slo.md
 
 theme:
   name: readthedocs

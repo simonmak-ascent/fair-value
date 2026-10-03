@@ -31,6 +31,8 @@ mcp = ["fastmcp>=2.0"]
 ocr = ["pytesseract>=0.3.10", "easyocr>=1.7.0"]
 quant = ["QuantLib-Python>=1.17"]
 docs = ["mkdocs"]
+# Observability (A-016): no-op unless SENTRY_DSN is set.
+observability = ["sentry-sdk>=2.0"]
 # Sibling MCPs whose tool surfaces are delegated to (A-005). Both require
 # Python >= 3.11, so this extra raises the effective floor to 3.11.
 superset = ["intangible-valuation-mcp>=2.1.2", "startup-valuation>=2.1.2"]

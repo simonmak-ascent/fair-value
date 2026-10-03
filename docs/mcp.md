@@ -26,3 +26,7 @@ fair-value-mcp --http     # Streamable HTTP (default 127.0.0.1:8000)
 
 - PyPI: `fair-value`
 - MCP Registry: `io.github.simonmak-ascent/fair-value`
+
+Directory sites (Glama, PulseMCP, mcp.so) ingest the official MCP Registry, so
+publishing there makes the server discoverable across them automatically; the
+social preview asset is at `assets/social-card.svg`.

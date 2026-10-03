@@ -203,6 +203,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args(argv)
 
+    from .observability import init_sentry
+
+    init_sentry()  # no-op unless sentry_sdk is installed and SENTRY_DSN is set
+
     server = build_server()
     if args.http:
         server.run(transport="http", host=args.host, port=args.port)
@@ -214,6 +218,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 __all__ = [
     "build_server",
     "register_delegated_tools",
+    "register_prompts",
+    "register_resources",
     "main",
     "tool_names",
     "FASTMCP_AVAILABLE",

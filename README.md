@@ -1,5 +1,10 @@
 # Fair Value
 
+[![PyPI](https://img.shields.io/pypi/v/fair-value.svg)](https://pypi.org/project/fair-value/)
+[![CI](https://github.com/simonmak-ascent/fair-value/actions/workflows/ci.yml/badge.svg)](https://github.com/simonmak-ascent/fair-value/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![MCP Registry](https://img.shields.io/badge/MCP-Registry-blue.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=fair-value)
+
 Professional financial valuation system for OpenCode with IFRS/IVS compliance.
 
 mcp-name: io.github.simonmak-ascent/fair-value
