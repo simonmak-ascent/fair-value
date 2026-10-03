@@ -33,9 +33,11 @@ quant = ["QuantLib-Python>=1.17"]
 docs = ["mkdocs"]
 # Observability (A-016): no-op unless SENTRY_DSN is set.
 observability = ["sentry-sdk>=2.0"]
-# Sibling MCPs whose tool surfaces are delegated to (A-005). Both require
-# Python >= 3.11, so this extra raises the effective floor to 3.11.
-superset = ["intangible-valuation-mcp>=2.1.2", "startup-valuation>=2.1.2"]
+# Sibling MCP whose tool surface is delegated to (A-005). Only
+# startup-valuation is installable alongside this package (namespaced modules).
+# intangible-valuation ships a top-level ``mcp_server`` package that collides
+# with ours, so it is loaded from source instead (env INTANGIBLE_VALUATION_SRC).
+superset = ["startup-valuation>=2.1.2"]
 
 [project.scripts]
 # Console command for the MCP server.

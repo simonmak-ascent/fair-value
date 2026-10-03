@@ -22,18 +22,26 @@ from .superset_baseline import (
 
 STRATEGY = "delegate"
 
-# Optional extras that provide the sibling surfaces.
-SUPERSET_DEPENDENCIES = (
-    "intangible-valuation-mcp>=2.1.2",
-    "startup-valuation>=2.1.2",
-)
+# Optional extra that provides a sibling surface by import. Only
+# ``startup-valuation`` is installable alongside this package: its modules are
+# namespaced (``startup_valuation.*``). ``intangible-valuation`` ships a
+# top-level ``mcp_server`` package that collides with ours, so it cannot be
+# pip-installed concurrently and is loaded from source instead
+# (see ``INTANGIBLE_SRC_HINT``).
+SUPERSET_DEPENDENCIES = ("startup-valuation>=2.1.2",)
 
 # owner -> import path of the pure ``call_tool`` dispatcher.
 SIBLING_CALL_TOOL_PATHS: Dict[str, Tuple[str, str]] = {
     "startup-valuation": ("startup_valuation.mcp.tool_surface", "call_tool"),
-    # intangible-valuation-mcp ships top-level modules (server/tool_surface).
-    "intangible-valuation": ("tool_surface", "call_tool"),
 }
+
+# ``intangible-valuation`` is loaded by file under a private module name to
+# avoid the top-level ``mcp_server`` collision. Point ``INTANGIBLE_VALUATION_SRC``
+# at its repo root, or rely on the dev checkout default.
+INTANGIBLE_SRC_HINT = "INTANGIBLE_VALUATION_SRC"
+_INTANGIBLE_SRC_CANDIDATES = ("/home/simonmak/git/intangible-valuation",)
+_INTANGIBLE_RELATIVE = "mcp_server/tool_surface.py"
+_INTANGIBLE_PRIVATE_MODULE = "_fv_sibling_intangible_tool_surface"
 
 _INTANGIBLE_SET = set(INTANGIBLE_TOOLS)
 _STARTUP_SET = set(STARTUP_TOOLS)
@@ -94,8 +102,54 @@ def missing_tools() -> List[str]:
     return coverage()["missing"]
 
 
+def _intangible_source_path() -> Optional[str]:
+    """Return the filesystem path to intangible-valuation's tool_surface, if any."""
+    import os
+    from pathlib import Path
+
+    candidates: List[str] = []
+    env = os.environ.get(INTANGIBLE_SRC_HINT)
+    if env:
+        candidates.append(env)
+    candidates.extend(_INTANGIBLE_SRC_CANDIDATES)
+    for base in candidates:
+        path = Path(base) / _INTANGIBLE_RELATIVE
+        if path.is_file():
+            return str(path)
+    return None
+
+
+def _load_intangible_call_tool() -> Callable[..., Dict[str, Any]]:
+    """Load intangible-valuation's ``call_tool`` from source by file path."""
+    import sys
+    from pathlib import Path
+
+    path = _intangible_source_path()
+    if not path:
+        raise ImportError(
+            f"intangible-valuation source not found; set {INTANGIBLE_SRC_HINT} "
+            "to its repository root"
+        )
+    repo_root = str(Path(path).parents[1])
+    spec = importlib.util.spec_from_file_location(_INTANGIBLE_PRIVATE_MODULE, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"cannot load sibling module from {path}")
+    module = importlib.util.module_from_spec(spec)
+    added = repo_root not in sys.path
+    if added:
+        sys.path.insert(0, repo_root)
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        if added and repo_root in sys.path:
+            sys.path.remove(repo_root)
+    return getattr(module, "call_tool")
+
+
 def sibling_available(owner: str) -> bool:
-    """Whether the sibling dispatcher for ``owner`` is importable."""
+    """Whether the sibling dispatcher for ``owner`` can be resolved."""
+    if owner == "intangible-valuation":
+        return _intangible_source_path() is not None
     path = SIBLING_CALL_TOOL_PATHS.get(owner)
     if not path:
         return False
@@ -106,7 +160,9 @@ def sibling_available(owner: str) -> bool:
 
 
 def sibling_call_tool(owner: str) -> Callable[..., Dict[str, Any]]:
-    """Import and return the sibling's pure ``call_tool`` dispatcher."""
+    """Return the sibling's pure ``call_tool`` dispatcher."""
+    if owner == "intangible-valuation":
+        return _load_intangible_call_tool()
     module_name, func_name = SIBLING_CALL_TOOL_PATHS[owner]
     module = importlib.import_module(module_name)
     return getattr(module, func_name)

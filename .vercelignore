@@ -1,0 +1,17 @@
+.git
+.github
+.venv
+vdd
+dist
+site
+build
+__pycache__
+*.pyc
+*.egg-info
+.code_deploy
+pyproject.toml
+uv.lock
+requirements.txt
+requirements-dev.txt
+mkdocs.yml
+docs

@@ -50,8 +50,11 @@ def test_overlap_has_canonical_owner():
 
 def test_strategy_and_dependencies_declared():
     assert ss.STRATEGY == "delegate"
-    assert any("intangible-valuation" in d for d in ss.SUPERSET_DEPENDENCIES)
+    # Only namespaced startup-valuation is pip-installable; intangible-valuation
+    # collides on the top-level ``mcp_server`` package and is source-loaded.
     assert any("startup-valuation" in d for d in ss.SUPERSET_DEPENDENCIES)
+    assert not any("intangible-valuation" in d for d in ss.SUPERSET_DEPENDENCIES)
+    assert ss.INTANGIBLE_SRC_HINT == "INTANGIBLE_VALUATION_SRC"
 
 
 def test_delegate_call_wraps_result_in_envelope():
@@ -84,3 +87,9 @@ def test_sibling_availability_is_boolean():
     assert isinstance(ss.sibling_available("startup-valuation"), bool)
     assert isinstance(ss.sibling_available("intangible-valuation"), bool)
     assert ss.sibling_available("nonexistent") is False
+
+
+def test_intangible_availability_matches_source_path():
+    # Availability must track whether a source file was actually located.
+    p = ss._intangible_source_path()
+    assert ss.sibling_available("intangible-valuation") is (p is not None)
