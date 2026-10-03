@@ -5,14 +5,16 @@ The server runs over **stdio** by default and over **Streamable HTTP** with
 
 ## Hosted endpoint (zero install)
 
-A managed Streamable HTTP endpoint is deployed on Vercel:
+A managed Streamable HTTP endpoint is deployed on Vercel and served at the
+custom domain root:
 
 ```
-https://fair-value-two.vercel.app/mcp
+https://fair-value.ascent-partners.com/
 ```
 
-Point any MCP client at it (transport: `streamable-http`). It is generated from
-`api/index.py` → `mcp_server.asgi:app`.
+The legacy path `/mcp` redirects (308) to the root. Point any MCP client at the
+URL (transport: `streamable-http`). It is generated from `api/index.py` →
+`mcp_server.asgi:app` (MCP mounted at `/`).
 
 ## Docker
 

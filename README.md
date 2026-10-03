@@ -31,6 +31,8 @@ pip install ".[mcp]"              # + MCP server dependencies (A-004)
 
 The console command `fair-value-mcp` runs the MCP server (stdio; add `--http` for Streamable HTTP).
 
+Hosted (zero install): `https://fair-value.ascent-partners.com/` (Streamable HTTP).
+
 ## MCP Server
 
 ```bash
