@@ -126,3 +126,9 @@ def test_report_audit_detects_hkfrs_basis_and_gaps(tmp_path):
     assert res["reporting_basis"] == "HKFRS"
     standards = {f.get("standard") for f in res["findings"]}
     assert "HKAS 40" in standards or "HKAS 36" in standards
+
+
+def test_report_review_draft_outline():
+    res = dispatch("calculate_report_review", {"method": "draft", "report_type": "dcf"})
+    assert res["status"] == "ok", res
+    assert isinstance(res["value"], str) and "Scope" in res["value"]

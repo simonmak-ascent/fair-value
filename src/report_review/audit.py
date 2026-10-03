@@ -134,3 +134,48 @@ def audit_report(file_path: str) -> Dict[str, Any]:
         "standards": STANDARDS,
         **outcome,
     }
+
+
+_OUTLINES: Dict[str, List[str]] = {
+    "dcf": [
+        "Scope and basis of value (IVS 101-102)",
+        "Company and industry overview",
+        "Financial projections and drivers",
+        "Discount rate (WACC) build-up",
+        "Terminal value and assumptions",
+        "Fair value per share and sensitivity",
+        "Sources of data and valuation date",
+    ],
+    "market": [
+        "Scope and basis of value",
+        "Peer selection and screening",
+        "Multiples applied and justification",
+        "Implied value range",
+        "Control/illiquidity adjustments (IFRS 13)",
+        "Conclusion and valuation date",
+    ],
+    "credit": [
+        "Scope and reporting basis (IFRS 9 / HKFRS 9)",
+        "Exposure, PD, LGD and EAD",
+        "Staging and lifetime vs 12-month ECL",
+        "Forward-looking information and scenarios",
+        "Resulting provision and disclosure",
+    ],
+    "report_review": [
+        "Document identification and valuation date",
+        "Methodology identified",
+        "Assumption and input checks",
+        "Discount-rate and terminal-value checks",
+        "Standards basis (IVS / IFRS / HKFRS)",
+        "Findings, severities and conclusion",
+    ],
+}
+
+
+def draft_report(report_type: str) -> Dict[str, Any]:
+    """Return the required section structure for a valuation report type."""
+    sections = _OUTLINES.get(report_type)
+    if sections is None:
+        raise ValueError(f"report_type must be one of {sorted(_OUTLINES)}")
+    markdown = "\n".join(f"## {i + 1}. {name}" for i, name in enumerate(sections))
+    return {"value": markdown, "report_type": report_type, "sections": sections}

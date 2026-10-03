@@ -977,6 +977,13 @@ _REPORT = (
         "IVS 2025 review; standards decision tree",
         ("IVS 2025", "IFRS 13"),
     ),
+    MethodSpec(
+        "draft",
+        "draft the required structure of a valuation report",
+        ("report_type",),
+        "IVS 2025 / IFRS 13 report skeleton",
+        ("IVS 2025",),
+    ),
 )
 
 _COMPANY = (

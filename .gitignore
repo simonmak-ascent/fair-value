@@ -46,3 +46,8 @@ site/
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+
+# Environment files — never commit secrets
+.env
+.env.*
+!.env.example

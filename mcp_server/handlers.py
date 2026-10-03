@@ -1119,9 +1119,15 @@ def _report_audit(file_path):
     return audit_report(file_path)
 
 
+def _report_draft(report_type):
+    from src.report_review.audit import draft_report
+
+    return draft_report(report_type)
+
+
 _register(
     "calculate_report_review",
-    {"audit": _report_audit},
+    {"audit": _report_audit, "draft": _report_draft},
 )
 
 

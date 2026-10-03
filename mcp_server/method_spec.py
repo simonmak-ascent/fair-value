@@ -258,6 +258,10 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "quantity": _n("Number of units (biological assets)."),
     "costs_to_sell": _n("Incremental costs to sell / dispose (IAS 41)."),
     "noi": _n("Net operating income of the property (IAS 40)."),
+    "report_type": _enum(
+        ["dcf", "market", "credit", "report_review"],
+        "Valuation report type to draft a structure for.",
+    ),
     "call_price": _n("CBBC call price (mandatory-call trigger level)."),
     "entitlement": _n("CBBC entitlement: units of underlying per contract."),
     "fixing_days": _i("Number of closing fixings averaged for settlement (>=1)."),
