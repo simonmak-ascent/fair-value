@@ -43,3 +43,6 @@ vdd/
 constitution.md
 site/
 .vercel
+
+# Playwright MCP session artifacts
+.playwright-mcp/
