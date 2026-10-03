@@ -47,3 +47,21 @@ py-modules = ["valuation_engine"]
 
 [tool.setuptools.packages.find]
 include = ["src*", "mcp_server*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+exclude = ["build", "dist", ".venv"]
+
+[tool.ruff.lint]
+# Pragmatic correctness-focused set for a legacy scientific codebase.
+select = ["E", "F", "W"]
+ignore = ["E501", "E402", "E741", "W291", "W293", "W605"]
+per-file-ignores = { "tests/*" = ["F401"] }
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+warn_unused_ignores = false
+files = ["mcp_server", "valuation_engine.py", "src/output"]
+
