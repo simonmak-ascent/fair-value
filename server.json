@@ -3,7 +3,7 @@
   "name": "io.github.simonmak-ascent/fair-value",
   "title": "Fair Value MCP Server",
   "description": "Valuation MCP: DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "websiteUrl": "https://github.com/simonmak-ascent/fair-value",
   "repository": {
     "url": "https://github.com/simonmak-ascent/fair-value",
@@ -13,7 +13,7 @@
     {
       "registryType": "pypi",
       "identifier": "fair-value",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "runtimeHint": "uvx",
       "runtimeArguments": [
         { "type": "named", "name": "--from", "value": "fair-value[mcp]" }
@@ -29,6 +29,12 @@
       "src": "https://raw.githubusercontent.com/simonmak-ascent/fair-value/main/assets/icon.svg",
       "mimeType": "image/svg+xml",
       "sizes": ["any"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://fair-value-two.vercel.app/mcp"
     }
   ]
 }

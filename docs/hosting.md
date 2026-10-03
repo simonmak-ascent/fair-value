@@ -1,7 +1,18 @@
 # Hosting (Streamable HTTP)
 
 The server runs over **stdio** by default and over **Streamable HTTP** with
-`--http`. Container builds give a reproducible self-hosted endpoint.
+`--http`.
+
+## Hosted endpoint (zero install)
+
+A managed Streamable HTTP endpoint is deployed on Vercel:
+
+```
+https://fair-value-two.vercel.app/mcp
+```
+
+Point any MCP client at it (transport: `streamable-http`). It is generated from
+`api/index.py` → `mcp_server.asgi:app`.
 
 ## Docker
 

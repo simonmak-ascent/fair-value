@@ -76,3 +76,9 @@ def test_registry_length_limits():
 def test_readme_has_mcp_name_marker():
     readme = (ROOT / "README.md").read_text()
     assert f"mcp-name: {_manifest()['name']}" in readme
+
+
+def test_remote_endpoint_declared():
+    remotes = _manifest().get("remotes", [])
+    assert remotes, "server.json should declare a hosted remote"
+    assert any(r.get("type") == "streamable-http" for r in remotes)
