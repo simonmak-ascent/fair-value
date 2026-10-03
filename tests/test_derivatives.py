@@ -24,13 +24,6 @@ from src.derivatives.futures import (
     basis,
     implied_rate_from_futures
 )
-from src.derivatives.futures import (
-    futures_price,
-    forward_price,
-    currency_forward,
-    basis,
-    implied_rate_from_futures
-)
 from src.derivatives.greeks import (
     delta,
     gamma,

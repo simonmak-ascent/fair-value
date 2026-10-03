@@ -4,7 +4,7 @@ Extract and review PDF valuation reports
 """
 
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)

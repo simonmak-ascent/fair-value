@@ -5,7 +5,6 @@ Black-Scholes-Merton, Binomial Tree, and Monte Carlo methods
 
 import numpy as np
 from scipy.stats import norm
-from typing import Dict, Optional
 import logging
 
 logger = logging.getLogger(__name__)

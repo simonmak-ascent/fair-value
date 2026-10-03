@@ -2,8 +2,7 @@
 Expected Credit Loss (ECL) calculation per HKFRS 9 / IFRS 9
 """
 
-import numpy as np
-from typing import Dict, Optional
+from typing import Dict
 import logging
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ Report Formatter Module
 Format valuation results for docgen output
 """
 
-from typing import Dict, List, Any
+from typing import Dict
 import logging
 
 logger = logging.getLogger(__name__)

@@ -60,8 +60,10 @@ ignore = ["E501", "E402", "E741", "W291", "W293", "W605"]
 per-file-ignores = { "tests/*" = ["F401"] }
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.12"
 ignore_missing_imports = true
 warn_unused_ignores = false
+# Analyse imported legacy modules, but only report errors for the modules we own.
+follow_imports = "silent"
 files = ["mcp_server", "valuation_engine.py", "src/output"]
 

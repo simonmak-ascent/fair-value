@@ -3,8 +3,7 @@ Comparable Company Analysis (CCA) / Multiples Valuation Module
 """
 
 import numpy as np
-import pandas as pd
-from typing import Dict, List, Optional
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,7 +20,6 @@ def get_peer_data(ticker: str, sector: str = None) -> List[Dict]:
     Returns:
         List of peer company metrics
     """
-    from ..fetch_data import get_key_metrics, get_company_info
     
     # This is a simplified implementation
     # In production, use a database of comparable companies

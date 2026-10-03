@@ -5,7 +5,7 @@ Data fetching module using yfinance
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 from datetime import datetime, timedelta
 import logging
 

@@ -27,7 +27,7 @@ try:  # optional dependency (the ``[mcp]`` extra)
 
     FASTMCP_AVAILABLE = True
 except ImportError:  # pragma: no cover - exercised when extra is absent
-    FastMCP = None  # type: ignore[assignment]
+    FastMCP = None  # type: ignore[assignment,misc]
     FASTMCP_AVAILABLE = False
 
 
@@ -66,9 +66,7 @@ def _invoke(spec: ToolSpec, arguments: Dict[str, Any]) -> Dict[str, Any]:
             method=spec.name,
         )
     except Exception as exc:
-        return _error(
-            "DATA_UNAVAILABLE", f"{spec.name} failed: {exc}", method=spec.name
-        )
+        return _error("DATA_UNAVAILABLE", f"{spec.name} failed: {exc}", method=spec.name)
 
 
 def _make_tool(spec: ToolSpec) -> Callable[..., Dict[str, Any]]:
@@ -147,8 +145,7 @@ def build_server() -> Any:
     """Build a FastMCP server with one tool per :data:`TOOL_SURFACE` entry."""
     if not FASTMCP_AVAILABLE:
         raise RuntimeError(
-            "fastmcp is not installed; install the 'mcp' extra: "
-            "pip install 'fair-value[mcp]'"
+            "fastmcp is not installed; install the 'mcp' extra: pip install 'fair-value[mcp]'"
         )
 
     server: Any = FastMCP(SERVER_NAME)  # type: ignore[misc]

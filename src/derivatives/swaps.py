@@ -3,7 +3,7 @@ Interest Rate and Currency Swap Valuation Module
 """
 
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)

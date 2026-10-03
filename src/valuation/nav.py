@@ -3,9 +3,7 @@ Net Asset Value (NAV) Valuation Module
 For investment holding companies and asset-rich businesses
 """
 
-import numpy as np
-import pandas as pd
-from typing import Dict, List, Optional
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -220,7 +218,6 @@ def nav_from_holdings(
     Returns:
         NAV results
     """
-    from ..fetch_data import get_stock_price
     
     listed = {}
     unlisted = []

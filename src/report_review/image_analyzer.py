@@ -4,7 +4,7 @@ OCR and data extraction from scanned images
 """
 
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List
 import logging
 
 logger = logging.getLogger(__name__)

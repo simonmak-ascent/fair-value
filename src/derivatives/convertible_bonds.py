@@ -3,7 +3,6 @@ Convertible Bond Valuation Module
 """
 
 import numpy as np
-from typing import Dict, Optional
 import logging
 
 logger = logging.getLogger(__name__)
