@@ -82,3 +82,36 @@ def test_build_server_registers_surface_tools():
         params = inspect.signature(fn).parameters
         for prop in spec.input_schema.get("properties", {}):
             assert prop in params
+
+
+def test_make_delegated_tool_returns_error_envelope_when_sibling_absent():
+    fn = srv._make_delegated_tool("valuation_ip", "intangible-valuation")
+    res = fn({"asset": "patent"})
+    assert res["status"] == "error"
+    assert res["error"]["code"] == "DATA_UNAVAILABLE"
+
+
+def test_register_delegated_tools_covers_all_non_native_baseline():
+    from mcp_server import superset_baseline as sb
+    from mcp_server import tool_surface as ts
+
+    class FakeServer:
+        def __init__(self):
+            self.tools = {}
+
+        def tool(self, name, description=None):
+            def deco(fn):
+                self.tools[name] = fn
+                return fn
+
+            return deco
+
+        def add_tool(self, fn, name, description=None):
+            self.tools[name] = fn
+
+    fake = FakeServer()
+    names = srv.register_delegated_tools(fake)
+    expected = [n for n in sb.UNION_TOOLS if n not in set(ts.tool_names())]
+    assert set(names) == set(expected)
+    assert len(names) == 27
+    assert set(fake.tools) == set(expected)

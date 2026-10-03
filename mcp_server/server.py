@@ -98,6 +98,51 @@ def _make_tool(spec: ToolSpec) -> Callable[..., Dict[str, Any]]:
     return tool
 
 
+def _make_delegated_tool(name: str, owner: str) -> Callable[..., Dict[str, Any]]:
+    """Build a tool that delegates a baseline tool to a sibling (A-005)."""
+    from .superset import delegate_call
+
+    def tool(arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        return delegate_call(owner, name, arguments or {})
+
+    tool.__name__ = name
+    tool.__doc__ = f"Superset tool delegated to {owner} (A-005)."
+    tool.__signature__ = inspect.Signature(  # type: ignore[attr-defined]
+        [
+            inspect.Parameter(
+                "arguments",
+                inspect.Parameter.KEYWORD_ONLY,
+                default=None,
+                annotation=Optional[Dict[str, Any]],
+            )
+        ]
+    )
+    return tool
+
+
+def register_delegated_tools(server: Any) -> List[str]:
+    """Register one delegated tool per non-native baseline tool (A-005).
+
+    Makes the live server a strict superset: native tools plus every sibling
+    tool, delegated to the sibling's ``call_tool``. Returns the names added.
+    """
+    from .superset import CANONICAL_MAP
+
+    native = set(tool_names())
+    registered: List[str] = []
+    for name, resolution in CANONICAL_MAP.items():
+        if name in native or not resolution.startswith("delegate:"):
+            continue
+        owner = resolution.split(":", 2)[1]
+        fn = _make_delegated_tool(name, owner)
+        try:
+            server.tool(name=name, description=fn.__doc__)(fn)
+        except TypeError:  # older FastMCP signature
+            server.add_tool(fn, name=name, description=fn.__doc__)
+        registered.append(name)
+    return registered
+
+
 def build_server() -> Any:
     """Build a FastMCP server with one tool per :data:`TOOL_SURFACE` entry."""
     if not FASTMCP_AVAILABLE:
@@ -113,6 +158,7 @@ def build_server() -> Any:
             server.tool(name=spec.name, description=spec.description)(fn)
         except TypeError:  # older FastMCP signature
             server.add_tool(fn, name=spec.name, description=spec.description)
+    register_delegated_tools(server)
     return server
 
 
@@ -134,7 +180,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     return 0
 
 
-__all__ = ["build_server", "main", "tool_names", "FASTMCP_AVAILABLE"]
+__all__ = [
+    "build_server",
+    "register_delegated_tools",
+    "main",
+    "tool_names",
+    "FASTMCP_AVAILABLE",
+]
 
 
 if __name__ == "__main__":  # pragma: no cover
