@@ -15,7 +15,7 @@ and IFRS. The previous sibling-delegation model was retired.
 | Tools / methods | 16 tools, 129 methods |
 | Implemented | 127/129 (2 deferred: `finite_difference`, `quantlib`) |
 | Lint / types | ruff clean; mypy clean (17 files) |
-| Tests | 284 passed, 2 skipped |
+| Tests | 284 passed, 2 skipped (CI, no QuantLib); 290 passed with QuantLib |
 | Conformance | `16 tools; 127/129 implemented, 2 explicitly deferred` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
@@ -61,9 +61,9 @@ floor (the debt grid diffuses the terminal conversion step). Needs a
 regime-aware or smoother treatment before it can replace the deferral.
 
 ### P1 — QuantLib parity tests
-Add `pytest.importorskip("QuantLib")` parity checks for options and convertibles
-so the optional path is exercised when QuantLib is present (it is not on the
-compute box).
+- **Done**: `tests/test_quantlib_parity.py` checks QuantLib vs the native
+  Black-Scholes across strikes and call/put, skipped when QuantLib is absent.
+  Verified on the compute box with QuantLib 1.43: 290 tests pass.
 
 ### P2 — HK-market depth
 - HIBOR/HKD curve construction — **done**: `calculate_fixed_income`
