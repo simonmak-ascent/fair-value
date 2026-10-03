@@ -15,7 +15,7 @@ and IFRS. The previous sibling-delegation model was retired.
 | Tools / methods | 16 tools, 127 methods |
 | Implemented | 125/127 (2 deferred: `finite_difference`, `quantlib`) |
 | Lint / types | ruff clean; mypy clean (17 files) |
-| Tests | 277 passed, 2 skipped |
+| Tests | 280 passed, 2 skipped |
 | Conformance | `16 tools; 125/127 implemented, 2 explicitly deferred` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
@@ -78,5 +78,6 @@ tag-triggered (`release.yml` → PyPI → MCP Registry); redeploy the hosted ASG
 app and re-run any deployed-surface audit. **Not yet performed.**
 
 ### P3 — Docs & examples
-Keep `valuation://methods` as the source of truth; add worked HK examples
-(one convertible, one structured product, one loss-making company) to the docs.
+- Worked HK examples — **done**: `examples/hk_examples.py` (convertible, inline
+  warrant, loss-making listing), rendered in `docs/examples.md` and covered by
+  the test suite. Keep `valuation://methods` as the source of truth.
