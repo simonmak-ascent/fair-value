@@ -8,6 +8,7 @@ nav:
   - MCP Server: mcp.md
   - Hosting: hosting.md
   - Methods: methods.md
+  - Status & Roadmap: status.md
   - Observability: slo.md
 
 theme:

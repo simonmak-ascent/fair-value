@@ -1,89 +1,46 @@
-"""A-013: machine-readable valuation method catalog (MCP resource).
+"""Machine-readable MCP resources: method catalog and standards taxonomy.
 
-Served as the MCP resource ``valuation://methods`` so agents can discover the
-methods, formula references, and standards each tool implements without
-guessing from prose.
+Served as ``valuation://methods`` and ``valuation://standards`` so agents can
+discover the methods, formula references, and standards each tool implements
+without guessing from prose. Both are derived from the method-spec registry and
+the report-review taxonomy — never hand-maintained separately.
 """
 
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from .tool_surface import SERVER_NAME, SURFACE_VERSION, TOOL_SURFACE
+from . import method_spec as ms
 
-# Per-tool method metadata: method name, formula reference, governing standards.
-_METHOD_META: Dict[str, Dict[str, Any]] = {
-    "valuation_dcf": {
-        "method": "DCF",
-        "formula_ref": "IVS 105 income approach; PV of projected FCFF",
-        "standards": ["IVS 2025", "IFRS 13"],
-    },
-    "valuation_nav": {
-        "method": "NAV",
-        "formula_ref": "IVS 105 asset-based approach; assets - liabilities",
-        "standards": ["IVS 2025"],
-    },
-    "valuation_cca": {
-        "method": "CCA",
-        "formula_ref": "IVS 105 market approach; median peer multiples",
-        "standards": ["IVS 2025", "IFRS 13"],
-    },
-    "review_report": {
-        "method": "Review",
-        "formula_ref": "IVS 2025 review; methodology + assumption checks",
-        "standards": ["IVS 2025", "IFRS 13"],
-    },
-    "get_valuation_summary": {
-        "method": "Profile",
-        "formula_ref": "n/a (market data)",
-        "standards": [],
-    },
-    "calculate_wacc": {
-        "method": "WACC",
-        "formula_ref": "WACC = we*ke + wd*kd*(1 - tax)",
-        "standards": ["IVS 2025"],
-    },
-    "calculate_ecl": {
-        "method": "ECL",
-        "formula_ref": "ECL = EAD x PD x LGD",
-        "standards": ["IFRS 9", "HKFRS 9"],
-    },
-    "black_scholes_price": {
-        "method": "Black-Scholes",
-        "formula_ref": "Black-Scholes-Merton European option price",
-        "standards": ["IFRS 13"],
-    },
+_STANDARDS = {
+    "IVS 2025": "International Valuation Standards 2025 (IVS 101-105): scope of work, bases of value, valuation approaches and methods.",
+    "IFRS 13": "Fair value measurement: exit price, market participants, valuation techniques, and the fair-value hierarchy.",
+    "IFRS 9": "Financial instruments: classification and measurement, expected credit losses, and fair value.",
+    "IAS 36": "Impairment of assets: recoverable amount is the higher of value in use and fair value less costs of disposal.",
+    "IAS 37": "Provisions, contingent liabilities and contingent assets: best estimate, risks, and discounting.",
+    "IAS 32": "Financial instruments: presentation, including puttable instruments and redemption features.",
+    "IFRS 2": "Share-based payment: fair value measured at grant date.",
+    "IFRS 17": "Insurance contracts: fulfilment cash flows, risk adjustment, and contractual service margin.",
+    "HKFRS": "Hong Kong Financial Reporting Standards, the local IFRS-equivalent reporting basis.",
 }
 
 
 def build_catalog() -> Dict[str, Any]:
-    """Return the machine-readable method catalog for the whole tool surface."""
-    tools: List[Dict[str, Any]] = []
-    for spec in TOOL_SURFACE:
-        meta = _METHOD_META.get(spec.name, {})
-        tools.append(
-            {
-                "name": spec.name,
-                "title": spec.title,
-                "description": spec.description,
-                "method": meta.get("method"),
-                "formula_ref": meta.get("formula_ref"),
-                "standards": meta.get("standards", []),
-                "handler": spec.handler,
-                "read_only": spec.annotations.get("readOnlyHint", True),
-                "open_world": spec.annotations.get("openWorldHint", False),
-                "input_schema": spec.input_schema,
-            }
-        )
-    return {
-        "server": SERVER_NAME,
-        "surface_version": SURFACE_VERSION,
-        "tool_count": len(TOOL_SURFACE),
-        "tools": tools,
-    }
+    """Return the full method catalog (delegates to the registry)."""
+    return ms.catalog()
+
+
+def standards() -> Dict[str, Any]:
+    """Return the standards taxonomy referenced by the tools."""
+    return {"standards": _STANDARDS}
 
 
 def catalog_json() -> str:
-    """Return :func:`build_catalog` serialized as deterministic JSON."""
+    """Return :func:`build_catalog` as deterministic JSON."""
     return json.dumps(build_catalog(), indent=2, sort_keys=True)
+
+
+def standards_json() -> str:
+    """Return :func:`standards` as deterministic JSON."""
+    return json.dumps(standards(), indent=2, sort_keys=True)

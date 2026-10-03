@@ -14,13 +14,16 @@ fair-value-mcp --http     # Streamable HTTP (default 127.0.0.1:8000)
 
 ## Surface
 
-- **Tools** — the native valuation / cost-of-capital / derivatives / credit-risk
-  / report-review tools, plus delegated tools from the `startup-valuation` and
-  `intangible-valuation` MCP servers (strict superset).
+- **Tools** — 16 native `calculate_*` tools derived from the method-spec registry
+  (DCF, cost of capital, multiples, residual income, options, expected value,
+  credit risk, actuarial PV, sector metrics, fair-value adjustments, convertible
+  bonds, structured products, loss-making companies, fixed income, report review,
+  company summary).
 - **Prompts** — guided workflows: `value_company_dcf`, `review_valuation_report`,
   `explain_cost_of_capital`.
 - **Resources** — `valuation://methods`: a machine-readable catalogue of methods,
-  formula references, and governing standards.
+  formula references, and governing standards; `valuation://standards`: the
+  IVS/IFRS taxonomy referenced by the tools.
 
 ## Registry
 

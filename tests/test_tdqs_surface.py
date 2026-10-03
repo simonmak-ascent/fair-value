@@ -8,8 +8,6 @@ cannot silently regress (which previously scored the server Tier D).
 import sys
 from pathlib import Path
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from mcp_server import tool_surface as ts  # noqa: E402
@@ -44,10 +42,7 @@ def test_titles_are_meaningful():
         assert len(spec.title) > len(spec.name), f"{spec.name} title too short"
 
 
-def test_delegated_tool_docs_carry_usage_guidance():
-    pytest.importorskip("pydantic")
-    from mcp_server.server import _make_delegated_tool
-
-    doc = _make_delegated_tool("valuation_ip", "intangible-valuation").__doc__ or ""
-    assert "Use it only for" in doc
-    assert "Read-only" in doc
+def test_all_tools_are_engine_backed():
+    # Every surface tool is registry-backed; no sibling-delegation remains.
+    for spec in ts.list_tools():
+        assert spec.handler.startswith("engine:"), spec.name

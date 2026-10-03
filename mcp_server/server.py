@@ -31,16 +31,13 @@ except ImportError:  # pragma: no cover - exercised when extra is absent
     FASTMCP_AVAILABLE = False
 
 
-_ENGINE_PARAM_TOOLS = {"valuation_dcf", "valuation_nav", "valuation_cca"}
-_ENGINE_KWARG_TOOLS = {"review_report", "get_valuation_summary"}
-
-
 def _invoke(spec: ToolSpec, arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Dispatch one tool call by family, always returning a dict.
+    """Dispatch one tool call, always returning the shared envelope.
 
-    Engine tools keep their own envelope; direct ``src`` functions are wrapped
-    in an A-006 success envelope. Expected failures become error envelopes and
-    never raise.
+    Every surface tool is registry-backed: ``resolve_handler`` returns the
+    method dispatcher, which validates arguments (no-defaults contract),
+    executes the handler, and wraps the result. Expected failures become error
+    envelopes and never raise.
     """
     from src.output.result import error as _error
 
@@ -48,17 +45,7 @@ def _invoke(spec: ToolSpec, arguments: Dict[str, Any]) -> Dict[str, Any]:
     args = dict(arguments or {})
 
     try:
-        if spec.name in _ENGINE_PARAM_TOOLS:
-            ticker = args.pop("ticker", None)
-            return handler(ticker, args)
-        if spec.name in _ENGINE_KWARG_TOOLS:
-            return handler(**args)
-
-        # direct src function -> wrap scalar/dict in the shared envelope
-        from src.output.result import ok as _ok
-
-        value = handler(**args)
-        return _ok(spec.name, value=value, formula_ref=spec.handler)
+        return handler(**args)
     except TypeError as exc:
         return _error(
             "INVALID_ARGUMENT",
@@ -138,97 +125,6 @@ def _make_tool(spec: ToolSpec) -> Callable[..., Dict[str, Any]]:
     return tool
 
 
-_DELEGATED_ANNOTATIONS = {
-    "readOnlyHint": True,
-    "idempotentHint": True,
-    "destructiveHint": False,
-    "openWorldHint": False,
-}
-
-
-def _delegated_title(name: str) -> str:
-    return name.replace("_", " ").strip().title()
-
-
-def _make_delegated_tool(name: str, owner: str) -> Callable[..., Dict[str, Any]]:
-    """Build a tool that delegates a baseline tool to a sibling (A-005)."""
-    from typing import Annotated
-
-    from pydantic import Field
-
-    from .superset import delegate_call
-
-    human_owner = owner.replace("-", " ")
-    title = _delegated_title(name)
-
-    def tool(arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        return delegate_call(owner, name, arguments or {})
-
-    tool.__name__ = name
-    tool.__doc__ = (
-        f"{title} ({name}) — a {human_owner} valuation capability, exposed through "
-        f"this server so one endpoint covers corporate, startup, and intangible "
-        f"valuation. Use it only for the {human_owner} '{name}' case that the native "
-        f"tools do not handle; prefer the native tool (valuation_dcf, valuation_nav, "
-        f"valuation_cca, calculate_wacc, calculate_ecl, or black_scholes_price) "
-        f"whenever it applies. Read-only, deterministic computation: no external "
-        f"calls and no authentication required. Pass an 'arguments' object matching "
-        f"that tool's schema; unsupported fields return an error envelope rather than "
-        f"raising. Returns the shared result envelope."
-    )
-    arg_annotation: Any = Annotated[
-        Optional[Dict[str, Any]],
-        Field(
-            description=(
-                f"Arguments forwarded to {human_owner} '{name}'; see that "
-                "tool's schema for supported fields."
-            )
-        ),
-    ]
-    tool.__signature__ = inspect.Signature(  # type: ignore[attr-defined]
-        [
-            inspect.Parameter(
-                "arguments",
-                inspect.Parameter.KEYWORD_ONLY,
-                default=None,
-                annotation=arg_annotation,
-            )
-        ]
-    )
-    tool.__annotations__ = {"arguments": arg_annotation, "return": Dict[str, Any]}
-    return tool
-
-
-def register_delegated_tools(server: Any) -> List[str]:
-    """Register one delegated tool per non-native baseline tool (A-005).
-
-    Makes the live server a strict superset: native tools plus every sibling
-    tool, delegated to the sibling's ``call_tool``. Returns the names added.
-    """
-    from .superset import CANONICAL_MAP
-    from .tool_surface import ENVELOPE_OUTPUT
-
-    native = set(tool_names())
-    registered: List[str] = []
-    for name, resolution in CANONICAL_MAP.items():
-        if name in native or not resolution.startswith("delegate:"):
-            continue
-        owner = resolution.split(":", 2)[1]
-        fn = _make_delegated_tool(name, owner)
-        try:
-            server.tool(
-                name=name,
-                title=_delegated_title(name),
-                description=fn.__doc__,
-                annotations=_DELEGATED_ANNOTATIONS,
-                output_schema=ENVELOPE_OUTPUT,
-            )(fn)
-        except TypeError:  # older FastMCP signature
-            server.add_tool(fn, name=name, description=fn.__doc__)
-        registered.append(name)
-    return registered
-
-
 def build_server() -> Any:
     """Build a FastMCP server with one tool per :data:`TOOL_SURFACE` entry."""
     if not FASTMCP_AVAILABLE:
@@ -249,7 +145,6 @@ def build_server() -> Any:
             )(fn)
         except TypeError:  # older FastMCP signature
             server.add_tool(fn, name=spec.name, description=spec.description)
-    register_delegated_tools(server)
     register_prompts(server)
     register_resources(server)
     return server
@@ -270,21 +165,28 @@ def register_prompts(server: Any) -> List[str]:
 
 
 def register_resources(server: Any) -> List[str]:
-    """Register the machine-readable method catalog (A-013); return URIs."""
-    from .catalog import catalog_json
+    """Register the machine-readable catalog and standards resources; return URIs."""
+    from .catalog import catalog_json, standards_json
 
     def method_catalog() -> str:
         """Machine-readable catalog of valuation methods, formulas, and standards."""
         return catalog_json()
 
-    uri = "valuation://methods"
-    try:
-        server.resource(uri, name="valuation_methods", description=method_catalog.__doc__)(
-            method_catalog
-        )
-    except TypeError:  # older FastMCP signature
-        server.resource(uri)(method_catalog)
-    return [uri]
+    def standards_catalog() -> str:
+        """Machine-readable taxonomy of IVS/IFRS standards referenced by the tools."""
+        return standards_json()
+
+    registered: List[str] = []
+    for uri, name, fn in (
+        ("valuation://methods", "valuation_methods", method_catalog),
+        ("valuation://standards", "valuation_standards", standards_catalog),
+    ):
+        try:
+            server.resource(uri, name=name, description=fn.__doc__)(fn)
+        except TypeError:  # older FastMCP signature
+            server.resource(uri)(fn)
+        registered.append(uri)
+    return registered
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -311,7 +213,6 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 __all__ = [
     "build_server",
-    "register_delegated_tools",
     "register_prompts",
     "register_resources",
     "main",

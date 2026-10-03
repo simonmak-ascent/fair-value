@@ -76,11 +76,12 @@ def test_tool_surface_module_does_not_import_fastmcp():
 
 def test_core_families_present():
     names = set(ts.tool_names())
-    assert {"valuation_dcf", "valuation_nav", "valuation_cca"} <= names
-    assert "review_report" in names
-    assert "calculate_wacc" in names
-    assert "calculate_ecl" in names
-    assert "black_scholes_price" in names
+    assert {"calculate_dcf", "calculate_discount_rate", "calculate_market_multiple"} <= names
+    assert "calculate_convertible_bond" in names
+    assert "calculate_structured_product" in names
+    assert "calculate_report_review" in names
+    assert "calculate_company_summary" in names
+    assert len(names) == 16
 
 
 def test_versioned_identity():

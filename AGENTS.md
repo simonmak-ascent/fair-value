@@ -1,54 +1,68 @@
 # AGENTS.md
 
-Financial valuation library (DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review) aligned to IVS 2025 / IFRS. Capability spec lives in `SKILL.md`.
+Financial valuation library + MCP server (DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review) aligned to IVS 2025 / IFRS. Capability spec lives in `SKILL.md`; local immutable constraints (gitignored) live in `constitution.md`.
 
-## Top-level API (wired, A-001)
+## Commands (CI parity — run via the compute box)
 
-`valuation_engine.py` is the public facade. `run_valuation(ticker, method, params=None)` (methods `dcf`/`nav`/`cca`), `run_nav`, `run_cca`, `review_report(path)`, `scan_directory(dir)`, and `get_valuation_summary(ticker)` validate inputs, lazily import the concrete `src/` implementation, and return a shared result/error envelope (`{"status": "ok", ...}` or `{"status": "error", "error": {"code", "message"}}`). Network access happens only at call time; a monkeypatchable provider seam (`_get_market_metrics`, `_get_company_info`, `_get_stock_price`, `_get_volatility`) keeps tests offline.
+CI is the executable source of truth (`.github/workflows/ci.yml`):
 
-The concrete computation functions also live in `src/` and can be imported directly:
-
-```python
-from src.valuation.dcf import dcf_valuation
-from src.cost_of_capital.wacc import calculate_wacc
-from src.credit_risk.ecl import calculate_ecL
+```bash
+pip install -r requirements.txt -r requirements-dev.txt   # setup (pip; repo is not uv-managed, no uv.lock)
+ruff check .                                               # lint (config in pyproject.toml)
+mypy                                                       # type-check (no args; reads `files` from pyproject)
+python -m pytest                                           # all tests (pytest.ini: testpaths=tests)
+python -m pytest tests/test_dcf.py::test_dcf_valuation     # one test
+python -m pytest --cov=src --cov=mcp_server --cov=valuation_engine --cov-report=term-missing
+python scripts/check_conformance.py                        # registry + surface gate
+python -m tdqs lint --command "python -m mcp_server.server" --fail-on error
+pip install . && python -c "import mcp_server.server as s; s.build_server()"   # packaging/smoke
+mkdocs build --strict                                      # docs
 ```
+
+Per global policy, never run these locally: `cs run "ruff check . && mypy && python -m pytest"`. `cs provision`/`uv sync` does not fit this repo (pip + `requirements*.txt`, no `uv.lock`) — install deps with pip on the box.
+
+`mypy` only checks `mcp_server`, `valuation_engine.py`, and `src/output` (pyproject `files`); type errors in the rest of `src/` are not gated. Ruff `E501` is ignored despite `line-length = 100`.
 
 ## Layout
 
-- `src/valuation/` — `dcf.py`, `nav.py`, `multiples.py` (CCA), `sensitivity.py`
-- `src/cost_of_capital/` — `wacc.py`, `fama_french.py`, `kmv.py`
-- `src/derivatives/` — `options.py`, `swaps.py`, `convertible_bonds.py`, `futures.py`, `greeks.py`
-- `src/credit_risk/` — `ecl.py`, `pd_models.py`
-- `src/report_review/` — `excel_analyzer.py`, `pdf_analyzer.py`, `word_analyzer.py`, `image_analyzer.py`
-- `src/output/` — `report_formatter.py`, `chart_data.py`
-- `src/fetch_data.py` — Yahoo Finance via `yfinance` (network at call time only)
-- `src/constants.py` — standards refs, rating→PD, LGD tables
+- `valuation_engine.py` — public facade + CLI. Validates, lazily imports `src/`, returns the shared envelope.
+- `src/` — computation only: `valuation/`, `cost_of_capital/`, `derivatives/`, `credit_risk/`, `report_review/`, `output/`, `fetch_data.py`, `constants.py`.
+- `mcp_server/` — FastMCP server. `method_spec.py` + `method_spec_seed.py` are the single source of truth for the 16 `calculate_*` tools and their 123 methods; `tool_surface.py` derives the surface from the registry; `engine.py` validates and dispatches; `server.py` renders it; `asgi.py` is the hosted ASGI app; `catalog.py`/`prompts.py` serve the `valuation://methods` and `valuation://standards` resources and guided prompts.
+- `api/index.py` — Vercel Python entrypoint (imports `mcp_server.asgi:app`). `Dockerfile`/`docker-compose.yml` run `fair-value-mcp --http`.
+- `tests/` — pytest; `tests/conftest.py` holds the offline fixtures/seam.
+- `scripts/check_conformance.py` — CI needs no network and must exit 0.
 
-Subpackage `__init__.py` files are mostly empty; `src/valuation/__init__.py` re-exports its functions. Import concrete modules, not the package root.
+## Envelope contract
 
-## Commands
+Every public result uses `src/output/result.py` `ok()`/`error()`. Success envelopes must carry `status, method, value, assumptions, formula_ref, data_timestamp, steps, disclaimer` (`OK_REQUIRED_FIELDS`); `missing_ok_fields()` checks this. Do not invent a new return shape.
 
-```bash
-pip install -r requirements.txt   # no pyproject.toml/setup.py — pip, not uv/pnpm
-python -m pytest                   # all tests (pytest.ini: testpaths=tests)
-python -m pytest tests/test_dcf.py::test_dcf_valuation   # one test
-```
+## MCP tool surface
 
-Per the global compute policy, run tests via the box, e.g. `cs run "python -m pytest"`. `cs provision` uses `uv sync`, which fails here (no `pyproject.toml`); install deps with pip on the box instead. No lint/typecheck/formatter config exists in-repo.
+Edit `mcp_server/method_spec_seed.py` (method tables) and `mcp_server/method_spec.py` (parameter vocabulary), not `server.py`, to add/change tools; `tool_surface.py` derives the surface from the registry. `build_server()` requires the `[mcp]` extra (fastmcp); importing `server.py` is side-effect free and raises only on `build_server()`. Tests enforce surface invariants: every parameter has a `description`, every tool has all four annotations, a non-empty output schema, and a title longer than its name (`tests/test_tdqs_surface.py`). Every registered method must be implemented or explicitly listed as deferred in `scripts/check_conformance.py` (currently 2 convertible-bond discretizations needing QuantLib). Handlers auto-wrap the shared envelope; expected failures become error envelopes, never raises.
+
+## Packaging & release invariants
+
+- PEP 621 `pyproject.toml` is authoritative; `fair-value-mcp = mcp_server.server:main` is the console script.
+- **Version lockstep:** `server.json` `version` must equal `pyproject.toml` `version` (`tests/test_manifest.py::test_version_locked_to_pyproject`). Bump both `version` fields in `server.json` (top-level and `packages[0]`).
+- `README.md` must contain `mcp-name: io.github.simonmak-ascent/fair-value`; `assets/icon.svg` must exist (manifest tests).
+- `.vercelignore` excludes `pyproject.toml`; Vercel uses `requirements.txt` (`includeFiles` in `vercel.json`).
+- Release is tag-triggered (`release.yml`): `python -m build` → PyPI → MCP Registry. Don't publish by hand.
 
 ## Import & runtime quirks
 
-- Run from the repo root; tests do `sys.path.insert(0, repo_root)` and import absolute `src....`. `valuation_engine.py` does the same.
-- `import src` runs `src/__init__.py`, which imports `fetch_data` → `yfinance`. So **yfinance must be installed even for the pure-math tests**, which themselves make no network calls.
-- Internal relative imports exist (e.g. `from ..fetch_data import ...` in `multiples.py`), so import modules as `src.<pkg>.<mod>`.
+- Run from the repo root. Tests, `valuation_engine.py`, and `check_conformance.py` insert the root on `sys.path`; import `src.<pkg>.<mod>` and top-level `mcp_server`/`valuation_engine`. Internal relative imports (e.g. `from ..fetch_data import ...`) require that form.
+- `import src` runs `src/__init__.py`, which imports `fetch_data` → `yfinance`. So **yfinance must be installed even for pure-math tests**, which make no network calls.
+- Network/data fetching happens only at call time in `src/fetch_data.py`; never at import time. Tests monkeypatch `valuation_engine._get_market_metrics`/`_get_company_info`/`_get_stock_price`/`_get_volatility`.
 
-## Optional dependencies (all guarded with try/except)
+## Data & report rules
 
-Tests do **not** require any of these:
-- QuantLib — `derivatives/options.py` falls back to native NumPy/SciPy Black-Scholes.
-- `pandas_datareader` — FF5 factor fetch fallback in `fama_french.py`.
-- `pytesseract` / `easyocr` — OCR fallbacks in `image_analyzer.py`.
+- Missing source data stays absent/NULL — never synthesize a plausible value (`fetch_data` omits missing keys; `tests/test_fetch_provenance.py` guards this). Never hardcode PD/LGD/ratings outside `src/constants.py`.
+- Report review runs guards before parsing: macro-enabled Office files are refused and spreadsheet formulas invoking remote access (WEBSERVICE/IMPORTDATA/DDE…) are flagged (`src/report_review/guards.py`). Never execute embedded macros/scripts.
+- No `print()` in `src/` (use `logging`); no bare `except:` (optional-import guards set an `*_AVAILABLE` flag).
+
+## Optional dependencies (all guarded with try/except; tests need none)
+
+`requirements-optional.txt`: QuantLib (native NumPy/SciPy Black-Scholes fallback in `derivatives/options.py`), `pandas_datareader` (FF5 fallback), `pytesseract`/`easyocr` (OCR fallbacks), plus openpyxl/pdfplumber/python-docx for report review. Observability: `sentry-sdk` is a no-op unless `SENTRY_DSN` is set.
 
 ## Deliberate quirk to preserve
 
@@ -56,6 +70,6 @@ Tests do **not** require any of these:
 
 ## Other
 
-- `README.md` points to `IMPLEMENTATION_PLAN.md`, which is not in the repo (removed from tracking) — ignore that reference.
-- Generated reports/models are written to `~/docgen_output/` (see `SKILL.md`).
-- Public, MIT-licensed repo (`LICENSE`); keep new files consistent with the existing code.
+- Generated reports/models go to `~/docgen_output/` (see `SKILL.md`).
+- `vdd/` and `constitution.md` are gitignored local artifacts, not published.
+- Public MIT repo (`LICENSE`); keep new files consistent with the existing code.

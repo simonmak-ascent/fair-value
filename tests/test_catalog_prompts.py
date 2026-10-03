@@ -1,4 +1,4 @@
-"""A-013: method catalog + guided prompts (and their MCP registration)."""
+"""Method catalog, standards resource, and guided prompts."""
 
 import json
 import sys
@@ -46,21 +46,27 @@ class _FakeServer:
 
 def test_catalog_shape():
     cat = catalog.build_catalog()
-    assert cat["server"] == "fair-value"
-    assert cat["tool_count"] == 8
-    assert len(cat["tools"]) == 8
+    assert cat["tool_count"] == 16
+    assert cat["method_count"] == len(cat["methods"])
+    assert cat["surface_version"] == "2.0"
 
 
-def test_catalog_every_tool_has_method_metadata():
-    for tool in catalog.build_catalog()["tools"]:
-        assert tool["method"], f"{tool['name']} has no method"
-        assert tool["formula_ref"], f"{tool['name']} has no formula_ref"
-        assert isinstance(tool["standards"], list)
+def test_catalog_every_method_has_metadata():
+    for entry in catalog.build_catalog()["methods"]:
+        assert entry["tool"] and entry["method"]
+        assert isinstance(entry["required"], list) and entry["required"]
+        assert "formula_ref" in entry and "standards" in entry
 
 
 def test_catalog_json_roundtrips():
     parsed = json.loads(catalog.catalog_json())
-    assert parsed["server"] == "fair-value"
+    assert parsed["tool_count"] == 16
+
+
+def test_standards_taxonomy_covers_ivs_and_ifrs():
+    std = catalog.standards()["standards"]
+    assert "IVS 2025" in std and "IFRS 13" in std and "IFRS 9" in std
+    assert json.loads(catalog.standards_json())["standards"] == std
 
 
 # --- guided prompts --------------------------------------------------------
@@ -75,9 +81,9 @@ def test_prompt_set():
 
 
 def test_prompts_render_text_mentioning_tools():
-    assert "valuation_dcf" in prompts.value_company_dcf("ACME")
-    assert "review_report" in prompts.review_valuation_report("r.pdf")
-    assert "calculate_wacc" in prompts.explain_cost_of_capital("ACME")
+    assert "calculate_dcf" in prompts.value_company_dcf("ACME")
+    assert "calculate_report_review" in prompts.review_valuation_report("r.pdf")
+    assert "calculate_discount_rate" in prompts.explain_cost_of_capital("ACME")
 
 
 # --- registration ----------------------------------------------------------
@@ -93,5 +99,5 @@ def test_register_prompts_on_fake_server():
 def test_register_resources_on_fake_server():
     server = _FakeServer()
     uris = register_resources(server)
-    assert uris == ["valuation://methods"]
-    assert "valuation://methods" in server.resources
+    assert uris == ["valuation://methods", "valuation://standards"]
+    assert "valuation://standards" in server.resources

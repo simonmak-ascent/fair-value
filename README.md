@@ -45,7 +45,7 @@ fair-value-mcp            # stdio
 fair-value-mcp --http     # Streamable HTTP
 ```
 
-The server exposes the native valuation, cost-of-capital, derivatives, credit-risk, and report-review tools, and delegates the `startup-valuation` and `intangible-valuation` tool families, so it is a strict superset of both.
+The server exposes 16 native `calculate_*` tools spanning DCF, cost of capital, market multiples, residual income, options, expected value, credit risk, actuarial PV, sector metrics, fair-value adjustments, convertible bonds, structured products, loss-making companies, fixed income, report review, and company profiles — all derived from one method-spec registry.
 
 **Adoption target:** ≥ 100 PyPI downloads and ≥ 1 directory listing within 90 days of the first release (tracked via the PyPI stats API and the directory listing).
 

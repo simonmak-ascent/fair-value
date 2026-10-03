@@ -1,7 +1,8 @@
-"""CI conformance check (A-007).
+"""CI conformance check.
 
-Fails (exit 1) if the MCP tool surface is invalid or the sibling baseline is
-not fully covered by this repo's superset. Pure and offline.
+Fails (exit 1) unless the method-spec registry and the derived MCP tool surface
+are sound and every registered method is either implemented or explicitly
+deferred to an optional dependency. Pure and offline.
 """
 
 import sys
@@ -9,13 +10,29 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from mcp_server import superset as ss
+from mcp_server import method_spec as ms
 from mcp_server import tool_surface as ts
+from mcp_server.engine import is_implemented
+
+#: Methods intentionally not implemented because they require an optional
+#: third-party engine (QuantLib) or a heavier numerical scheme.
+DEFERRED = {
+    "calculate_convertible_bond": {"quantlib", "finite_difference"},
+}
 
 
 def main() -> int:
-    problems = list(ts.validate_surface())
-    problems += [f"superset gap: {name}" for name in ss.missing_tools()]
+    problems = list(ms.validate_registry())
+    problems += list(ts.validate_surface())
+
+    total = implemented = 0
+    for tool in ms.tools():
+        for method in ms.methods_for(tool):
+            total += 1
+            if is_implemented(tool, method):
+                implemented += 1
+            elif method not in DEFERRED.get(tool, set()):
+                problems.append(f"unimplemented method: {tool}.{method}")
 
     if problems:
         print("CONFORMANCE FAILED:")
@@ -23,11 +40,10 @@ def main() -> int:
             print(f"  - {problem}")
         return 1
 
-    cov = ss.coverage()
     print(
-        f"conformance ok: {len(ts.TOOL_SURFACE)} native tools; "
-        f"superset covered {cov['total']}/{cov['total']} "
-        f"(native {len(cov['native'])}, delegated {len(cov['delegated'])})"
+        f"conformance ok: {len(ts.TOOL_SURFACE)} tools; "
+        f"{implemented}/{total} methods implemented, "
+        f"{total - implemented} explicitly deferred"
     )
     return 0
 
