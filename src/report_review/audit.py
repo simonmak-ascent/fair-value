@@ -37,6 +37,22 @@ _REQUIRED = (
 )
 
 
+#: HKFRS-specific disclosures checked in addition to the base checklist.
+_HKFRS = (
+    (
+        "investment property",
+        "HKAS 40",
+        "Investment property should be stated at fair value (HKAS 40).",
+    ),
+    ("goodwill", "HKAS 36", "Goodwill impairment testing should reference HKAS 36."),
+    (
+        "expected credit loss",
+        "HKFRS 9",
+        "Financial assets should be assessed for expected credit losses (HKFRS 9).",
+    ),
+)
+
+
 def _text_rules(text: str) -> Tuple[List[Dict[str, Any]], float]:
     low = text.lower()
     findings: List[Dict[str, Any]] = []
@@ -53,6 +69,19 @@ def _text_rules(text: str) -> Tuple[List[Dict[str, Any]], float]:
                 "standard": standard,
             }
         )
+    hkfrs = ("hkfrs" in low) or ("hkas" in low)
+    if hkfrs:
+        for topic, standard, message in _HKFRS:
+            if topic in low and standard.lower() not in low:
+                findings.append(
+                    {
+                        "rule": f"hkfrs:{topic}",
+                        "status": "missing",
+                        "severity": "warning",
+                        "message": message,
+                        "standard": standard,
+                    }
+                )
     score = round(100 * present / len(_REQUIRED), 1)
     return findings, score
 
@@ -63,9 +92,12 @@ def _route(path: str) -> Dict[str, Any]:
         with open(path, "r", encoding="utf-8", errors="replace") as handle:
             text = handle.read()
         findings, score = _text_rules(text)
+        low = text.lower()
+        basis = "HKFRS" if ("hkfrs" in low or "hkas" in low) else "IFRS/unspecified"
         return {
             "file_type": ext.lstrip("."),
             "score": score,
+            "reporting_basis": basis,
             "findings": findings,
             "text_length": len(text),
         }

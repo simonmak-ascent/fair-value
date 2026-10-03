@@ -112,3 +112,17 @@ def test_dispatch_company_profile(monkeypatch, tmp_path):
     assert res["status"] == "ok", res
     assert res["value"] == 12.5
     assert res["profile"]["name"] == "Test Co"
+
+
+def test_report_audit_detects_hkfrs_basis_and_gaps(tmp_path):
+    doc = tmp_path / "hk.md"
+    doc.write_text(
+        "Methodology: market approach. assumptions, discount rate and fair value given. "
+        "Prepared under HKFRS. Investment property is carried at fair value; goodwill is tested annually. "
+        "Valuation date 2026-01-01.",
+        encoding="utf-8",
+    )
+    res = audit_report(str(doc))
+    assert res["reporting_basis"] == "HKFRS"
+    standards = {f.get("standard") for f in res["findings"]}
+    assert "HKAS 40" in standards or "HKAS 36" in standards

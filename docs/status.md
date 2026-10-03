@@ -15,7 +15,7 @@ and IFRS. The previous sibling-delegation model was retired.
 | Tools / methods | 16 tools, 129 methods |
 | Implemented | 127/129 (2 deferred: `finite_difference`, `quantlib`) |
 | Lint / types | ruff clean; mypy clean (17 files) |
-| Tests | 283 passed, 2 skipped |
+| Tests | 284 passed, 2 skipped |
 | Conformance | `16 tools; 127/129 implemented, 2 explicitly deferred` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
@@ -70,7 +70,8 @@ compute box).
   `zero_curve`/`forward_rate`/`pv_curve` (and `discount_factor`).
 - HKEX structured-product conventions — **done**: `cbbc_residual` (knock-out
   residual value) and `inline_warrant_avg` (averaged fixings).
-- HKFRS-specific report-review checklists beyond the current IFRS mapping.
+- HKFRS-specific report-review checks — **done**: HKAS 40 / HKAS 36 / HKFRS 9
+  gap rules and `reporting_basis` detection in `calculate_report_review`.
 
 ### P2 — Release & deployment
 Version lockstep is ready (`pyproject.toml` ↔ `server.json`). Release is
