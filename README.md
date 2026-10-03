@@ -2,6 +2,8 @@
 
 Professional financial valuation system for OpenCode with IFRS/IVS compliance.
 
+mcp-name: io.github.simonmak-ascent/valuation-skills
+
 ## Overview
 
 This project provides comprehensive financial valuation capabilities including:

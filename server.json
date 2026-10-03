@@ -3,7 +3,7 @@
   "name": "io.github.simonmak-ascent/valuation-skills",
   "title": "Valuation Skills MCP Server",
   "description": "Valuation MCP: DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "websiteUrl": "https://github.com/simonmak-ascent/valuation_skills",
   "repository": {
     "url": "https://github.com/simonmak-ascent/valuation_skills",
@@ -13,7 +13,7 @@
     {
       "registryType": "pypi",
       "identifier": "valuation-skills",
-      "version": "0.1.0",
+  "version": "0.1.1",
       "runtimeHint": "uvx",
       "runtimeArguments": [
         { "type": "named", "name": "--from", "value": "valuation-skills[mcp]" }
