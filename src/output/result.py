@@ -41,7 +41,7 @@ def utc_now_iso() -> str:
 def ok(
     method: str,
     ticker: Optional[str] = None,
-    value: Optional[float] = None,
+    value: Any = None,
     *,
     assumptions: Optional[Dict[str, Any]] = None,
     formula_ref: Optional[str] = None,

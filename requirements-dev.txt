@@ -1,0 +1,4 @@
+# Test / CI tooling (not required at runtime)
+pytest>=7.0
+pytest-cov>=4.0
+fastmcp>=2.0
