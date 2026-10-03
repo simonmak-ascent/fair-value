@@ -69,3 +69,25 @@ def test_build_server_exposes_all_tools():
     tools = asyncio.run(server.list_tools())
     assert {t.name for t in tools} == set(ts.tool_names())
     assert len(tools) == 16
+
+
+@pytest.mark.skipif(not srv.FASTMCP_AVAILABLE, reason="fastmcp not installed")
+def test_build_server_tool_call_roundtrip():
+    import asyncio
+    import json
+
+    from fastmcp import Client
+
+    server = srv.build_server()
+
+    async def go():
+        async with Client(server) as client:
+            result = await client.call_tool(
+                "calculate_dcf",
+                {"method": "dcf", "cash_flows": [100.0, 110.0], "discount_rate": 0.1},
+            )
+            return json.loads(result.content[0].text)
+
+    res = asyncio.run(go())
+    assert res["status"] == "ok", res
+    assert res["value"] is not None

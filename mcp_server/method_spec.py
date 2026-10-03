@@ -377,7 +377,9 @@ def validate_arguments(tool: str, method: str, arguments: Dict[str, Any]) -> Lis
         problems.append(f"method '{method}' requires: {', '.join(missing)}")
 
     allowed = set(spec.required)
-    extra = sorted(name for name in arguments if name not in allowed)
+    extra = sorted(
+        name for name in arguments if name not in allowed and arguments[name] is not None
+    )
     if extra:
         problems.append(f"unexpected arguments for method '{method}': {', '.join(extra)}")
     return problems

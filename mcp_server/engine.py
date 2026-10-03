@@ -30,6 +30,9 @@ def dispatch(tool: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     method = args.pop("method", None)
     if not method:
         return _error("INVALID_ARGUMENT", f"{tool} requires 'method'", method=tool)
+    # Absent optional parameters arrive as explicit ``None`` from the MCP layer;
+    # treat them as omitted (the no-defaults contract requires real values only).
+    args = {name: value for name, value in args.items() if value is not None}
 
     canonical_tool, canonical_method = al.resolve(tool, method)
     assert canonical_method is not None  # method is truthy above
