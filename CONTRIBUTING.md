@@ -3,8 +3,8 @@
 ## Setup
 
 ```bash
-git clone https://github.com/simonmak-ascent/valuation_skills.git
-cd valuation_skills
+git clone https://github.com/simonmak-ascent/fair-value.git
+cd fair-value
 ```
 
 ## Development

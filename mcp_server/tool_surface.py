@@ -1,4 +1,4 @@
-"""Canonical MCP tool surface for valuation_skills (A-003).
+"""Canonical MCP tool surface for fair-value (A-003).
 
 Single source of truth for this repo's MCP tool definitions: name, title,
 description, input schema, output schema, MCP annotations, and a handler
@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-SERVER_NAME = "valuation-skills"
+SERVER_NAME = "fair-value"
 SURFACE_VERSION = "1.0"
 
 _NAME_RE = re.compile(r"^[a-z][a-z0-9_]*$")

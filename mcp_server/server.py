@@ -148,7 +148,7 @@ def build_server() -> Any:
     if not FASTMCP_AVAILABLE:
         raise RuntimeError(
             "fastmcp is not installed; install the 'mcp' extra: "
-            "pip install 'valuation-skills[mcp]'"
+            "pip install 'fair-value[mcp]'"
         )
 
     server: Any = FastMCP(SERVER_NAME)  # type: ignore[misc]
@@ -164,7 +164,7 @@ def build_server() -> Any:
 
 def main(argv: Optional[List[str]] = None) -> int:
     """Run the MCP server: stdio by default, Streamable HTTP with ``--http``."""
-    parser = argparse.ArgumentParser(description="valuation-skills MCP server")
+    parser = argparse.ArgumentParser(description="fair-value MCP server")
     parser.add_argument(
         "--http", action="store_true", help="serve Streamable HTTP instead of stdio"
     )

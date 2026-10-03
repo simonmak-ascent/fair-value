@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "valuation-skills"
-version = "0.1.1"
+name = "fair-value"
+version = "0.2.0"
 description = "Financial valuation library (DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review) aligned to IVS 2025 / IFRS."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -36,11 +36,11 @@ docs = ["mkdocs"]
 superset = ["intangible-valuation-mcp>=2.1.2", "startup-valuation>=2.1.2"]
 
 [project.scripts]
-# Console command for the MCP server. The target module is created in A-004.
-valuation-skills-mcp = "mcp_server.server:main"
+# Console command for the MCP server.
+fair-value-mcp = "mcp_server.server:main"
 
 [project.urls]
-Repository = "https://github.com/simonmak-ascent/valuation_skills"
+Repository = "https://github.com/simonmak-ascent/fair-value"
 
 [tool.setuptools]
 py-modules = ["valuation_engine"]

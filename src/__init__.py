@@ -1,5 +1,5 @@
 """
-Financial Valuation Skills
+Fair Value
 Professional financial valuation according to IAS/IFRS and IVS standards
 """
 

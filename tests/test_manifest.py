@@ -51,7 +51,7 @@ def test_version_locked_to_pyproject():
 def test_package_is_pypi_uvx():
     pkg = _manifest()["packages"][0]
     assert pkg["registryType"] == "pypi"
-    assert pkg["identifier"] == "valuation-skills"
+    assert pkg["identifier"] == "fair-value"
     assert pkg["runtimeHint"] == "uvx"
 
 
@@ -71,3 +71,8 @@ def test_registry_length_limits():
     manifest = _manifest()
     assert len(manifest["description"]) <= 100
     assert len(manifest["title"]) <= 100
+
+
+def test_readme_has_mcp_name_marker():
+    readme = (ROOT / "README.md").read_text()
+    assert f"mcp-name: {_manifest()['name']}" in readme

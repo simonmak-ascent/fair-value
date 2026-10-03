@@ -1,32 +1,32 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.simonmak-ascent/valuation-skills",
-  "title": "Valuation Skills MCP Server",
+  "name": "io.github.simonmak-ascent/fair-value",
+  "title": "Fair Value MCP Server",
   "description": "Valuation MCP: DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review.",
-  "version": "0.1.1",
-  "websiteUrl": "https://github.com/simonmak-ascent/valuation_skills",
+  "version": "0.2.0",
+  "websiteUrl": "https://github.com/simonmak-ascent/fair-value",
   "repository": {
-    "url": "https://github.com/simonmak-ascent/valuation_skills",
+    "url": "https://github.com/simonmak-ascent/fair-value",
     "source": "github"
   },
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "valuation-skills",
-  "version": "0.1.1",
+      "identifier": "fair-value",
+      "version": "0.2.0",
       "runtimeHint": "uvx",
       "runtimeArguments": [
-        { "type": "named", "name": "--from", "value": "valuation-skills[mcp]" }
+        { "type": "named", "name": "--from", "value": "fair-value[mcp]" }
       ],
       "packageArguments": [
-        { "type": "positional", "value": "valuation-skills-mcp" }
+        { "type": "positional", "value": "fair-value-mcp" }
       ],
       "transport": { "type": "stdio" }
     }
   ],
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/simonmak-ascent/valuation_skills/main/assets/icon.svg",
+      "src": "https://raw.githubusercontent.com/simonmak-ascent/fair-value/main/assets/icon.svg",
       "mimeType": "image/svg+xml",
       "sizes": ["any"]
     }

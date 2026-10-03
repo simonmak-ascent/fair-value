@@ -84,5 +84,5 @@ def test_core_families_present():
 
 
 def test_versioned_identity():
-    assert ts.SERVER_NAME == "valuation-skills"
+    assert ts.SERVER_NAME == "fair-value"
     assert ts.SURFACE_VERSION

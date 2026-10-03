@@ -3,5 +3,5 @@
   <path d="M24 96 L48 60 L72 78 L104 30" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
   <circle cx="48" cy="60" r="7" fill="#e2e8f0"/>
   <circle cx="72" cy="78" r="7" fill="#e2e8f0"/>
-  <text x="64" y="118" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#e2e8f0" text-anchor="middle">VS</text>
+  <text x="64" y="118" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#e2e8f0" text-anchor="middle">fv</text>
 </svg>

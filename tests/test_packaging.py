@@ -51,7 +51,7 @@ def test_fastmcp_is_not_a_required_dependency():
 
 def test_mcp_console_entry_point_declared():
     scripts = _load()["project"].get("scripts", {})
-    assert scripts.get("valuation-skills-mcp") == "mcp_server.server:main"
+    assert scripts.get("fair-value-mcp") == "mcp_server.server:main"
 
 
 def test_build_system_declared():

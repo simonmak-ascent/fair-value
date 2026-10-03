@@ -1,4 +1,4 @@
-# Financial Valuation Skills - Python Dependencies
+# Fair Value - Python Dependencies
 
 # Data fetching
 yfinance>=0.2.0

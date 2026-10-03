@@ -1,8 +1,8 @@
-# Financial Valuation Skills
+# Fair Value
 
 Professional financial valuation system for OpenCode with IFRS/IVS compliance.
 
-mcp-name: io.github.simonmak-ascent/valuation-skills
+mcp-name: io.github.simonmak-ascent/fair-value
 
 ## Overview
 
@@ -23,18 +23,18 @@ pip install .                     # base library
 pip install ".[mcp]"              # + MCP server dependencies (A-004)
 ```
 
-The console command `valuation-skills-mcp` runs the MCP server (stdio; add `--http` for Streamable HTTP).
+The console command `fair-value-mcp` runs the MCP server (stdio; add `--http` for Streamable HTTP).
 
 ## MCP Server
 
 ```bash
 # run locally without installing (stdio)
-uvx --from "valuation-skills[mcp]" valuation-skills-mcp
+uvx --from "fair-value[mcp]" fair-value-mcp
 
 # or install and run
-pip install "valuation-skills[mcp]"
-valuation-skills-mcp            # stdio
-valuation-skills-mcp --http     # Streamable HTTP
+pip install "fair-value[mcp]"
+fair-value-mcp            # stdio
+fair-value-mcp --http     # Streamable HTTP
 ```
 
 The server exposes the native valuation, cost-of-capital, derivatives, credit-risk, and report-review tools, and delegates the `startup-valuation` and `intangible-valuation` tool families, so it is a strict superset of both.
