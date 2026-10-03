@@ -39,7 +39,7 @@ jobs:
           --cov=src --cov=mcp_server --cov=valuation_engine
           --cov-report=term-missing
 
-      - name: Tool-surface + superset conformance
+      - name: Registry + surface conformance
         run: python scripts/check_conformance.py
 
       - name: Tool Definition Quality (TDQS lint)
