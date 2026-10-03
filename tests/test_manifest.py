@@ -65,3 +65,9 @@ def test_icon_referenced_and_present():
 def test_version_mismatch_is_detectable():
     manifest = _manifest()
     assert manifest["version"] != "999.999.999"
+
+
+def test_registry_length_limits():
+    manifest = _manifest()
+    assert len(manifest["description"]) <= 100
+    assert len(manifest["title"]) <= 100
