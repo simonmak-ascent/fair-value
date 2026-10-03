@@ -71,4 +71,4 @@ See IMPLEMENTATION_PLAN.md for detailed specifications.
 
 ## License
 
-Proprietary & Confidential
+Released under the [MIT License](LICENSE).

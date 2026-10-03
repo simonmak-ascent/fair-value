@@ -37,3 +37,7 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# VDD (Vision Driven Design) — local artifacts, not published
+vdd/
+constitution.md
