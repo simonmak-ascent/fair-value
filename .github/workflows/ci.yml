@@ -42,6 +42,9 @@ jobs:
       - name: Tool-surface + superset conformance
         run: python scripts/check_conformance.py
 
+      - name: Tool Definition Quality (TDQS lint)
+        run: python -m tdqs lint --command "python -m mcp_server.server" --fail-on error
+
       - name: Install + server-build smoke
         run: |
           pip install .
