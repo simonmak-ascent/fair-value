@@ -1,0 +1,34 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.simonmak-ascent/valuation-skills",
+  "title": "Valuation Skills MCP Server",
+  "description": "Corporate + startup + intangible valuation for AI agents: DCF/NAV/CCA, cost of capital (WACC/FF5/KMV), derivatives, IFRS 9 credit risk (ECL/PD), and report review. A strict superset of the startup-valuation and intangible-valuation MCP servers.",
+  "version": "0.1.0",
+  "websiteUrl": "https://github.com/simonmak-ascent/valuation_skills",
+  "repository": {
+    "url": "https://github.com/simonmak-ascent/valuation_skills",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "valuation-skills",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        { "type": "named", "name": "--from", "value": "valuation-skills[mcp]" }
+      ],
+      "packageArguments": [
+        { "type": "positional", "value": "valuation-skills-mcp" }
+      ],
+      "transport": { "type": "stdio" }
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/simonmak-ascent/valuation_skills/main/assets/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"]
+    }
+  ]
+}

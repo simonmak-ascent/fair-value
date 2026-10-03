@@ -21,7 +21,23 @@ pip install .                     # base library
 pip install ".[mcp]"              # + MCP server dependencies (A-004)
 ```
 
-The console command `valuation-skills-mcp` is reserved for the MCP server (A-004); it is not functional until that module lands.
+The console command `valuation-skills-mcp` runs the MCP server (stdio; add `--http` for Streamable HTTP).
+
+## MCP Server
+
+```bash
+# run locally without installing (stdio)
+uvx --from "valuation-skills[mcp]" valuation-skills-mcp
+
+# or install and run
+pip install "valuation-skills[mcp]"
+valuation-skills-mcp            # stdio
+valuation-skills-mcp --http     # Streamable HTTP
+```
+
+The server exposes the native valuation, cost-of-capital, derivatives, credit-risk, and report-review tools, and delegates the `startup-valuation` and `intangible-valuation` tool families, so it is a strict superset of both.
+
+**Adoption target:** ≥ 100 PyPI downloads and ≥ 1 directory listing within 90 days of the first release (tracked via the PyPI stats API and the directory listing).
 
 ## Quick Start
 
