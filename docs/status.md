@@ -12,11 +12,11 @@ and IFRS. The previous sibling-delegation model was retired.
 
 | Area | Result |
 |------|--------|
-| Tools / methods | 16 tools, 123 methods |
-| Implemented | 121/123 (2 deferred: `finite_difference`, `quantlib`) |
+| Tools / methods | 16 tools, 127 methods |
+| Implemented | 125/127 (2 deferred: `finite_difference`, `quantlib`) |
 | Lint / types | ruff clean; mypy clean (17 files) |
-| Tests | 271 passed, 2 skipped |
-| Conformance | `16 tools; 121/123 implemented, 2 explicitly deferred` |
+| Tests | 277 passed, 2 skipped |
+| Conformance | `16 tools; 125/127 implemented, 2 explicitly deferred` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
 | TDQS coherence | 4.3–4.5 (naming 5, completeness 4–5, disambiguation 4, tool_count 4) |
@@ -35,9 +35,10 @@ and IFRS. The previous sibling-delegation model was retired.
 - **Loss-making companies** — margin-ramp DCF, revenue multiple, Merton,
   scenario, VC, distressed waterfall, bank residual income, SPAC, each with a
   dispersion kernel (mean, σ, percentiles, long-tail).
-- **Fixed income**, **expected value** (continuous/MC/decision tree),
-  **report review** (IVS/IFRS rule engine) and a **standards taxonomy** served
-  at `valuation://standards`.
+- **Fixed income**, including a **HIBOR/HKD-style term structure** (par-rate
+  bootstrap, forward rates, curve discounting), **expected value**
+  (continuous/MC/decision tree), **report review** (IVS/IFRS rule engine) and a
+  **standards taxonomy** served at `valuation://standards`.
 
 ### TDQS progression
 
@@ -65,7 +66,8 @@ so the optional path is exercised when QuantLib is present (it is not on the
 compute box).
 
 ### P2 — HK-market depth
-- HIBOR/HKD curve construction and a local risk-free term structure.
+- HIBOR/HKD curve construction — **done**: `calculate_fixed_income`
+  `zero_curve`/`forward_rate`/`pv_curve` (and `discount_factor`).
 - HKEX structured-product conventions (CBBC residual-value schedules,
   inline-warrant fixing calendars).
 - HKFRS-specific report-review checklists beyond the current IFRS mapping.

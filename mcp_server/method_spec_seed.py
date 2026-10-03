@@ -70,8 +70,8 @@ _TOOL_META = {
         "Company-summary engine. Return a company profile with live market metrics (price, shares, beta, volatility, market capitalisation) to seed valuation inputs. Use this to seed inputs for the other calculate_* tools; it does not compute a valuation itself, and it omits missing fields rather than inventing them. Supplying a ticker performs a network fetch. Read-only. Returns the shared result envelope.",
     ),
     "calculate_fixed_income": (
-        "Fixed income bond analytics",
-        "Fixed-income engine. Price plain coupon bonds, solve for yield to maturity, and measure interest-rate sensitivity via Macaulay and modified duration and convexity. Use this for vanilla bonds and rate risk; for convertibles use calculate_convertible_bond and for structured payoffs use calculate_structured_product.",
+        "Fixed income and term structure analytics",
+        "Fixed-income engine. Price plain coupon bonds, solve for yield to maturity, measure interest-rate sensitivity via Macaulay and modified duration and convexity, and build a HIBOR/HKD-style term structure: bootstrap a zero curve from par rates, infer forward rates, and discount cash flows on the curve. Use this for vanilla bonds, rate risk and discount curves; for convertibles use calculate_convertible_bond and for structured payoffs use calculate_structured_product.",
     ),
 }
 
@@ -984,6 +984,34 @@ _FIXED_INCOME = (
         "second-order price sensitivity",
         ("face", "coupon_rate", "years", "ytm", "frequency"),
         "Convexity of the price-yield curve",
+        ("IFRS 13",),
+    ),
+    MethodSpec(
+        "discount_factor",
+        "present value of one unit at a single rate",
+        ("rate", "years", "frequency"),
+        "DF = (1 + r/m)^(-m t)",
+        ("IFRS 13",),
+    ),
+    MethodSpec(
+        "zero_curve",
+        "bootstrap zero rates from par rates on a tenor grid",
+        ("par_rates", "tenors", "frequency"),
+        "Sequential par-bond bootstrap, annual compounding",
+        ("IFRS 13",),
+    ),
+    MethodSpec(
+        "forward_rate",
+        "implied forward rate between two tenors",
+        ("zero_rates", "tenors", "t1", "t2"),
+        "Forward from two bootstrapped zero rates",
+        ("IFRS 13",),
+    ),
+    MethodSpec(
+        "pv_curve",
+        "discount cash flows on a zero curve",
+        ("cash_flows", "times", "zero_rates", "tenors"),
+        "Curve interpolation and discounting",
         ("IFRS 13",),
     ),
 )

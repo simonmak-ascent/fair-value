@@ -1093,7 +1093,14 @@ _register(
 )
 
 
+_CURVE_METHODS = ("discount_factor", "zero_curve", "forward_rate", "pv_curve")
+
+
 def _fixed_income(method: str, **kw):
+    if method in _CURVE_METHODS:
+        from src.derivatives import term_structure as ts
+
+        return getattr(ts, method)(**kw)
     from src.derivatives import fixed_income as fi
 
     return getattr(fi, method)(**kw)
@@ -1103,6 +1110,6 @@ _register(
     "calculate_fixed_income",
     {
         m: (lambda m=m, **kw: _fixed_income(m, **kw))
-        for m in ("bond_price", "bond_yield", "duration", "convexity")
+        for m in ("bond_price", "bond_yield", "duration", "convexity", *_CURVE_METHODS)
     },
 )

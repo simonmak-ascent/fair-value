@@ -245,6 +245,13 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "frequency": _i("Coupon payments per year (1=annual, 2=semi-annual)."),
     "ytm": _n("Yield to maturity (decimal, annualised)."),
     "price": _n("Dirty price of the instrument in reporting currency."),
+    "par_rates": _nums("Par (coupon) rates per tenor, aligned with tenors (decimal)."),
+    "tenors": _nums("Tenors in years, aligned with par_rates or zero_rates."),
+    "zero_rates": _nums("Zero (spot) rates per tenor, decimal, annual compounding."),
+    "times": _nums("Cash-flow times in years, aligned with cash_flows."),
+    "t1": _n("Forward period start in years (>=0)."),
+    "t2": _n("Forward period end in years (> t1)."),
+    "rate": _n("A single interest/zero rate (decimal)."),
     "conversion_ratio": _n("Shares received per bond on conversion."),
     "call_schedule": _objs(
         "Issuer call schedule [{date_years, price}]; pass [] when there is none."

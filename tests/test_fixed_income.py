@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from mcp_server.engine import dispatch
 from src.derivatives import fixed_income as fi
+from src.derivatives.term_structure import discount_factor as fi_discount_factor
 
 PAR: Dict[str, Any] = dict(face=100.0, coupon_rate=0.05, years=5.0, frequency=2)
 
@@ -50,3 +51,42 @@ def test_dispatch_fixed_income_ok_and_requires_ytm():
     )
     assert bad["status"] == "error"
     assert "ytm" in bad["error"]["message"]
+
+
+def test_discount_factor_single_period():
+    assert abs(fi_discount_factor(0.05, 1.0, 1)["value"] - 1.0 / 1.05) < 1e-12
+
+
+def test_flat_par_bootstraps_to_flat_zero():
+    from src.derivatives import term_structure as ts
+
+    res = ts.zero_curve([0.05, 0.05, 0.05], [1.0, 2.0, 3.0], 1)
+    assert all(abs(z - 0.05) < 1e-9 for z in res["zero_rates"])
+
+
+def test_forward_rate_flat_curve_is_flat():
+    from src.derivatives import term_structure as ts
+
+    res = ts.forward_rate([0.05, 0.05, 0.05], [1.0, 2.0, 3.0], 1.0, 2.0)
+    assert abs(res["value"] - 0.05) < 1e-9
+
+
+def test_pv_curve_discounts_a_cashflow():
+    from src.derivatives import term_structure as ts
+
+    res = ts.pv_curve([105.0], [1.0], [0.05], [1.0])
+    assert abs(res["value"] - 100.0) < 1e-9
+
+
+def test_dispatch_zero_curve_ok():
+    res = dispatch(
+        "calculate_fixed_income",
+        {
+            "method": "zero_curve",
+            "par_rates": [0.05, 0.05],
+            "tenors": [1.0, 2.0],
+            "frequency": 1,
+        },
+    )
+    assert res["status"] == "ok", res
+    assert len(res["zero_rates"]) == 2
