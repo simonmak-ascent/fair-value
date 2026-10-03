@@ -15,9 +15,13 @@ This project provides comprehensive financial valuation capabilities including:
 ## Installation
 
 ```bash
-cd /mnt/c/git_repo/valuation_skills
-pip install -r requirements.txt
+pip install -r requirements.txt   # dev workflow (unchanged)
+# or, as a package:
+pip install .                     # base library
+pip install ".[mcp]"              # + MCP server dependencies (A-004)
 ```
+
+The console command `valuation-skills-mcp` is reserved for the MCP server (A-004); it is not functional until that module lands.
 
 ## Quick Start
 

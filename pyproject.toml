@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "valuation-skills"
+version = "0.1.0"
+description = "Financial valuation library (DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review) aligned to IVS 2025 / IFRS."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Simon Mak" }]
+keywords = ["valuation", "dcf", "nav", "cca", "wacc", "ivs", "ifrs", "mcp"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0",
+    "yfinance>=0.2.0",
+    "python-dateutil>=2.8.0",
+]
+
+[project.optional-dependencies]
+# MCP server dependencies (A-004) — never required for the base library.
+mcp = ["fastmcp>=2.0"]
+# Optional analysis backends.
+ocr = ["pytesseract>=0.3.10", "easyocr>=1.7.0"]
+quant = ["QuantLib-Python>=1.17"]
+docs = ["mkdocs"]
+
+[project.scripts]
+# Console command for the MCP server. The target module is created in A-004.
+valuation-skills-mcp = "mcp_server.server:main"
+
+[project.urls]
+Repository = "https://github.com/simonmak-ascent/valuation_skills"
+
+[tool.setuptools]
+py-modules = ["valuation_engine"]
+
+[tool.setuptools.packages.find]
+include = ["src*", "mcp_server*"]
