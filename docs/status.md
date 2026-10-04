@@ -12,11 +12,11 @@ and IFRS. The previous sibling-delegation model was retired.
 
 | Area | Result |
 |------|--------|
-| Tools / methods | 16 tools, 131 methods |
-| Implemented | 129/131 (2 deferred: `finite_difference`, `quantlib`) |
+| Tools / methods | 16 tools, 130 methods |
+| Implemented | 128/130 (2 deferred: `finite_difference`, `quantlib`) |
 | Lint / types | ruff clean; mypy clean (17 files) |
 | Tests | 286 passed, 2 skipped (CI, no QuantLib); 292 passed with QuantLib |
-| Conformance | `16 tools; 129/131 implemented, 2 explicitly deferred` |
+| Conformance | `16 tools; 128/130 implemented, 2 explicitly deferred` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
 | TDQS coherence | 4.3–4.5 (naming 5, completeness 4–5, disambiguation 4, tool_count 4) |

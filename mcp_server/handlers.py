@@ -1074,8 +1074,6 @@ _register(
 def _loss_making(method: str, **kw):
     from src.valuation import loss_making as lm
 
-    if method == "scenario":
-        return lm.scenario_weighted(kw["scenarios"], kw["range_method"])
     return getattr(lm, method)(**kw)
 
 
@@ -1087,7 +1085,6 @@ _register(
             "margin_ramp_dcf",
             "revenue_multiple",
             "merton_equity",
-            "scenario",
             "vc_method",
             "distressed_waterfall",
             "bank_residual_income",

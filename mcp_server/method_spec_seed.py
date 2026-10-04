@@ -19,7 +19,7 @@ _TOOL_META = {
     ),
     "calculate_market_multiple": (
         "Market multiples and comparable pricing",
-        "Market-multiple engine. Apply peer multiples (P/E, P/B, EV/EBITDA, EV/Sales, PEG and more) or derive implied multiples to price a company on a comparable basis. Use this for market-approach pricing where peers exist; for intrinsic value use calculate_dcf. Read-only and deterministic. Returns the shared result envelope.",
+        "Market-multiple engine. Apply peer multiples (P/E, P/B, EV/EBITDA, EV/Sales, PEG and more) or derive implied multiples to price a company on a comparable basis. Use this for market-approach pricing where peers exist; it does peer multiples only — for intrinsic cash-flow value use calculate_dcf, and for residual-income or IFRS-basis measurement use calculate_residual.",
     ),
     "calculate_residual": (
         "IFRS measurement, residual income and non-financial fair value",
@@ -27,11 +27,11 @@ _TOOL_META = {
     ),
     "calculate_option": (
         "Option and warrant pricing",
-        "Option-pricing engine. Price European and American options and warrants (Black-Scholes, Black-76, CRR binomial, Garman-Kohlhagen FX, digital, range, share-based) and their greeks. Use this for contingent claims and option-based valuations; for equity-linked note structures use calculate_structured_product. Read-only and deterministic. Returns the shared result envelope.",
+        "Option-pricing engine. Price European and American options and warrants (Black-Scholes, Black-76, CRR binomial, Garman-Kohlhagen FX, digital, range, share-based) and their greeks. Use this for a single contingent claim or warrant on one underlying; it does NOT price listed structured payoffs such as CBBCs, inline/derivative warrants or autocallables (use calculate_structured_product).",
     ),
     "calculate_expected_value": (
         "Expected value and probability weighting",
-        "Expected-value engine. Compute expected values over discrete, continuous, simulated, or tree-structured uncertainty, plus football-field ranges and discounted provisions. Use this to probability-weight scenarios and ranges inside a valuation; for regulated provisions and insurance or benefit obligations use calculate_actuarial_pv, and for path-dependent payoffs use calculate_structured_product.",
+        "Expected-value engine. Compute expected values over discrete, continuous, simulated, or tree-structured uncertainty, plus football-field ranges. Use this for generic probability weighting of scenarios, Monte-Carlo and decision trees; it does NOT perform IFRS/HKFRS measurement of provisions, insurance or employee-benefit obligations (use calculate_actuarial_pv), and it does not price path-dependent payoffs (use calculate_structured_product).",
     ),
     "calculate_credit_loss": (
         "Credit loss and impairment",
@@ -39,7 +39,7 @@ _TOOL_META = {
     ),
     "calculate_actuarial_pv": (
         "Actuarial present value",
-        "Actuarial present value engine. Discount expected cash flows with mortality, survival, and risk adjustment for insurance and benefit obligations, generalising IFRS 17 (fulfilment cash flows), IAS 19 (employee benefits), IFRS 2 (share-based payments), and IAS 37 (provisions). Use this for regulated actuarial obligations; for general scenario weighting use calculate_expected_value.",
+        "Actuarial present value engine. Discount expected cash flows with mortality, survival, and risk adjustment for insurance and benefit obligations, generalising IFRS 17 (fulfilment cash flows), IAS 19 (employee benefits), IFRS 2 (share-based payments), and IAS 37 (provisions). Use this for regulated IFRS/HKFRS obligations only; it does NOT do generic project or scenario probability weighting (use calculate_expected_value).",
     ),
     "calculate_sector_metrics": (
         "Sector-specific operating metrics",
@@ -59,7 +59,7 @@ _TOOL_META = {
     ),
     "calculate_loss_making_company": (
         "Loss-making and pre-profit company valuation",
-        "Loss-making-company engine. Value currently unprofitable companies with margin-ramp DCF, revenue multiples, Merton structural equity, probability-weighted scenarios, the VC method, distressed waterfalls, bank residual income, and SPAC deals, each returning a central value plus a dispersion (sigma, percentiles, long-tail). Use this when earnings-based multiples break down. Read-only and deterministic. Returns the shared result envelope.",
+        "Loss-making-company engine. Value currently unprofitable companies with margin-ramp DCF, revenue multiples, Merton structural equity, the VC method, distressed waterfalls, bank residual income, and SPAC deals; every method returns a central value plus a dispersion (sigma, percentiles, long-tail). Use this when earnings-based multiples break down; for standalone probability weighting of arbitrary scenarios use calculate_expected_value, and for a single going-concern DCF use calculate_dcf.",
     ),
     "calculate_report_review": (
         "Valuation report review and standards audit",
@@ -934,12 +934,6 @@ _LOSS_MAKING = (
         ("firm_value", "firm_volatility", "debt", "risk_free", "maturity", "range_method"),
         "Merton structural model",
         ("IFRS 13",),
-    ),
-    MethodSpec(
-        "scenario",
-        "probability-weighted scenario value",
-        ("scenarios", "range_method"),
-        "E[V] = sum p_i*V_i",
     ),
     MethodSpec(
         "vc_method",

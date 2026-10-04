@@ -6,7 +6,7 @@ taxonomy is served at `valuation://standards`. Both are derived from the
 method-spec registry (`mcp_server/method_spec.py` + `method_spec_seed.py`).
 
 Each `calculate_*` tool takes a required `method` plus exactly that method's
-inputs (no defaults). 131 methods are registered across 16 tools.
+inputs (no defaults). 130 methods are registered across 16 tools.
 
 | Tool | Methods | Standards |
 |------|---------|-----------|
@@ -19,7 +19,7 @@ inputs (no defaults). 131 methods are registered across 16 tools.
 | `calculate_expected_value` | 6 (`discrete`, `continuous`, `scenario`, `monte_carlo`, `decision_tree`, `football_field`) | — |
 | `calculate_fair_value_adjustment` | 6 (`dlom`, `dloc`, `control_premium`, `minority_discount`, `highest_best_use`, `hierarchy_level`) | IFRS 13 |
 | `calculate_fixed_income` | 8 (`bond_price`, `bond_yield`, `duration`, `convexity`, `discount_factor`, `zero_curve`, `forward_rate`, `pv_curve`) | IFRS 13 |
-| `calculate_loss_making_company` | 8 (`margin_ramp_dcf`, `revenue_multiple`, `merton_equity`, `scenario`, `vc_method`, `distressed_waterfall`, `bank_residual_income`, `spac_deal`) | IFRS 13, IFRS 9, IAS 32 |
+| `calculate_loss_making_company` | 7 (`margin_ramp_dcf`, `revenue_multiple`, `merton_equity`, `vc_method`, `distressed_waterfall`, `bank_residual_income`, `spac_deal`) | IFRS 13, IFRS 9, IAS 32 |
 | `calculate_market_multiple` | 11 (`ev_revenue`, `ev_ebitda`, `ev_arr`, `ev_gmv`, `pe`, `pb`, `ps`, `cap_rate`, `regression`, `royalty_cap`, `ddm`) | IAS 40 |
 | `calculate_option` | 9 (`black_scholes`, `black76`, `binomial_american`, `garman_kohlhagen`, `barrier_first_passage`, `asian_average`, `digital`, `range`, `share_based`) | IFRS 13, IFRS 2 |
 | `calculate_report_review` | 2 (`audit`, `draft`) | IVS 2025, IFRS 13 |
