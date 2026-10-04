@@ -75,3 +75,17 @@ def test_errors():
     assert unknown.status_code == 404
     assert bad_method.status_code == 400
     assert not_json.status_code == 400
+
+
+def test_openapi_and_docs():
+    with _client() as client:
+        spec = client.get("/v1/openapi.json")
+        docs = client.get("/v1/docs")
+    assert spec.status_code == 200
+    body = spec.json()
+    assert body["openapi"].startswith("3.")
+    assert "/v1/calculate/{tool}" in body["paths"]
+    enum = body["paths"]["/v1/help/{tool}"]["get"]["parameters"][0]["schema"]["enum"]
+    assert "calculate_dcf" in enum
+    assert docs.status_code == 200
+    assert "swagger-ui" in docs.text

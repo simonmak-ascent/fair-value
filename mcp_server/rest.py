@@ -85,11 +85,32 @@ def build_rest_routes() -> List[Any]:
         result = dispatch(tool, body)
         return _json(result, 200 if result.get("status") == "ok" else 400)
 
+    async def openapi_spec(request: Any) -> Any:
+        from .openapi import build_openapi
+
+        return _json(build_openapi())
+
+    async def api_docs(request: Any) -> Any:
+        from starlette.responses import HTMLResponse
+
+        html = (
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            "<title>Fair Value API</title>"
+            "<link rel='stylesheet' href='https://unpkg.com/swagger-ui-dist@5/swagger-ui.css'>"
+            "</head><body><div id='swagger-ui'></div>"
+            "<script src='https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js'></script>"
+            "<script>SwaggerUIBundle({url:'/v1/openapi.json',dom_id:'#swagger-ui'});</script>"
+            "</body></html>"
+        )
+        return HTMLResponse(html)
+
     return [
         Route("/v1/health", health),
         Route("/v1/tools", tools),
         Route("/v1/methods", methods),
         Route("/v1/standards", standards),
+        Route("/v1/openapi.json", openapi_spec),
+        Route("/v1/docs", api_docs),
         Route("/v1/help/{tool}", help_tool),
         Route("/v1/calculate/{tool}", calculate, methods=["POST"]),
     ]

@@ -14,6 +14,8 @@ the shared engine and returns the same envelope (centre value + `statistics` +
 | GET | `/v1/tools` | Tools with titles, descriptions and methods |
 | GET | `/v1/methods` | Full method catalog (parameters, formula refs, standards) |
 | GET | `/v1/standards` | Standards, clauses, and the methods citing each |
+| GET | `/v1/openapi.json` | OpenAPI 3.0 document for this API |
+| GET | `/v1/docs` | Swagger UI for the API |
 | GET | `/v1/help/{tool}` | Generated transparency record for a tool |
 | POST | `/v1/calculate/{tool}` | Run a method: `{"method": "...", ...inputs}` |
 
