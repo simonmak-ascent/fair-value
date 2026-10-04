@@ -18,15 +18,12 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 
 ### Pending (not yet in the corpus)
 
-- IVS 500 Financial Instruments, and the IFRS employee/insurance/instrument
-  bodies (IFRS 9 ECL, IFRS 17 FCF, IAS 19 PUC) — methods exist but their corpus
-  extracts are not yet added, so they are not yet cited. Source note: HKICPA
-  (HKFRS/HKAS) serves its Members' Handbook PDFs only through a session
-  redirect and exposes no extractable text; the free AASB verbatim adoptions are
-  the practical source (AASB 137 was used for IAS 37). Add the rest as data when
-  sourced.
+- IVS 500 Financial Instruments: no public verbatim body was extractable (the
+  IVS 2025 extract carries only its title/TOC). Financial-instrument methods
+  (`bond_*`, `black_scholes`, `matrix_pricing`, …) are cited to IVS 103/105
+  instead. Add IVS 500 clauses as data when a source is obtained.
 
-### Covered asset-standard methods (corpus + cited)
+### Covered asset-standard & financial-method corpus (cited)
 
 - IVS 210 intangibles (relief-from-royalty, MPEEM, with-and-without)
 - IVS 220 non-financial liabilities (Bottom-Up, §60.04) — `liability_fulfilment`
@@ -37,3 +34,6 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 - IVS 103 matrix pricing (A10.05) — `matrix_pricing`
 - IAS 36 recoverable amount (§18) — `recoverable_amount`; IAS 36 VIU/pre-tax rate
 - IAS 37 provisions (best estimate, §36) — `ias37_provision`
+- IFRS 9 expected credit losses (§5.5.5) — `ecl_12m`, `ecl_lifetime`, `ecl_staged`
+- IFRS 17 fulfilment cash flows (§32) — `ifrs17_gmm`
+- IAS 19 projected unit credit (§67) — `ias19_puc`

@@ -15,6 +15,7 @@ from mcp_server.method_spec import MethodSpec
 from mcp_server.standards import (
     Taxonomy,
     TaxonomyError,
+    citations_for,
     clause_text,
     load_provenance,
     load_taxonomy,
@@ -212,3 +213,13 @@ def test_ias37_corpus_and_citation():
     )
     assert res["status"] == "ok", res
     assert "IAS.37.36" in res["citations"]["ifrs"]
+
+
+def test_new_ifrs_corpus_and_citations():
+    taxonomy = load_taxonomy()
+    assert "unbiased and probability-weighted" in clause_text(taxonomy, "IFRS.9.5.5.5")["text"]
+    assert "risk adjustment for non-financial risk" in clause_text(taxonomy, "IFRS.17.32")["text"]
+    assert "additional unit of benefit entitlement" in clause_text(taxonomy, "IAS.19.67")["text"]
+    for method in ("ecl_lifetime", "ecl_staged", "ias19_puc", "ifrs17_gmm"):
+        cites = citations_for(taxonomy, method)
+        assert cites["ivs"] and cites["ifrs"], method

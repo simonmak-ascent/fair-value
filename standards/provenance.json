@@ -45,6 +45,33 @@
       "url": "https://files.accurri.com/AASB/AASB-137-1222.pdf",
       "retrieved": "2026-10-04",
       "note": "Short verbatim extracts; AASB 137 incorporates IAS 37 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
+    },
+    {
+      "file": "source/ifrs-9.md",
+      "title": "IFRS 9 Financial Instruments",
+      "rights_holder": "IFRS Foundation",
+      "edition": "2023 (as reproduced in AASB 9 compiled standard, compilation 5)",
+      "url": "https://files.accurri.com/AASB/AASB-9-1222.pdf",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extract; AASB 9 incorporates IFRS 9 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
+    },
+    {
+      "file": "source/ifrs-17.md",
+      "title": "IFRS 17 Insurance Contracts",
+      "rights_holder": "IFRS Foundation",
+      "edition": "2023 (as reproduced in the AASB 17 compiled standard)",
+      "url": "https://files.accurri.com/AASB/AASB-17-1222.pdf",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extract; AASB 17 incorporates IFRS 17 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
+    },
+    {
+      "file": "source/ias-19.md",
+      "title": "IAS 19 Employee Benefits",
+      "rights_holder": "IFRS Foundation",
+      "edition": "2023 (as reproduced in AASB 119 compiled standard, compilation 5)",
+      "url": "https://files.accurri.com/AASB/AASB-119-1222.pdf",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extract; AASB 119 incorporates IAS 19 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
     }
   ]
 }

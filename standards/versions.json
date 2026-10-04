@@ -6,7 +6,10 @@
     "IFRS13": "2025",
     "IFRS16": "2022",
     "IAS36": "2023",
-    "IAS37": "2023"
+    "IAS37": "2023",
+    "IFRS9": "2023",
+    "IFRS17": "2023",
+    "IAS19": "2023"
   },
   "retrieved": "2026-10-04",
   "note": "Tracked editions of the standards cited in standards/taxonomy.json. Bump an entry when the corresponding corpus extract is refreshed."

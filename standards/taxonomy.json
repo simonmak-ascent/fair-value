@@ -4,7 +4,10 @@
     { "id": "IVS", "title": "International Valuation Standards 2025", "family": "IVS", "version": "2025", "source_ref": "source/ivs-2025.md" },
     { "id": "IFRS", "title": "IFRS 13 Fair Value Measurement", "family": "IFRS", "version": "2025", "source_ref": "source/ifrs-13.md" },
     { "id": "IFRS16", "title": "IFRS 16 Leases", "family": "IFRS", "version": "2025", "source_ref": "source/ifrs-16.md" },
-    { "id": "IAS", "title": "IAS 36 Impairment of Assets", "family": "IAS", "version": "2025", "source_ref": "source/ias-36.md" }
+    { "id": "IFRS9", "title": "IFRS 9 Financial Instruments", "family": "IFRS", "version": "2023", "source_ref": "source/ifrs-9.md" },
+    { "id": "IFRS17", "title": "IFRS 17 Insurance Contracts", "family": "IFRS", "version": "2023", "source_ref": "source/ifrs-17.md" },
+    { "id": "IAS", "title": "IAS 36 Impairment of Assets", "family": "IAS", "version": "2025", "source_ref": "source/ias-36.md" },
+    { "id": "IAS19", "title": "IAS 19 Employee Benefits", "family": "IAS", "version": "2023", "source_ref": "source/ias-19.md" }
   ],
   "clauses": [
     { "id": "IVS.103.A10", "standard": "IVS", "label": "Valuation approaches", "summary": "Market, income and cost approaches to value.", "source_ref": "source/ivs-2025.md#ivs-103-valuation-approaches" },
@@ -24,7 +27,10 @@
     { "id": "IAS.36.6", "standard": "IAS", "label": "Value in use", "summary": "Present value of the future cash flows expected from an asset or cash-generating unit.", "source_ref": "source/ias-36.md#paragraph-6" },
     { "id": "IAS.36.55", "standard": "IAS", "label": "Pre-tax discount rate", "summary": "The discount rate shall be a pre-tax rate reflecting current market assessments of the time value of money and asset-specific risks.", "source_ref": "source/ias-36.md#paragraph-55" },
     { "id": "IAS.36.18", "standard": "IAS", "label": "Recoverable amount", "summary": "Recoverable amount is the higher of fair value less costs of disposal and value in use.", "source_ref": "source/ias-36.md#paragraph-18" },
-    { "id": "IAS.37.36", "standard": "IAS", "label": "Best estimate of a provision", "summary": "A provision is measured at the best estimate of the expenditure required to settle the present obligation.", "source_ref": "source/ias-37.md#paragraph-36" }
+    { "id": "IAS.37.36", "standard": "IAS", "label": "Best estimate of a provision", "summary": "A provision is measured at the best estimate of the expenditure required to settle the present obligation.", "source_ref": "source/ias-37.md#paragraph-36" },
+    { "id": "IFRS.9.5.5.5", "standard": "IFRS9", "label": "Measurement of expected credit losses", "summary": "ECL: unbiased, probability-weighted, time value of money, forward-looking.", "source_ref": "source/ifrs-9.md#paragraph-5-5-5" },
+    { "id": "IFRS.17.32", "standard": "IFRS17", "label": "Fulfilment cash flows", "summary": "PV of cash flows, a financial-risk adjustment, and a risk adjustment for non-financial risk.", "source_ref": "source/ifrs-17.md#paragraph-32" },
+    { "id": "IAS.19.67", "standard": "IAS19", "label": "Projected unit credit method", "summary": "Each period of service gives rise to an additional unit of benefit entitlement, measured separately.", "source_ref": "source/ias-19.md#paragraph-67" }
   ],
   "methods": [
     { "method_id": "dcf", "approach": "income", "citations": { "ivs": ["IVS.103.A20"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [] },
@@ -42,6 +48,11 @@
     { "method_id": "development_residual", "approach": "income", "citations": { "ivs": ["IVS.410.A10"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "developer_profit", "ivs_basis": "IVS 410.100.03 residual deducts anticipated developer profit and risk", "ifrs_basis": "IFRS 13 measures the completed asset at fair value (profit is in the exit price)" } ] },
     { "method_id": "ppe_revaluation", "approach": "cost", "citations": { "ivs": ["IVS.300.A10"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "obsolescence", "ivs_basis": "IVS 300 depreciated replacement cost (physical/functional/external obsolescence)", "ifrs_basis": "IAS 16 revaluation to fair value under IFRS 13" } ] },
     { "method_id": "investment_property", "approach": "income", "citations": { "ivs": ["IVS.400.A10"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "capitalisation_rate", "ivs_basis": "IVS 400 income capitalisation of stabilised net income", "ifrs_basis": "IAS 40 fair value (income approach under IFRS 13)" } ] },
-    { "method_id": "ias37_provision", "approach": "income", "citations": { "ivs": ["IVS.220.A10"], "ifrs": ["IAS.37.36"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "measurement_objective", "ivs_basis": "IVS 220 Bottom-Up: costs to fulfil plus a reasonable mark-up", "ifrs_basis": "IAS 37.36 best estimate of the expenditure required to settle (no profit margin)" } ] }
+    { "method_id": "ias37_provision", "approach": "income", "citations": { "ivs": ["IVS.220.A10"], "ifrs": ["IAS.37.36"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "measurement_objective", "ivs_basis": "IVS 220 Bottom-Up: costs to fulfil plus a reasonable mark-up", "ifrs_basis": "IAS 37.36 best estimate of the expenditure required to settle (no profit margin)" } ] },
+    { "method_id": "ecl_12m", "approach": "income", "citations": { "ivs": ["IVS.105.A10"], "ifrs": ["IFRS.9.5.5.5"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "horizon", "ivs_basis": "IVS 105 model inputs (probability-weighted)", "ifrs_basis": "IFRS 9 12-month expected credit losses" } ] },
+    { "method_id": "ecl_lifetime", "approach": "income", "citations": { "ivs": ["IVS.105.A10"], "ifrs": ["IFRS.9.5.5.5"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "horizon", "ivs_basis": "IVS 105 model inputs (probability-weighted)", "ifrs_basis": "IFRS 9 lifetime expected credit losses" } ] },
+    { "method_id": "ecl_staged", "approach": "income", "citations": { "ivs": ["IVS.105.A10"], "ifrs": ["IFRS.9.5.5.5"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "stage", "ivs_basis": "IVS 105 model inputs (probability-weighted)", "ifrs_basis": "IFRS 9 §5.5 staging (12-month vs lifetime)" } ] },
+    { "method_id": "ias19_puc", "approach": "income", "citations": { "ivs": ["IVS.105.A10"], "ifrs": ["IAS.19.67"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "attribution", "ivs_basis": "IVS 105 valuation model (no prescribed benefit attribution)", "ifrs_basis": "IAS 19.67 projected unit credit attribution per period of service" } ] },
+    { "method_id": "ifrs17_gmm", "approach": "income", "citations": { "ivs": ["IVS.105.A10"], "ifrs": ["IFRS.17.32"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "risk_adjustment", "ivs_basis": "IVS 105 model risk and uncertainty", "ifrs_basis": "IFRS 17.32 explicit risk adjustment for non-financial risk" } ] }
   ]
 }
