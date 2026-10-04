@@ -217,12 +217,21 @@ def test_ias37_corpus_and_citation():
 
 def test_new_ifrs_corpus_and_citations():
     taxonomy = load_taxonomy()
-    assert "unbiased and probability-weighted" in clause_text(taxonomy, "IFRS.9.5.5.5")["text"]
+    # Corrected paragraph ids (HKICPA HKFRS/HKAS cross-check, corpus 2025.2):
+    assert "unbiased and probability-weighted" in clause_text(taxonomy, "IFRS.9.5.5.17")["text"]
+    assert "12-month expected credit losses" in clause_text(taxonomy, "IFRS.9.5.5.5")["text"]
     assert "risk adjustment for non-financial risk" in clause_text(taxonomy, "IFRS.17.32")["text"]
-    assert "additional unit of benefit entitlement" in clause_text(taxonomy, "IAS.19.67")["text"]
+    assert "contractual service margin" in clause_text(taxonomy, "IFRS.17.32")["text"]
+    assert (
+        "shall use the projected unit credit method" in clause_text(taxonomy, "IAS.19.67")["text"]
+    )
+    assert "additional unit of benefit entitlement" in clause_text(taxonomy, "IAS.19.68")["text"]
     for method in ("ecl_lifetime", "ecl_staged", "ias19_puc", "ifrs17_gmm"):
         cites = citations_for(taxonomy, method)
         assert cites["ivs"] and cites["ifrs"], method
+    # ecl_12m cites the 12-month rule; the other ECL methods cite the measurement basis.
+    assert citations_for(taxonomy, "ecl_12m")["ifrs"] == ["IFRS.9.5.5.5"]
+    assert citations_for(taxonomy, "ecl_lifetime")["ifrs"] == ["IFRS.9.5.5.17"]
 
 
 def test_ivs500_corpus_and_citations():

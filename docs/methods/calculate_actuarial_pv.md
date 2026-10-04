@@ -17,6 +17,7 @@ flowchart TD
   T --> calculate_actuarial_pv_ias19_puc["ias19_puc (income)"]
   calculate_actuarial_pv_ias19_puc -. cites .-> IVS_105_A10[IVS.105.A10]
   calculate_actuarial_pv_ias19_puc -. cites .-> IAS_19_67[IAS.19.67]
+  calculate_actuarial_pv_ias19_puc -. cites .-> IAS_19_68[IAS.19.68]
   T --> calculate_actuarial_pv_ias37_provision["ias37_provision (income)"]
   calculate_actuarial_pv_ias37_provision -. cites .-> IVS_220_A10[IVS.220.A10]
   calculate_actuarial_pv_ias37_provision -. cites .-> IAS_37_36[IAS.37.36]
@@ -44,8 +45,8 @@ IFRS 17 general measurement model
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.17.32** — Fulfilment cash flows
-  > The fulfilment cash flows comprise: (a) estimates of future cash flows; (b) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of future cash flows; and (c) a risk adjustment for non-financial risk.
+- **IFRS.17.32** — Initial recognition of insurance contracts
+  > On initial recognition, an entity shall measure a group of insurance contracts at the total of: (a) the fulfilment cash flows, which comprise: (i) estimates of future cash flows (paragraphs 33–35); (ii) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of the future cash flows (paragraph 36); and (iii) a risk adjustment for non-financial risk (paragraph 37); and (b) the contractual service margin, measured applying paragraphs 38–39.
   > — IFRS Foundation (source/ifrs-17.md#paragraph-32)
 
 **IVS ↔ IFRS/IAS divergences**
@@ -81,8 +82,8 @@ IFRS 17 premium allocation approach
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.17.32** — Fulfilment cash flows
-  > The fulfilment cash flows comprise: (a) estimates of future cash flows; (b) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of future cash flows; and (c) a risk adjustment for non-financial risk.
+- **IFRS.17.32** — Initial recognition of insurance contracts
+  > On initial recognition, an entity shall measure a group of insurance contracts at the total of: (a) the fulfilment cash flows, which comprise: (i) estimates of future cash flows (paragraphs 33–35); (ii) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of the future cash flows (paragraph 36); and (iii) a risk adjustment for non-financial risk (paragraph 37); and (b) the contractual service margin, measured applying paragraphs 38–39.
   > — IFRS Foundation (source/ifrs-17.md#paragraph-32)
 
 **Risks & limits**
@@ -113,8 +114,8 @@ IFRS 17 variable fee approach
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.17.32** — Fulfilment cash flows
-  > The fulfilment cash flows comprise: (a) estimates of future cash flows; (b) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of future cash flows; and (c) a risk adjustment for non-financial risk.
+- **IFRS.17.32** — Initial recognition of insurance contracts
+  > On initial recognition, an entity shall measure a group of insurance contracts at the total of: (a) the fulfilment cash flows, which comprise: (i) estimates of future cash flows (paragraphs 33–35); (ii) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of the future cash flows (paragraph 36); and (iii) a risk adjustment for non-financial risk (paragraph 37); and (b) the contractual service margin, measured applying paragraphs 38–39.
   > — IFRS Foundation (source/ifrs-17.md#paragraph-32)
 
 **Risks & limits**
@@ -145,8 +146,11 @@ IAS 19 projected unit credit defined-benefit obligation
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
 - **IAS.19.67** — Projected unit credit method
-  > The projected unit credit method (sometimes known as the accrued benefit method pro-rated on service or as the benefit/years of service method) sees each period of service as giving rise to an additional unit of benefit entitlement (see paragraphs 70-74) and measures each unit separately to build up the final obligation (see paragraphs 68-70).
+  > An entity shall use the projected unit credit method to determine the present value of its defined benefit obligations and the related current service cost and, where applicable, past service cost.
   > — IFRS Foundation (source/ias-19.md#paragraph-67)
+- **IAS.19.68** — Projected unit credit method (definition)
+  > The projected unit credit method (sometimes known as the accrued benefit method pro-rated on service or as the benefit/years of service method) sees each period of service as giving rise to an additional unit of benefit entitlement (see paragraphs 70–74) and measures each unit separately to build up the final obligation (see paragraphs 75–98).
+  > — IFRS Foundation (source/ias-19.md#paragraph-68)
 
 **IVS ↔ IFRS/IAS divergences**
 

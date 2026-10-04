@@ -1,6 +1,6 @@
 {
   "surface": "2.0",
-  "corpus_version": "2025.1",
+  "corpus_version": "2025.2",
   "standards": {
     "IVS": "2025",
     "IFRS13": "2025",
@@ -12,5 +12,5 @@
     "IAS19": "2023"
   },
   "retrieved": "2026-10-04",
-  "note": "Tracked editions of the standards cited in standards/taxonomy.json. Bump an entry when the corresponding corpus extract is refreshed."
+  "note": "Tracked editions of the standards cited in standards/taxonomy.json. Bump an entry when the corresponding corpus extract is refreshed; clause numbering is cross-checked against the HKICPA HKFRS/HKAS adoptions (see provenance.json verified_against)."
 }

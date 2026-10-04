@@ -10,22 +10,22 @@ flowchart TD
   calculate_credit_loss_ecl_12m -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
   T --> calculate_credit_loss_ecl_lifetime["ecl_lifetime (income)"]
   calculate_credit_loss_ecl_lifetime -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_credit_loss_ecl_lifetime -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  calculate_credit_loss_ecl_lifetime -. cites .-> IFRS_9_5_5_17[IFRS.9.5.5.17]
   T --> calculate_credit_loss_ecl_staged["ecl_staged (income)"]
   calculate_credit_loss_ecl_staged -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_credit_loss_ecl_staged -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  calculate_credit_loss_ecl_staged -. cites .-> IFRS_9_5_5_17[IFRS.9.5.5.17]
   T --> calculate_credit_loss_provision_matrix["provision_matrix (income)"]
   calculate_credit_loss_provision_matrix -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_credit_loss_provision_matrix -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  calculate_credit_loss_provision_matrix -. cites .-> IFRS_9_5_5_17[IFRS.9.5.5.17]
   T --> calculate_credit_loss_pd_from_spread["pd_from_spread (income)"]
   calculate_credit_loss_pd_from_spread -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_credit_loss_pd_from_spread -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  calculate_credit_loss_pd_from_spread -. cites .-> IFRS_9_5_5_17[IFRS.9.5.5.17]
   T --> calculate_credit_loss_cumulative_pd["cumulative_pd (income)"]
   calculate_credit_loss_cumulative_pd -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_credit_loss_cumulative_pd -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  calculate_credit_loss_cumulative_pd -. cites .-> IFRS_9_5_5_17[IFRS.9.5.5.17]
   T --> calculate_credit_loss_hazard["hazard (income)"]
   calculate_credit_loss_hazard -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_credit_loss_hazard -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  calculate_credit_loss_hazard -. cites .-> IFRS_9_5_5_17[IFRS.9.5.5.17]
   T --> calculate_credit_loss_cva_dva["cva_dva (income)"]
   calculate_credit_loss_cva_dva -. cites .-> IVS_105_A10[IVS.105.A10]
   calculate_credit_loss_cva_dva -. cites .-> IFRS_13_62[IFRS.13.62]
@@ -53,8 +53,8 @@ flowchart TD
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
-  > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
+- **IFRS.9.5.5.5** — 12-month expected credit losses
+  > Subject to paragraphs 5.5.13–5.5.16, if, at the reporting date, the credit risk on a financial instrument has not increased significantly since initial recognition, an entity shall measure the loss allowance for that financial instrument at an amount equal to 12-month expected credit losses.
   > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
 
 **IVS ↔ IFRS/IAS divergences**
@@ -89,9 +89,9 @@ lifetime expected credit loss
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
+- **IFRS.9.5.5.17** — Measurement of expected credit losses
   > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
-  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-17)
 
 **IVS ↔ IFRS/IAS divergences**
 
@@ -127,9 +127,9 @@ staged ECL by IFRS 9 stage
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
+- **IFRS.9.5.5.17** — Measurement of expected credit losses
   > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
-  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-17)
 
 **IVS ↔ IFRS/IAS divergences**
 
@@ -162,9 +162,9 @@ provision matrix over ageing buckets
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
+- **IFRS.9.5.5.17** — Measurement of expected credit losses
   > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
-  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-17)
 
 **Risks & limits**
 
@@ -193,9 +193,9 @@ derive PD from a credit spread
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
+- **IFRS.9.5.5.17** — Measurement of expected credit losses
   > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
-  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-17)
 
 **Risks & limits**
 
@@ -222,9 +222,9 @@ cumulative PD from annual PD over years
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
+- **IFRS.9.5.5.17** — Measurement of expected credit losses
   > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
-  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-17)
 
 **Risks & limits**
 
@@ -251,9 +251,9 @@ PD from a hazard rate over a tenor
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.9.5.5.5** — Measurement of expected credit losses
+- **IFRS.9.5.5.17** — Measurement of expected credit losses
   > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
-  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-17)
 
 **Risks & limits**
 

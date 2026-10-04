@@ -73,5 +73,14 @@
       "retrieved": "2026-10-04",
       "note": "Short verbatim extract; AASB 119 incorporates IAS 19 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
     }
+  ],
+  "verified_against": [
+    {
+      "title": "HKICPA Members' Handbook Volume II — HKFRS/HKAS (Section 1, effective 2026)",
+      "rights_holder": "Hong Kong Institute of Certified Public Accountants (HKICPA)",
+      "edition": "2026",
+      "url": "https://www.hkicpa.org.hk/en/Standards-setting/Standards/Members-Handbook-and-Due-Process/MHandBook/MHandBook2",
+      "note": "The HKFRS/HKAS texts are verbatim adoptions of IFRS/IAS; clause numbering and wording in source/ were cross-checked against them (HKFRS 9/13/16/17, HKAS 19/36/37)."
+    }
   ]
 }
