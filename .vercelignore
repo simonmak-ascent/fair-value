@@ -1,33 +1,35 @@
 # Vercel ignores these from the deployment upload.
+# Patterns are anchored to the repo root so they never match nested app/ paths
+# (e.g. a bare "docs" would also remove the Next.js app/docs route).
 
 # Node / Next
 node_modules
 .next
-out
-.turbo
+/out
+/.turbo
 
-# Python caches
+# Python caches / build artifacts
 __pycache__
 *.pyc
 .pytest_cache
 .ruff_cache
 .mypy_cache
 *.egg-info
-build
-dist
+/build
+/dist
 .venv
 
 # Local / non-runtime
 .git
 .github
-vdd
-specs
-constitution.md
-site
-.code_deploy
-docs
-mkdocs.yml
-requirements-dev.txt
-requirements-optional.txt
-pyproject.toml
-uv.lock
+/vdd
+/specs
+/constitution.md
+/site
+/.code_deploy
+/docs
+/mkdocs.yml
+/requirements-dev.txt
+/requirements-optional.txt
+/pyproject.toml
+/uv.lock
