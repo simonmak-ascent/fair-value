@@ -99,6 +99,50 @@ src/
 └── output/                # Report formatting
 ```
 
+## MCP tool surface
+
+```mermaid
+flowchart LR
+    SEED["method_spec_seed.py<br/>method tables (123 methods)"] --> SPEC["method_spec.py<br/>parameter vocabulary"]
+    SPEC --> SURF["tool_surface.py<br/>derives the 16 calculate_* tools"]
+    SURF --> SRV["server.py (FastMCP)"]
+    SRV --> STDIO["stdio · uvx fair-value-mcp"]
+    SRV --> HTTP["Streamable HTTP · fair-value-mcp --http"]
+    ASGI["asgi.py → api/index.py"] --> HOST["Hosted · fair-value.ascent-partners.com"]
+    SRV -.->|resources| RES["valuation://methods · valuation://standards"]
+```
+
+## Request lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as MCP client / Python caller
+    participant E as validation + dispatch
+    participant R as method-spec registry
+    participant M as computation modules (src/)
+    participant O as output envelope
+    C->>E: calculate_*(...) / run_valuation(...)
+    E->>R: resolve method + validate parameters
+    R-->>E: method spec
+    E->>M: dispatch to valuation / cost_of_capital / credit_risk / derivatives
+    M-->>E: value + steps + assumptions
+    E->>O: ok() / error() envelope
+    O-->>C: status · method · value · assumptions · formula_ref · disclaimer
+```
+
+## Report review pipeline
+
+```mermaid
+flowchart LR
+    F["Excel / PDF / Word / image"] --> G{"Guards"}
+    G -->|macro-enabled or remote formulas| REF["Refused / flagged"]
+    G -->|safe| P["Parse<br/>openpyxl · pdfplumber · python-docx · OCR"]
+    P --> CH["Checks (report_review/)"]
+    CH --> FI["Findings + audit"]
+    FI --> ENV["Shared envelope"]
+```
+
 ## Requirements
 
 - Python 3.8+
