@@ -74,9 +74,10 @@ optional engine (CI installs QuantLib), it can be enabled behind a handler
 guarded by `QUANTLIB_AVAILABLE`.
 
 ### P2 — Release & deployment
-Version lockstep is ready (`pyproject.toml` ↔ `server.json`, both `0.2.4`).
+Version lockstep is ready (`pyproject.toml` ↔ `server.json`, both `0.2.5`).
 Release is tag-triggered (`release.yml` → PyPI → MCP Registry); the hosted ASGI
-app (MCP + REST) is deployed on Vercel. **Tag not yet cut.**
+app (MCP + REST) is deployed on Vercel. Tag `v0.2.5` cut; the MCP Registry remote
+is the dedicated `/mcp` endpoint.
 
 ### P3 — Docs & examples
 Method reference is generated (`scripts/gen_docs.py`); worked HK examples live in
