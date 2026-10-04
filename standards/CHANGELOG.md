@@ -18,9 +18,12 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 
 ### Pending (not yet in the corpus)
 
-- IVS 500 Financial Instruments, and the IFRS liability/provision bodies
-  (IFRS 9 ECL, IFRS 17 FCF, IAS 19 PUC, IAS 37) — methods exist but their
-  corpus extracts are not yet added, so they are not yet cited. Add as data when
+- IVS 500 Financial Instruments, and the IFRS employee/insurance/instrument
+  bodies (IFRS 9 ECL, IFRS 17 FCF, IAS 19 PUC) — methods exist but their corpus
+  extracts are not yet added, so they are not yet cited. Source note: HKICPA
+  (HKFRS/HKAS) serves its Members' Handbook PDFs only through a session
+  redirect and exposes no extractable text; the free AASB verbatim adoptions are
+  the practical source (AASB 137 was used for IAS 37). Add the rest as data when
   sourced.
 
 ### Covered asset-standard methods (corpus + cited)
@@ -33,3 +36,4 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 - IVS 410 development property (residual method, §100.03) — `development_residual`
 - IVS 103 matrix pricing (A10.05) — `matrix_pricing`
 - IAS 36 recoverable amount (§18) — `recoverable_amount`; IAS 36 VIU/pre-tax rate
+- IAS 37 provisions (best estimate, §36) — `ias37_provision`

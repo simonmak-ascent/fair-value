@@ -191,3 +191,24 @@ def test_missing_provenance_raises(tmp_path, monkeypatch):
 def test_clause_text_unknown_clause_raises():
     with pytest.raises(KeyError):
         clause_text(load_taxonomy(), "no.such.clause")
+
+
+def test_ias37_corpus_and_citation():
+    taxonomy = load_taxonomy()
+    text = clause_text(taxonomy, "IAS.37.36")["text"]
+    assert "best estimate of the expenditure" in text
+
+    from mcp_server.engine import dispatch
+
+    res = dispatch(
+        "calculate_actuarial_pv",
+        {
+            "method": "ias37_provision",
+            "outcomes": [100.0, 200.0],
+            "probabilities": [0.5, 0.5],
+            "discount_rate": 0.0,
+            "periods": 1,
+        },
+    )
+    assert res["status"] == "ok", res
+    assert "IAS.37.36" in res["citations"]["ifrs"]

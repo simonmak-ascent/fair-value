@@ -9,7 +9,9 @@ flowchart TD
   T --> calculate_actuarial_pv_ifrs17_paa["ifrs17_paa (n/a)"]
   T --> calculate_actuarial_pv_ifrs17_vfa["ifrs17_vfa (n/a)"]
   T --> calculate_actuarial_pv_ias19_puc["ias19_puc (n/a)"]
-  T --> calculate_actuarial_pv_ias37_provision["ias37_provision (n/a)"]
+  T --> calculate_actuarial_pv_ias37_provision["ias37_provision (income)"]
+  calculate_actuarial_pv_ias37_provision -. cites .-> IVS_220_A10[IVS.220.A10]
+  calculate_actuarial_pv_ias37_provision -. cites .-> IAS_37_36[IAS.37.36]
 ```
 
 ## `ifrs17_gmm`
@@ -104,8 +106,8 @@ IAS 37 provision: expected value, discounted
 
 **Formula:** IAS 37 best estimate, discounted
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -116,6 +118,21 @@ IAS 37 provision: expected value, discounted
 | `discount_rate` | number | Discount rate as a decimal (0.10 = 10%); pre-tax when method=viu_pre_tax. |
 | `periods` | integer | Number of periods n (>=1). |
 
+**Standards (verbatim)**
+
+- **IVS.220.A10** — Non-financial liability (Bottom-Up)
+  > 60.04 Under the Bottom-Up Method, the non-financial liability is measured as the costs required to fulfil the performance obligation, plus a reasonable mark-up on those costs, discounted to present value. These costs may or may not include certain overhead items.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-220-non-financial-liabilities)
+- **IAS.37.36** — Best estimate of a provision
+  > The amount recognised as a provision shall be the best estimate of the expenditure required to settle the present obligation at the end of the reporting period.
+  > — IFRS Foundation (source/ias-37.md#paragraph-36)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `measurement_objective`: IVS — IVS 220 Bottom-Up: costs to fulfil plus a reasonable mark-up; IFRS/IAS — IAS 37.36 best estimate of the expenditure required to settle (no profit margin)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'measurement_objective': the two regimes treat this differently (IVS 220 Bottom-Up: costs to fulfil plus a reasonable mark-up vs IAS 37.36 best estimate of the expenditure required to settle (no profit margin)); the choice is the caller's, not a default.
 - Standards alignment is declared per method; see the cited clauses.
