@@ -43,12 +43,15 @@ def continuous(
 
 
 def monte_carlo(
-    iterations: int, distributions: List[Dict[str, Any]], base_params: Dict[str, float]
+    iterations: int,
+    distributions: List[Dict[str, Any]],
+    base_params: Dict[str, float],
+    seed: int,
 ) -> Dict[str, Any]:
     if iterations <= 0:
         raise ValueError("iterations must be positive")
     iterations = min(int(iterations), _ITER_DEFAULT_CAP)
-    rng = np.random.default_rng(_SEED)
+    rng = np.random.default_rng(int(seed))
     outcome = np.zeros(iterations)
     for factor in distributions:
         kind = factor.get("distribution", "normal")
@@ -65,17 +68,33 @@ def monte_carlo(
     outcome += sum(float(v) for v in base_params.values())
 
     p = np.percentile(outcome, [5, 25, 50, 75, 95])
+    mean = float(outcome.mean())
+    std = float(outcome.std(ddof=1)) if iterations > 1 else 0.0
     return {
-        "value": float(outcome.mean()),
-        "mean": float(outcome.mean()),
+        "value": mean,
+        "mean": mean,
         "median": float(np.median(outcome)),
-        "std": float(outcome.std(ddof=1)) if iterations > 1 else 0.0,
+        "std": std,
         "percentiles": {
             "p5": float(p[0]),
             "p25": float(p[1]),
             "p50": float(p[2]),
             "p75": float(p[3]),
             "p95": float(p[4]),
+        },
+        # Statistical characteristics consumed by the shared result envelope.
+        "statistics": {
+            "solution_type": "simulation",
+            "distribution": "empirical",
+            "centre": mean,
+            "sigma": std,
+            "percentiles": {
+                "p05": float(p[0]),
+                "p50": float(p[2]),
+                "p95": float(p[4]),
+            },
+            "samples": int(iterations),
+            "seed": int(seed),
         },
     }
 

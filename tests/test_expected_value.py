@@ -26,10 +26,13 @@ def test_continuous_uniform_mean():
 
 def test_monte_carlo_mean_tracks_input():
     res = ev.monte_carlo(
-        50000, [{"name": "x", "distribution": "normal", "mean": 10.0, "std": 0.0}], {}
+        50000, [{"name": "x", "distribution": "normal", "mean": 10.0, "std": 0.0}], {}, 1234
     )
     assert res["value"] == pytest.approx(10.0)
     assert res["std"] == 0.0
+    assert res["statistics"]["seed"] == 1234
+    assert res["statistics"]["solution_type"] == "simulation"
+    assert res["statistics"]["samples"] == 50000
 
 
 def test_decision_tree_chance_and_decision():
@@ -71,9 +74,27 @@ def test_dispatch_expected_value_methods():
             "iterations": 1000,
             "distributions": [{"name": "x", "distribution": "normal", "mean": 1.0, "std": 0.1}],
             "base_params": {"c": 2.0},
+            "seed": 42,
         },
     )
     assert mc["status"] == "ok", mc
+    assert mc["solution_type"] == "simulation"
+    assert mc["statistics"]["seed"] == 42
+    assert mc["statistics"]["distribution"] == "empirical"
+
+
+def test_monte_carlo_requires_seed():
+    res = dispatch(
+        "calculate_expected_value",
+        {
+            "method": "monte_carlo",
+            "iterations": 1000,
+            "distributions": [{"name": "x", "distribution": "normal", "mean": 1.0, "std": 0.1}],
+            "base_params": {"c": 2.0},
+        },
+    )
+    assert res["status"] == "error"
+    assert "seed" in res["error"]["message"]
 
 
 def test_report_audit_scores_complete_document(tmp_path):

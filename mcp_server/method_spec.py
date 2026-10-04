@@ -165,6 +165,7 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "upper": _n("Upper integration bound."),
     "scenarios": _objs("Scenarios [{probability, value}] with probabilities summing to 1."),
     "iterations": _i("Monte-Carlo iterations (>=1000)."),
+    "seed": _i("Deterministic RNG seed (required by simulation methods for reproducibility)."),
     "distributions": _objs("Input distributions [{parameter, type, mean, std}]."),
     "base_params": {"type": "object", "description": "Base parameter values for simulation."},
     "tree": {"type": "object", "description": "Decision tree with chance/decision nodes."},

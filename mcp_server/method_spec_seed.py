@@ -514,8 +514,9 @@ _EXPECTED_VALUE = (
     MethodSpec(
         "monte_carlo",
         "simulated distribution of an outcome",
-        ("iterations", "distributions", "base_params"),
-        "Monte-Carlo; mean/median/std/percentiles",
+        ("iterations", "distributions", "base_params", "seed"),
+        "Monte-Carlo; mean/median/std/percentiles (seeded, reproducible)",
+        ("IVS 103", "IFRS 13"),
     ),
     MethodSpec(
         "decision_tree",

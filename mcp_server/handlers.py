@@ -848,10 +848,10 @@ def _ev_continuous(distribution, mean, std, lower, upper):
     return ev.continuous(distribution, mean, std, lower, upper)
 
 
-def _ev_monte_carlo(iterations, distributions, base_params):
+def _ev_monte_carlo(iterations, distributions, base_params, seed):
     from src.valuation import expected_value as ev
 
-    return ev.monte_carlo(iterations, distributions, base_params)
+    return ev.monte_carlo(iterations, distributions, base_params, seed)
 
 
 def _ev_decision_tree(tree):
