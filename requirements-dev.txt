@@ -1,7 +1,7 @@
 # Test / CI tooling (not required at runtime)
-pytest>=7.0
-pytest-cov>=4.0
+pytest>=9.1.1
+pytest-cov>=7.1.0
 fastmcp>=2.0
-ruff>=0.6.0
-mypy>=1.10
+ruff>=0.16.9
+mypy>=2.3.1
 tdqs>=0.1.0
