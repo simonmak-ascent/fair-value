@@ -1,0 +1,24 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "fair-value",
+  "description": "Financial valuation library and MCP server — DCF/NAV/CCA, cost of capital, derivatives, credit risk and report review, cited to IVS 2025 and IFRS/IAS.",
+  "branch": "main",
+  "folders": [],
+  "excludeFolders": [
+    "node_modules",
+    "tests",
+    "vdd",
+    "design",
+    ".playwright-mcp",
+    "dist",
+    "standards/source",
+    "scripts"
+  ],
+  "excludeFiles": ["pnpm-lock.yaml", "package-lock.json"],
+  "rules": [
+    "Prefer the native calculate_* MCP tools over ad-hoc math; supply each method's exact inputs (no defaults).",
+    "Quote IVS/IFRS via the citations the envelopes return; never paraphrase standards into source facts.",
+    "Treat valuation://methods and valuation://standards as the source of truth for methods and clauses."
+  ],
+  "url": "https://context7.com/simonmak-ascent/fair-value"
+}
