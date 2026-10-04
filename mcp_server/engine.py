@@ -30,6 +30,16 @@ def dispatch(tool: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     method = args.pop("method", None)
     if not method:
         return _error("INVALID_ARGUMENT", f"{tool} requires 'method'", method=tool)
+    # Transparency: `method="-help"` (or `help=true`) returns the generated docs.
+    if method in ("-help", "help") or args.get("help") is True:
+        from .docs import tool_help, tool_help_markdown
+
+        return _ok(
+            f"{tool}.-help",
+            value=None,
+            help=tool_help(tool),
+            text=tool_help_markdown(tool),
+        )
     # Absent optional parameters arrive as explicit ``None`` from the MCP layer;
     # treat them as omitted (the no-defaults contract requires real values only).
     args = {name: value for name, value in args.items() if value is not None}
@@ -63,12 +73,36 @@ def dispatch(tool: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     spec = ms.get(canonical_tool, canonical_method)
     formula_ref = spec.formula_ref if spec else None
+    solution_type = getattr(spec, "solution_type", None) if spec else None
+    citations = (
+        {key: list(val) for key, val in spec.citations.items()}
+        if spec and getattr(spec, "citations", None)
+        else None
+    )
     name = f"{canonical_tool}.{canonical_method}"
 
     if isinstance(value, dict) and value.get("status") in ("ok", "error"):
+        if value.get("status") == "ok":
+            if solution_type:
+                value.setdefault("solution_type", solution_type)
+            if citations:
+                value.setdefault("citations", citations)
         return value
     if isinstance(value, dict):
         payload = dict(value)
         primary = payload.pop("value", None)
-        return _ok(name, value=primary, formula_ref=formula_ref, **payload)
-    return _ok(name, value=value, formula_ref=formula_ref)
+        return _ok(
+            name,
+            value=primary,
+            formula_ref=formula_ref,
+            solution_type=solution_type,
+            citations=citations,
+            **payload,
+        )
+    return _ok(
+        name,
+        value=value,
+        formula_ref=formula_ref,
+        solution_type=solution_type,
+        citations=citations,
+    )

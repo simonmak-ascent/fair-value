@@ -1,0 +1,41 @@
+{
+  "version": "2025.1",
+  "sources": [
+    {
+      "file": "source/ivs-2025.md",
+      "title": "International Valuation Standards (IVS) 2025",
+      "rights_holder": "International Valuation Standards Council (IVSC)",
+      "edition": "2025",
+      "url": "https://ivsc.org/standards/",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extracts of operative paragraphs, quoted for compliance reference. All rights reserved by IVSC."
+    },
+    {
+      "file": "source/ifrs-13.md",
+      "title": "IFRS 13 Fair Value Measurement",
+      "rights_holder": "IFRS Foundation",
+      "edition": "2025 (as reproduced in AASB 13 compiled standard)",
+      "url": "https://standards.aasb.gov.au/node/3604",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extracts; AASB 13 incorporates IFRS 13 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
+    },
+    {
+      "file": "source/ifrs-16.md",
+      "title": "IFRS 16 Leases",
+      "rights_holder": "IFRS Foundation",
+      "edition": "2022 (as reproduced in AASB 16 compiled standard, compilation 7)",
+      "url": "https://www.aasb.gov.au/admin/file/content105/c9/AASB16_02-16_COMPdec21_01-22.pdf",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extract; AASB 16 incorporates IFRS 16 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
+    },
+    {
+      "file": "source/ias-36.md",
+      "title": "IAS 36 Impairment of Assets",
+      "rights_holder": "IFRS Foundation",
+      "edition": "2023 (as reproduced in AASB 136 compiled standard, compilation 3)",
+      "url": "https://files.accurri.com/AASB/AASB-136-1222.pdf",
+      "retrieved": "2026-10-04",
+      "note": "Short verbatim extracts; AASB 136 incorporates IAS 36 verbatim for for-profit entities. IFRS Foundation copyright material; used under the AASB reproduction notice (personal, non-commercial, attributed)."
+    }
+  ]
+}

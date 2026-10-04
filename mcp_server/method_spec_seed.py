@@ -382,6 +382,34 @@ _RESIDUAL = (
         ("roe", "cost_equity", "growth_rate"),
         "P/B = (ROE - g)/(ke - g)",
     ),
+    MethodSpec(
+        "relief_from_royalty",
+        "intangible value as the present value of hypothetical royalty savings",
+        ("revenue", "royalty_rate", "discount_rate", "periods"),
+        "IVS 210 relief-from-royalty: PV of royalty savings",
+        ("IVS 210", "IFRS 13"),
+    ),
+    MethodSpec(
+        "mpeem",
+        "multi-period excess earnings after contributory-asset charges",
+        ("cash_flows", "contributory_charges", "discount_rate"),
+        "IVS 210 MPEEM: PV of earnings less contributory asset charges",
+        ("IVS 210", "IFRS 13"),
+    ),
+    MethodSpec(
+        "with_without",
+        "with-and-without (premium profit) present value of the increment",
+        ("with_cash_flows", "without_cash_flows", "discount_rate"),
+        "IVS 210 with-and-without: PV(with) - PV(without)",
+        ("IVS 210", "IFRS 13"),
+    ),
+    MethodSpec(
+        "recoverable_amount",
+        "higher of fair value less costs of disposal and value in use",
+        ("fair_value_less_costs_to_dispose", "value_in_use"),
+        "IAS 36.18: recoverable amount = max(FVLCD, VIU)",
+        ("IAS 36",),
+    ),
 )
 
 _OPTION = (

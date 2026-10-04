@@ -11,7 +11,7 @@ execution at import time. It drives the MCP tool surface, the
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 
@@ -132,6 +132,17 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "carrying_value": _n("Carrying amount before the test."),
     "fair_value_less_costs_to_dispose": _n("FVLCD in reporting currency."),
     "value_in_use": _n("Value in use in reporting currency."),
+    "contributory_charges": _nums(
+        "Contributory-asset charges (economic rent) per period, aligned with cash_flows "
+        "(IVS 210 MPEEM)."
+    ),
+    "with_cash_flows": _nums(
+        "After-tax cash flows with the asset in use (IVS 210 with-and-without)."
+    ),
+    "without_cash_flows": _nums(
+        "After-tax cash flows absent the asset (IVS 210 with-and-without), aligned with "
+        "with_cash_flows."
+    ),
     "net_realisable_value": _n("Estimated NRV in reporting currency."),
     "fair_value_less_costs_to_sell": _n("FV less costs to sell in reporting currency."),
     "claims": _objs("Ordered claims [{name, amount, priority}] for a waterfall."),
@@ -336,6 +347,11 @@ class MethodSpec:
     required: Tuple[str, ...]
     formula_ref: str = ""
     standards: Tuple[str, ...] = ()
+    # Dual-standard taxonomy (A-001): attached from ``standards/taxonomy.json``.
+    approach: Optional[str] = None
+    citations: Dict[str, Tuple[str, ...]] = field(default_factory=dict)
+    solution_type: Optional[str] = None
+    divergences: Tuple[Any, ...] = ()
 
 
 _REGISTRY: Dict[str, Dict[str, MethodSpec]] = {}
@@ -486,6 +502,10 @@ def catalog() -> Dict[str, Any]:
                     "required": list(spec.required),
                     "formula_ref": spec.formula_ref,
                     "standards": list(spec.standards),
+                    "approach": spec.approach,
+                    "solution_type": spec.solution_type,
+                    "citations": {k: list(v) for k, v in spec.citations.items()},
+                    "divergences": [getattr(d, "parameter", d) for d in spec.divergences],
                 }
             )
     return {
@@ -504,3 +524,24 @@ def catalog_json() -> str:
 
 
 register_seed()
+
+
+def attach_standards_registry(path: Optional[str] = None) -> Optional[Any]:
+    """Load, validate and attach the dual-standard taxonomy to the registry.
+
+    Returns the attached taxonomy, or ``None`` when no taxonomy file is present.
+    An invalid taxonomy raises, so import and CI fail fast (a shallow or wrong
+    taxonomy must never pass silently).
+    """
+    from .standards import attach_standards, load_taxonomy, validate_taxonomy
+
+    taxonomy = load_taxonomy(path)
+    validate_taxonomy(taxonomy, _REGISTRY)
+    attach_standards(_REGISTRY, taxonomy)
+    return taxonomy
+
+
+try:  # pragma: no cover - absent-file path is the only tolerated failure
+    _TAXONOMY: Optional[Any] = attach_standards_registry()
+except FileNotFoundError:
+    _TAXONOMY = None

@@ -1,0 +1,32 @@
+{
+  "version": "2025.1",
+  "standards": [
+    { "id": "IVS", "title": "International Valuation Standards 2025", "family": "IVS", "version": "2025", "source_ref": "source/ivs-2025.md" },
+    { "id": "IFRS", "title": "IFRS 13 Fair Value Measurement", "family": "IFRS", "version": "2025", "source_ref": "source/ifrs-13.md" },
+    { "id": "IFRS16", "title": "IFRS 16 Leases", "family": "IFRS", "version": "2025", "source_ref": "source/ifrs-16.md" },
+    { "id": "IAS", "title": "IAS 36 Impairment of Assets", "family": "IAS", "version": "2025", "source_ref": "source/ias-36.md" }
+  ],
+  "clauses": [
+    { "id": "IVS.103.A10", "standard": "IVS", "label": "Valuation approaches", "summary": "Market, income and cost approaches to value.", "source_ref": "source/ivs-2025.md#ivs-103-valuation-approaches" },
+    { "id": "IVS.103.A20", "standard": "IVS", "label": "Income approach and DCF", "summary": "Income approach converts projected cash flows to present value; methods are DCF variations.", "source_ref": "source/ivs-2025.md#ivs-103-income-approach" },
+    { "id": "IVS.105.A10", "standard": "IVS", "label": "Valuation models", "summary": "A valuation model must be fit for purpose; characteristics of appropriate models.", "source_ref": "source/ivs-2025.md#ivs-105-valuation-models" },
+    { "id": "IVS.210.A10", "standard": "IVS", "label": "Intangible asset methods", "summary": "Income-approach methods for intangibles: excess earnings (MPEEM) and relief-from-royalty.", "source_ref": "source/ivs-2025.md#ivs-210-intangible-assets" },
+    { "id": "IFRS.13.61", "standard": "IFRS", "label": "Valuation techniques", "summary": "Use appropriate techniques, maximising observable inputs.", "source_ref": "source/ifrs-13.md#paragraph-61" },
+    { "id": "IFRS.13.62", "standard": "IFRS", "label": "Three valuation techniques", "summary": "Market approach, cost approach and income approach.", "source_ref": "source/ifrs-13.md#paragraph-62" },
+    { "id": "IFRS.13.69", "standard": "IFRS", "label": "Blockage factors", "summary": "Premiums/discounts inconsistent with the unit of account (incl. a blockage factor) are not permitted.", "source_ref": "source/ifrs-13.md#paragraph-69" },
+    { "id": "IFRS16.26", "standard": "IFRS16", "label": "Lease liability measurement", "summary": "Present value of lease payments at the interest rate implicit in the lease or the incremental borrowing rate.", "source_ref": "source/ifrs-16.md#paragraph-26" },
+    { "id": "IAS.36.6", "standard": "IAS", "label": "Value in use", "summary": "Present value of the future cash flows expected from an asset or cash-generating unit.", "source_ref": "source/ias-36.md#paragraph-6" },
+    { "id": "IAS.36.55", "standard": "IAS", "label": "Pre-tax discount rate", "summary": "The discount rate shall be a pre-tax rate reflecting current market assessments of the time value of money and asset-specific risks.", "source_ref": "source/ias-36.md#paragraph-55" },
+    { "id": "IAS.36.18", "standard": "IAS", "label": "Recoverable amount", "summary": "Recoverable amount is the higher of fair value less costs of disposal and value in use.", "source_ref": "source/ias-36.md#paragraph-18" }
+  ],
+  "methods": [
+    { "method_id": "dcf", "approach": "income", "citations": { "ivs": ["IVS.103.A20"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [] },
+    { "method_id": "npv", "approach": "income", "citations": { "ivs": ["IVS.103.A20"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [] },
+    { "method_id": "viu_pre_tax", "approach": "income", "citations": { "ivs": ["IVS.103.A20"], "ifrs": ["IAS.36.6"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "discount_rate", "ivs_basis": "IVS 103 market-participant discount rate (post-tax)", "ifrs_basis": "IAS 36.55 pre-tax rate consistent with value-in-use" } ] },
+    { "method_id": "lease_pv", "approach": "income", "citations": { "ivs": ["IVS.103.A20"], "ifrs": ["IFRS16.26"] }, "solution_type": "closed_form", "divergences": [] },
+    { "method_id": "relief_from_royalty", "approach": "income", "citations": { "ivs": ["IVS.210.A10"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "royalty_rate", "ivs_basis": "IVS 210.60.20 royalty rate from comparable licences or a profit split", "ifrs_basis": "IFRS 13.62 income approach; market-participant royalty in the asset's highest and best use" } ] },
+    { "method_id": "mpeem", "approach": "income", "citations": { "ivs": ["IVS.210.A10"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "contributory_charges", "ivs_basis": "IVS 210.60.16 contributory asset charges at economic rent", "ifrs_basis": "IFRS 13.62 income approach; charges from the market participant's perspective" } ] },
+    { "method_id": "with_without", "approach": "income", "citations": { "ivs": ["IVS.210.A10"], "ifrs": ["IFRS.13.62"] }, "solution_type": "closed_form", "divergences": [] },
+    { "method_id": "recoverable_amount", "approach": "income", "citations": { "ivs": ["IVS.103.A10"], "ifrs": ["IAS.36.18"] }, "solution_type": "closed_form", "divergences": [ { "parameter": "measurement_objective", "ivs_basis": "IVS 103 basis of value and premise (e.g. market value)", "ifrs_basis": "IAS 36.18 recoverable amount = higher of FVLCD and value in use (entity-specific)" } ] }
+  ]
+}

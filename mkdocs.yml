@@ -6,8 +6,11 @@ repo_name: simonmak-ascent/fair-value
 nav:
   - Home: index.md
   - MCP Server: mcp.md
+  - REST API: api.md
   - Hosting: hosting.md
   - Methods: methods.md
+  - Method reference: methods/index.md
+  - Standards: standards.md
   - Examples: examples.md
   - Status & Roadmap: status.md
   - Observability: slo.md

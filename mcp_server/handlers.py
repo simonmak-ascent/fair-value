@@ -282,6 +282,38 @@ def _spac_redemption(
     return {"value": min(trust_cash / shares_outstanding, redemption_price)}
 
 
+def _relief_from_royalty(
+    revenue: float, royalty_rate: float, discount_rate: float, periods: int
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import relief_from_royalty
+
+    return {"value": relief_from_royalty(revenue, royalty_rate, discount_rate, periods)}
+
+
+def _mpeem(
+    cash_flows: List[float], contributory_charges: List[float], discount_rate: float
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import mpeem
+
+    return {"value": mpeem(cash_flows, contributory_charges, discount_rate)}
+
+
+def _with_without(
+    with_cash_flows: List[float], without_cash_flows: List[float], discount_rate: float
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import with_without
+
+    return {"value": with_without(with_cash_flows, without_cash_flows, discount_rate)}
+
+
+def _recoverable_amount(
+    fair_value_less_costs_to_dispose: float, value_in_use: float
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import recoverable_amount
+
+    return {"value": recoverable_amount(fair_value_less_costs_to_dispose, value_in_use)}
+
+
 # ---------------------------------------------------------------------------
 # calculate_option
 # ---------------------------------------------------------------------------
@@ -735,6 +767,10 @@ _register(
         },
         "residual_income": _residual_income,
         "justified_pb": _justified_pb,
+        "relief_from_royalty": _relief_from_royalty,
+        "mpeem": _mpeem,
+        "with_without": _with_without,
+        "recoverable_amount": _recoverable_amount,
     },
 )
 
