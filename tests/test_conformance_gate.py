@@ -43,7 +43,8 @@ def test_ratchet_flags_new_uncited_method():
 
 
 def test_ratchet_flags_new_orphan_clause():
-    report = std.coverage_report(ms._REGISTRY, ms._TAXONOMY)
+    report = dict(std.coverage_report(ms._REGISTRY, ms._TAXONOMY))
+    report["orphan_clauses"] = [*report["orphan_clauses"], "FAKE.999"]
     baseline = {"uncited_methods": len(report["uncited_methods"]), "orphan_clauses": 0}
     import json
 
@@ -62,3 +63,10 @@ def test_duplicate_method_detection():
     dups = gate._duplicate_methods(fake)
     assert dups and "'x'" in dups[0]
     assert gate._duplicate_methods({"tool_a": {"x": object()}}) == []
+
+
+def test_uncited_methods_are_exactly_the_exempt_set():
+    report = std.coverage_report(ms._REGISTRY, ms._TAXONOMY)
+    assert report["orphan_clauses"] == []
+    assert set(report["uncited_methods"]) == gate.CITATION_EXEMPT
+    assert len(report["uncited_methods"]) == 18

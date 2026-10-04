@@ -1,5 +1,5 @@
 {
-  "uncited_methods": 115,
-  "orphan_clauses": 3,
-  "note": "Citation-coverage ratchet for the A-005 gate. The gate fails if uncited methods or orphan clauses exceed these counts (a coverage regression) or if the taxonomy/corpus is invalid. Adding citations lowers the first count; refresh with `python scripts/check_conformance.py --update-baseline`."
+  "uncited_methods": 18,
+  "orphan_clauses": 0,
+  "note": "Citation-coverage ratchet for the A-005 gate. The gate fails if uncited methods or orphan clauses exceed these counts (a coverage regression), if the taxonomy/corpus is invalid, or if any uncited method is outside scripts/check_conformance.py CITATION_EXEMPT. The 18 uncited methods are exactly the exempt set (sector KPIs, the report-review surface, the company profile). Refresh with `python scripts/check_conformance.py --update-baseline`."
 }

@@ -29,6 +29,34 @@ DEFERRED = {
     "calculate_convertible_bond": {"quantlib", "finite_difference"},
 }
 
+#: Methods deliberately left uncited because they are not framed by a
+#: valuation standard: proprietary sector KPIs (calculate_sector_metrics), the
+#: report-review surface (a boundary, not a valuation method), and the company
+#: profile summary. Every other method must cite at least one clause.
+CITATION_EXEMPT = {
+    # calculate_sector_metrics — SaaS/marketplace/token KPIs
+    "ltv",
+    "cac",
+    "arr",
+    "nrr",
+    "magic_number",
+    "rule_of_40",
+    "take_rate",
+    "gmv_multiple",
+    "retention",
+    "trl",
+    "break_even",
+    "gross_margin",
+    "token",
+    "nvt",
+    "metcalfe",
+    # calculate_report_review — the review surface, not a calculation
+    "audit",
+    "draft",
+    # calculate_company_summary — descriptive profile
+    "profile",
+}
+
 
 def _coverage(problems: list) -> dict:
     """Validate the taxonomy and compute coverage; append problems on failure."""
@@ -60,6 +88,9 @@ def _check_coverage_ratchet(report: dict, problems: list) -> None:
             f"orphan clauses ({orphans} > baseline {baseline['orphan_clauses']}): "
             f"{report['orphan_clauses']}"
         )
+    unexpected = sorted(set(report["uncited_methods"]) - CITATION_EXEMPT)
+    if unexpected:
+        problems.append(f"uncited methods not in CITATION_EXEMPT: {unexpected}")
 
 
 def _write_baseline(report: dict) -> None:

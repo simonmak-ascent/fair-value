@@ -8,14 +8,30 @@ flowchart TD
   T --> calculate_option_black_scholes["black_scholes (income)"]
   calculate_option_black_scholes -. cites .-> IVS_500_A10[IVS.500.A10]
   calculate_option_black_scholes -. cites .-> IFRS_13_62[IFRS.13.62]
-  T --> calculate_option_black76["black76 (n/a)"]
-  T --> calculate_option_binomial_american["binomial_american (n/a)"]
-  T --> calculate_option_garman_kohlhagen["garman_kohlhagen (n/a)"]
-  T --> calculate_option_barrier_first_passage["barrier_first_passage (n/a)"]
-  T --> calculate_option_asian_average["asian_average (n/a)"]
-  T --> calculate_option_digital["digital (n/a)"]
-  T --> calculate_option_range["range (n/a)"]
-  T --> calculate_option_share_based["share_based (n/a)"]
+  T --> calculate_option_black76["black76 (income)"]
+  calculate_option_black76 -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_black76 -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_binomial_american["binomial_american (income)"]
+  calculate_option_binomial_american -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_binomial_american -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_garman_kohlhagen["garman_kohlhagen (income)"]
+  calculate_option_garman_kohlhagen -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_garman_kohlhagen -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_barrier_first_passage["barrier_first_passage (income)"]
+  calculate_option_barrier_first_passage -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_barrier_first_passage -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_asian_average["asian_average (income)"]
+  calculate_option_asian_average -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_asian_average -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_digital["digital (income)"]
+  calculate_option_digital -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_digital -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_range["range (income)"]
+  calculate_option_range -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_range -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_option_share_based["share_based (income)"]
+  calculate_option_share_based -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_option_share_based -. cites .-> IFRS_13_62[IFRS.13.62]
 ```
 
 ## `black_scholes`
@@ -63,8 +79,8 @@ European price on a forward/futures
 
 **Formula:** Black-76
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -77,8 +93,18 @@ European price on a forward/futures
 | `volatility` | number | Annualized volatility (decimal, 0.30 = 30%); > 0. |
 | `option_type` | string | Option right. |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `binomial_american`
 
@@ -86,8 +112,8 @@ CRR lattice with early exercise
 
 **Formula:** Cox-Ross-Rubinstein; early exercise
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** numeric
 
 **Inputs**
 
@@ -101,8 +127,18 @@ CRR lattice with early exercise
 | `option_type` | string | Option right. |
 | `steps` | integer | Lattice steps for binomial_american (>=50). |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `garman_kohlhagen`
 
@@ -110,8 +146,8 @@ European FX option price
 
 **Formula:** Garman-Kohlhagen
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -125,8 +161,18 @@ European FX option price
 | `volatility` | number | Annualized volatility (decimal, 0.30 = 30%); > 0. |
 | `option_type` | string | Option right. |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `barrier_first_passage`
 
@@ -134,8 +180,8 @@ knock-in/knock-out with continuous monitoring (e.g. HKEX CBBCs)
 
 **Formula:** First-passage/barrier under GBM
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** numeric
 
 **Inputs**
 
@@ -150,8 +196,18 @@ knock-in/knock-out with continuous monitoring (e.g. HKEX CBBCs)
 | `barrier` | number | Knock level for barrier_first_passage. |
 | `barrier_type` | string | Barrier direction. |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `asian_average`
 
@@ -159,8 +215,8 @@ settlement averaging (e.g. HKEX derivative warrants)
 
 **Formula:** Asian option
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** numeric
 
 **Inputs**
 
@@ -174,8 +230,18 @@ settlement averaging (e.g. HKEX derivative warrants)
 | `option_type` | string | Option right. |
 | `average_type` | string | Averaging convention. |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `digital`
 
@@ -183,8 +249,8 @@ fixed payout when the condition is met
 
 **Formula:** Cash-or-nothing digital
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -197,8 +263,18 @@ fixed payout when the condition is met
 | `volatility` | number | Annualized volatility (decimal, 0.30 = 30%); > 0. |
 | `cash_payout` | number | Fixed cash amount paid when the digital condition is met. |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `range`
 
@@ -206,8 +282,8 @@ fixed payout when settlement is inside two strikes (e.g. HKEX inline warrants)
 
 **Formula:** Difference of two range probabilities
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -221,8 +297,18 @@ fixed payout when settlement is inside two strikes (e.g. HKEX inline warrants)
 | `volatility` | number | Annualized volatility (decimal, 0.30 = 30%); > 0. |
 | `payout` | number | Fixed payout when the range condition is met. |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `share_based`
 
@@ -230,8 +316,8 @@ IFRS 2 grant-date fair value of an equity-settled award
 
 **Formula:** IFRS 2 fair-value-based measurement
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -244,6 +330,16 @@ IFRS 2 grant-date fair value of an equity-settled award
 | `risk_free` | number | Continuously-compounded risk-free rate (decimal). |
 | `dividend_yield` | number | Continuous dividend yield (decimal). |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.

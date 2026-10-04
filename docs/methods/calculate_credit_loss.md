@@ -14,11 +14,21 @@ flowchart TD
   T --> calculate_credit_loss_ecl_staged["ecl_staged (income)"]
   calculate_credit_loss_ecl_staged -. cites .-> IVS_105_A10[IVS.105.A10]
   calculate_credit_loss_ecl_staged -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
-  T --> calculate_credit_loss_provision_matrix["provision_matrix (n/a)"]
-  T --> calculate_credit_loss_pd_from_spread["pd_from_spread (n/a)"]
-  T --> calculate_credit_loss_cumulative_pd["cumulative_pd (n/a)"]
-  T --> calculate_credit_loss_hazard["hazard (n/a)"]
-  T --> calculate_credit_loss_cva_dva["cva_dva (n/a)"]
+  T --> calculate_credit_loss_provision_matrix["provision_matrix (income)"]
+  calculate_credit_loss_provision_matrix -. cites .-> IVS_105_A10[IVS.105.A10]
+  calculate_credit_loss_provision_matrix -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  T --> calculate_credit_loss_pd_from_spread["pd_from_spread (income)"]
+  calculate_credit_loss_pd_from_spread -. cites .-> IVS_105_A10[IVS.105.A10]
+  calculate_credit_loss_pd_from_spread -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  T --> calculate_credit_loss_cumulative_pd["cumulative_pd (income)"]
+  calculate_credit_loss_cumulative_pd -. cites .-> IVS_105_A10[IVS.105.A10]
+  calculate_credit_loss_cumulative_pd -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  T --> calculate_credit_loss_hazard["hazard (income)"]
+  calculate_credit_loss_hazard -. cites .-> IVS_105_A10[IVS.105.A10]
+  calculate_credit_loss_hazard -. cites .-> IFRS_9_5_5_5[IFRS.9.5.5.5]
+  T --> calculate_credit_loss_cva_dva["cva_dva (income)"]
+  calculate_credit_loss_cva_dva -. cites .-> IVS_105_A10[IVS.105.A10]
+  calculate_credit_loss_cva_dva -. cites .-> IFRS_13_62[IFRS.13.62]
 ```
 
 ## `ecl_12m`
@@ -137,8 +147,8 @@ provision matrix over ageing buckets
 
 **Formula:** sum(bucket amount * loss rate)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -147,8 +157,18 @@ provision matrix over ageing buckets
 | `receivables_ageing` | array | Ageing buckets [{bucket, amount}]. |
 | `loss_rates` | array | Loss rate per ageing bucket. |
 
+**Standards (verbatim)**
+
+- **IVS.105.A10** — Valuation models
+  > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
+- **IFRS.9.5.5.5** — Measurement of expected credit losses
+  > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `pd_from_spread`
@@ -157,8 +177,8 @@ derive PD from a credit spread
 
 **Formula:** PD approx spread/(1-recovery)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -168,8 +188,18 @@ derive PD from a credit spread
 | `recovery` | number | Recovery rate in [0,1]. |
 | `tenor_years` | number | Tenor in years (>0). |
 
+**Standards (verbatim)**
+
+- **IVS.105.A10** — Valuation models
+  > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
+- **IFRS.9.5.5.5** — Measurement of expected credit losses
+  > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `cumulative_pd`
 
@@ -177,8 +207,8 @@ cumulative PD from annual PD over years
 
 **Formula:** 1-(1-pd)^n
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -187,8 +217,18 @@ cumulative PD from annual PD over years
 | `annual_pd` | number | Annual PD in [0,1]. |
 | `years` | integer | Number of projection years n; equal len(cash_flows) when both are supplied. |
 
+**Standards (verbatim)**
+
+- **IVS.105.A10** — Valuation models
+  > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
+- **IFRS.9.5.5.5** — Measurement of expected credit losses
+  > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `hazard`
 
@@ -196,8 +236,8 @@ PD from a hazard rate over a tenor
 
 **Formula:** PD = 1 - exp(-lambda*T)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -206,8 +246,18 @@ PD from a hazard rate over a tenor
 | `hazard_rate` | number | Default hazard rate as a decimal. |
 | `tenor_years` | number | Tenor in years (>0). |
 
+**Standards (verbatim)**
+
+- **IVS.105.A10** — Valuation models
+  > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
+- **IFRS.9.5.5.5** — Measurement of expected credit losses
+  > An entity shall measure expected credit losses of a financial instrument in a way that reflects: (a) an unbiased and probability-weighted amount that is determined by evaluating a range of possible outcomes; (b) the time value of money; and (c) reasonable and supportable information that is available without undue cost or effort at the reporting date about past events, current conditions and forecasts of future economic conditions.
+  > — IFRS Foundation (source/ifrs-9.md#paragraph-5-5-5)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `cva_dva`
 
@@ -215,8 +265,8 @@ credit valuation adjustment on an exposure profile
 
 **Formula:** CVA = sum DF*EE*PD*LGD
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -227,4 +277,15 @@ credit valuation adjustment on an exposure profile
 | `lgd` | number | Loss given default in [0,1] (1 - recovery rate). |
 | `discount_rate` | number | Discount rate as a decimal (0.10 = 10%); pre-tax when method=viu_pre_tax. |
 
+**Standards (verbatim)**
+
+- **IVS.105.A10** — Valuation models
+  > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
+
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.

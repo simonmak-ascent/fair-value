@@ -26,6 +26,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+          # Optional native engine: enables the QuantLib option priced backend
+          # and the parity tests (otherwise skipped). Lightweight single wheel.
+          pip install QuantLib
 
       - name: Lint (ruff)
         run: ruff check .

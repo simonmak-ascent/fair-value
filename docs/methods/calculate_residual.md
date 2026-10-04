@@ -5,25 +5,51 @@ IFRS/HKFRS measurement engine. Compute goodwill and purchase-price allocation, i
 ```mermaid
 flowchart TD
   T[Calculate Residual]
-  T --> calculate_residual_goodwill["goodwill (n/a)"]
-  T --> calculate_residual_ppa["ppa (n/a)"]
-  T --> calculate_residual_impairment_fvlcd["impairment_fvlcd (n/a)"]
-  T --> calculate_residual_impairment_viu["impairment_viu (n/a)"]
-  T --> calculate_residual_inventory_nrv["inventory_nrv (n/a)"]
-  T --> calculate_residual_held_for_sale["held_for_sale (n/a)"]
-  T --> calculate_residual_debt_waterfall["debt_waterfall (n/a)"]
-  T --> calculate_residual_cap_table["cap_table (n/a)"]
-  T --> calculate_residual_sotp["sotp (n/a)"]
-  T --> calculate_residual_spac_redemption["spac_redemption (n/a)"]
+  T --> calculate_residual_goodwill["goodwill (income)"]
+  calculate_residual_goodwill -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_goodwill -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_ppa["ppa (income)"]
+  calculate_residual_ppa -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_ppa -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_impairment_fvlcd["impairment_fvlcd (income)"]
+  calculate_residual_impairment_fvlcd -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_impairment_fvlcd -. cites .-> IAS_36_18[IAS.36.18]
+  T --> calculate_residual_impairment_viu["impairment_viu (income)"]
+  calculate_residual_impairment_viu -. cites .-> IVS_103_A20[IVS.103.A20]
+  calculate_residual_impairment_viu -. cites .-> IAS_36_6[IAS.36.6]
+  T --> calculate_residual_inventory_nrv["inventory_nrv (market)"]
+  calculate_residual_inventory_nrv -. cites .-> IVS_230_A10[IVS.230.A10]
+  calculate_residual_inventory_nrv -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_held_for_sale["held_for_sale (market)"]
+  calculate_residual_held_for_sale -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_held_for_sale -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_debt_waterfall["debt_waterfall (income)"]
+  calculate_residual_debt_waterfall -. cites .-> IVS_103_A20[IVS.103.A20]
+  calculate_residual_debt_waterfall -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_cap_table["cap_table (income)"]
+  calculate_residual_cap_table -. cites .-> IVS_103_A20[IVS.103.A20]
+  calculate_residual_cap_table -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_sotp["sotp (income)"]
+  calculate_residual_sotp -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_sotp -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_spac_redemption["spac_redemption (income)"]
+  calculate_residual_spac_redemption -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_spac_redemption -. cites .-> IFRS_13_62[IFRS.13.62]
   T --> calculate_residual_investment_property["investment_property (income)"]
   calculate_residual_investment_property -. cites .-> IVS_400_A10[IVS.400.A10]
   calculate_residual_investment_property -. cites .-> IFRS_13_62[IFRS.13.62]
   T --> calculate_residual_ppe_revaluation["ppe_revaluation (cost)"]
   calculate_residual_ppe_revaluation -. cites .-> IVS_300_A10[IVS.300.A10]
   calculate_residual_ppe_revaluation -. cites .-> IFRS_13_62[IFRS.13.62]
-  T --> calculate_residual_biological_asset["biological_asset (n/a)"]
-  T --> calculate_residual_residual_income["residual_income (n/a)"]
-  T --> calculate_residual_justified_pb["justified_pb (n/a)"]
+  T --> calculate_residual_biological_asset["biological_asset (market)"]
+  calculate_residual_biological_asset -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_biological_asset -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_residual_income["residual_income (income)"]
+  calculate_residual_residual_income -. cites .-> IVS_103_A20[IVS.103.A20]
+  calculate_residual_residual_income -. cites .-> IFRS_13_61[IFRS.13.61]
+  T --> calculate_residual_justified_pb["justified_pb (market)"]
+  calculate_residual_justified_pb -. cites .-> IVS_103_A10[IVS.103.A10]
+  calculate_residual_justified_pb -. cites .-> IFRS_13_62[IFRS.13.62]
   T --> calculate_residual_relief_from_royalty["relief_from_royalty (income)"]
   calculate_residual_relief_from_royalty -. cites .-> IVS_210_A10[IVS.210.A10]
   calculate_residual_relief_from_royalty -. cites .-> IFRS_13_62[IFRS.13.62]
@@ -53,8 +79,8 @@ goodwill as consideration less net identifiable assets
 
 **Formula:** IFRS 3 goodwill residual
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -63,8 +89,18 @@ goodwill as consideration less net identifiable assets
 | `purchase_price` | number | Consideration transferred in reporting currency. |
 | `fair_value_net_identifiable_assets` | number | Fair value of net identifiable assets. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `ppa`
@@ -73,8 +109,8 @@ purchase price allocation residual
 
 **Formula:** goodwill = price - (tangible + intangibles)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -84,8 +120,18 @@ purchase price allocation residual
 | `tangible_assets_fv` | number | Fair value of tangible assets. |
 | `identified_intangibles_fv` | number | Fair value of separately identified intangibles. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `impairment_fvlcd`
@@ -94,8 +140,8 @@ impairment against fair value less costs to dispose
 
 **Formula:** IAS 36: loss = max(0, CV - FVLCD)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -104,8 +150,18 @@ impairment against fair value less costs to dispose
 | `carrying_value` | number | Carrying amount before the test. |
 | `fair_value_less_costs_to_dispose` | number | FVLCD in reporting currency. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IAS.36.18** — Recoverable amount
+  > This Standard defines recoverable amount as the higher of an asset's or cash-generating unit's fair value less costs of disposal and its value in use.
+  > — IFRS Foundation (source/ias-36.md#paragraph-18)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `impairment_viu`
@@ -114,8 +170,8 @@ impairment against value in use
 
 **Formula:** IAS 36: loss = max(0, CV - VIU)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -124,8 +180,18 @@ impairment against value in use
 | `carrying_value` | number | Carrying amount before the test. |
 | `value_in_use` | number | Value in use in reporting currency. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A20** — Income approach and DCF
+  > 30.01 The income approach provides an indication of value by converting projected cash flows to a single current value. Under the income approach, the value of an asset is determined by reference to the value of income, cash flow or cost savings generated by the asset. A20.01 Although there are many ways to implement the income approach, methods under the income approach are effectively based on discounting future amounts of cash flow to present value. They are variations of the Discounted Cash Flow (DCF) method and the concepts in the following paragraphs apply in part or in full to all income approach methods.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-income-approach)
+- **IAS.36.6** — Value in use
+  > Value in use is the present value of the future cash flows expected to be derived from an asset or cash-generating unit. The recoverable amount of an asset or a cash-generating unit is the higher of its fair value less costs of disposal and its value in use.
+  > — IFRS Foundation (source/ias-36.md#paragraph-6)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `inventory_nrv`
@@ -134,8 +200,8 @@ inventory write-down to net realisable value
 
 **Formula:** IAS 2: write-down = max(0, cost - NRV)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** market  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -144,8 +210,18 @@ inventory write-down to net realisable value
 | `carrying_value` | number | Carrying amount before the test. |
 | `net_realisable_value` | number | Estimated NRV in reporting currency. |
 
+**Standards (verbatim)**
+
+- **IVS.230.A10** — Inventory top-down residual
+  > 60.03 The top-down method is a residual method that begins with the estimated selling price and deducts remaining costs and estimated profit.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-230-inventory)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `held_for_sale`
@@ -154,8 +230,8 @@ measure at lower of carrying amount and FV less costs to sell
 
 **Formula:** IFRS 5 held-for-sale
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** market  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -164,8 +240,18 @@ measure at lower of carrying amount and FV less costs to sell
 | `carrying_value` | number | Carrying amount before the test. |
 | `fair_value_less_costs_to_sell` | number | FV less costs to sell in reporting currency. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `debt_waterfall`
@@ -174,8 +260,8 @@ distribute enterprise value across ordered claims
 
 **Formula:** priority waterfall
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -184,8 +270,18 @@ distribute enterprise value across ordered claims
 | `enterprise_value` | number | Enterprise value distributed across claims. |
 | `claims` | array | Ordered claims [{name, amount, priority}] for a waterfall. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A20** — Income approach and DCF
+  > 30.01 The income approach provides an indication of value by converting projected cash flows to a single current value. Under the income approach, the value of an asset is determined by reference to the value of income, cash flow or cost savings generated by the asset. A20.01 Although there are many ways to implement the income approach, methods under the income approach are effectively based on discounting future amounts of cash flow to present value. They are variations of the Discounted Cash Flow (DCF) method and the concepts in the following paragraphs apply in part or in full to all income approach methods.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-income-approach)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `cap_table`
 
@@ -193,8 +289,8 @@ allocate equity across the cap table
 
 **Formula:** cap-table allocation
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -203,8 +299,18 @@ allocate equity across the cap table
 | `enterprise_value` | number | Enterprise value distributed across claims. |
 | `claims` | array | Ordered claims [{name, amount, priority}] for a waterfall. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A20** — Income approach and DCF
+  > 30.01 The income approach provides an indication of value by converting projected cash flows to a single current value. Under the income approach, the value of an asset is determined by reference to the value of income, cash flow or cost savings generated by the asset. A20.01 Although there are many ways to implement the income approach, methods under the income approach are effectively based on discounting future amounts of cash flow to present value. They are variations of the Discounted Cash Flow (DCF) method and the concepts in the following paragraphs apply in part or in full to all income approach methods.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-income-approach)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `sotp`
 
@@ -212,8 +318,8 @@ sum-of-the-parts less net debt and a holding discount
 
 **Formula:** SOTP = sum(parts) - net debt, less holding discount
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -223,8 +329,18 @@ sum-of-the-parts less net debt and a holding discount
 | `net_debt` | number | Total debt minus cash and equivalents. |
 | `holding_discount` | number | Holding-company discount as a decimal. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `spac_redemption`
@@ -233,8 +349,8 @@ SPAC trust redemption value per share
 
 **Formula:** redemption value = min(trust cash / shares, redemption price)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -244,8 +360,18 @@ SPAC trust redemption value per share
 | `shares_outstanding` | number | Shares outstanding. |
 | `redemption_price` | number | SPAC redemption price per share. |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `investment_property`
@@ -324,8 +450,8 @@ biological assets at fair value less costs to sell
 
 **Formula:** V = price * quantity - costs to sell (IAS 41)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** market  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -335,8 +461,18 @@ biological assets at fair value less costs to sell
 | `quantity` | number | Number of units (biological assets). |
 | `costs_to_sell` | number | Incremental costs to sell / dispose (IAS 41). |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `residual_income`
@@ -345,8 +481,8 @@ residual income model
 
 **Formula:** V = BV + (NI - ke*BV)/ke
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -356,8 +492,18 @@ residual income model
 | `net_income` | number | Net income in reporting currency. |
 | `cost_equity` | number | Cost of equity as a decimal (0.12 = 12%). |
 
+**Standards (verbatim)**
+
+- **IVS.103.A20** — Income approach and DCF
+  > 30.01 The income approach provides an indication of value by converting projected cash flows to a single current value. Under the income approach, the value of an asset is determined by reference to the value of income, cash flow or cost savings generated by the asset. A20.01 Although there are many ways to implement the income approach, methods under the income approach are effectively based on discounting future amounts of cash flow to present value. They are variations of the Discounted Cash Flow (DCF) method and the concepts in the following paragraphs apply in part or in full to all income approach methods.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-income-approach)
+- **IFRS.13.61** — Valuation techniques
+  > An entity shall use valuation techniques that are appropriate in the circumstances and for which sufficient data are available to measure fair value, maximising the use of relevant observable inputs and minimising the use of unobservable inputs.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-61)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `justified_pb`
 
@@ -365,8 +511,8 @@ justified price-to-book from ROE
 
 **Formula:** P/B = (ROE - g)/(ke - g)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** market  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -376,8 +522,18 @@ justified price-to-book from ROE
 | `cost_equity` | number | Cost of equity as a decimal (0.12 = 12%). |
 | `growth_rate` | number | Periodic growth rate as a decimal (0.03 = 3%). |
 
+**Standards (verbatim)**
+
+- **IVS.103.A10** — Valuation approaches
+  > 10.01 Consideration must be given to the relevant and appropriate valuation approaches. One or more valuation approaches may be used in order to arrive at the value in accordance with the basis of value. The three approaches described and defined below are the principle valuation approaches: 20.01 The market approach provides an indication of value by comparing the asset and/or liability with identical or comparable (that is similar) asset and/or liability for which price information is available. 40.01 The cost approach provides an indication of value using the economic principle that a buyer would not pay more for an asset than the amount for which it could replace the asset with an equivalent asset.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-valuation-approaches)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 
 ## `relief_from_royalty`
 
