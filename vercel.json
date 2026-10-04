@@ -1,20 +1,15 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "250mb",
-        "includeFiles": [
-          "mcp_server/**",
-          "src/**",
-          "valuation_engine.py",
-          "requirements.txt"
-        ]
-      }
-    }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "functions": {
+    "api/index.py": { "memory": 512, "maxDuration": 60 }
+  },
+  "rewrites": [
+    { "source": "/mcp", "destination": "/api/index.py" },
+    { "source": "/mcp/(.*)", "destination": "/api/index.py" },
+    { "source": "/v1/(.*)", "destination": "/api/index.py" }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "api/index.py" }],
-  "redirects": [{ "source": "/mcp", "destination": "/", "permanent": true }]
+  "redirects": [
+    { "source": "/api/mcp", "destination": "/mcp", "permanent": true }
+  ]
 }

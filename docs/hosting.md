@@ -5,16 +5,20 @@ The server runs over **stdio** by default and over **Streamable HTTP** with
 
 ## Hosted endpoint (zero install)
 
-A managed Streamable HTTP endpoint is deployed on Vercel and served at the
-custom domain root:
+A managed deployment on Vercel serves the Next.js frontage at the domain root,
+the MCP Streamable HTTP endpoint at `/mcp`, and the REST API at `/v1`:
 
 ```
-https://fair-value.ascent-partners.com/
+https://fair-value.ascent-partners.com/       # docs / landing (Next.js)
+https://fair-value.ascent-partners.com/mcp    # MCP Streamable HTTP
+https://fair-value.ascent-partners.com/v1/…   # REST API
 ```
 
-The legacy path `/mcp` redirects (308) to the root. Point any MCP client at the
-URL (transport: `streamable-http`). It is generated from `api/index.py` →
-`mcp_server.asgi:app` (MCP mounted at `/`).
+The MCP endpoint moved from the root to `/mcp` when the frontage was added; a
+client pointed at the old root should be updated to the `/mcp` path. The
+`/api/mcp` path 308-redirects to `/mcp`. Generated from `api/index.py` →
+`mcp_server.asgi:app` (MCP at `/mcp`, REST at `/v1`), served alongside the
+Next.js app in one Vercel project.
 
 ## Docker
 

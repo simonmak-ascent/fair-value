@@ -1,16 +1,33 @@
-.git
-.github
-.venv
-vdd
-dist
-site
-build
+# Vercel ignores these from the deployment upload.
+
+# Node / Next
+node_modules
+.next
+out
+.turbo
+
+# Python caches
 __pycache__
 *.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
 *.egg-info
+build
+dist
+.venv
+
+# Local / non-runtime
+.git
+.github
+vdd
+specs
+constitution.md
+site
 .code_deploy
+docs
+mkdocs.yml
+requirements-dev.txt
+requirements-optional.txt
 pyproject.toml
 uv.lock
-requirements-dev.txt
-mkdocs.yml
-docs

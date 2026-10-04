@@ -32,8 +32,9 @@ clauses**, enforced by a conformance gate in CI.
 
 Fastest path — no install:
 
-- **Hosted MCP (Streamable HTTP):** `https://fair-value.ascent-partners.com/`
+- **Hosted MCP (Streamable HTTP):** `https://fair-value.ascent-partners.com/mcp`
 - **Hosted REST:** `https://fair-value.ascent-partners.com/v1/health`
+- **Frontage & docs:** `https://fair-value.ascent-partners.com/`
 - **Run locally, no install:** `uvx --from "fair-value[mcp]" fair-value-mcp`
 
 Then call any of the 16 `calculate_*` tools (add `-help` / `help=true` for the
@@ -44,7 +45,7 @@ generated transparency record). Client config: [MCP Server](#mcp-server).
 ```mermaid
 flowchart LR
   CLIENT["AI agent / OpenCode"] -->|"stdio (uvx) or Streamable HTTP"| MCP["fair-value-mcp<br/>16 calculate_* tools · 138 methods"]
-  HOST["Hosted · fair-value.ascent-partners.com<br/>MCP at / · REST at /v1"] --> CLIENT
+  HOST["Hosted · fair-value.ascent-partners.com<br/>docs/landing at / · MCP at /mcp · REST at /v1"] --> CLIENT
   MCP --> REG["method-spec registry<br/>(valuation://methods)"]
   REG --> STD["standards taxonomy + corpus<br/>IVS 2025 · IFRS/IAS · (valuation://standards)"]
   REG --> CORE["valuation engine<br/>DCF · NAV · CCA · WACC (FF5) · derivatives<br/>credit risk · actuarial · report review"]
@@ -99,6 +100,24 @@ curl -s -X POST localhost:8000/v1/calculate/calculate_dcf \
 Endpoints: `/v1/health`, `/v1/tools`, `/v1/methods`, `/v1/standards`,
 `/v1/openapi.json`, `/v1/docs` (Swagger UI), `/v1/help/{tool}`,
 `POST /v1/calculate/{tool}`. See [REST API](docs/api.md).
+
+## Web frontage (Next.js)
+
+The hosted domain serves a Next.js frontage — landing, complete docs, methods
+catalogue (one page per method), standards browser, and an API playground —
+alongside the MCP/REST function in one Vercel project. It is data-driven: the
+catalogue is generated from the registry at build time
+(`scripts/gen_web_data.py` → `data/catalog.json`).
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:3000  (expects /v1 from the API for the playground)
+pnpm build        # prebuild regenerates data/catalog.json
+pnpm typecheck && pnpm lint
+```
+
+Routing: `/` and `/docs/*` are Next.js; `/mcp` and `/v1/*` are rewritten to the
+Python function (`api/index.py`).
 
 ## Quick Start (Python)
 

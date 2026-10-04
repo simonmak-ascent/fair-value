@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/*
+ * fair-value frontage — dark-first theme.
+ * Tokens are the live ascent-partners.com palette (primary teal #007a9a ramp,
+ * gold #dfb947 secondary ramp, neutral ramp to #1f1f1f). No colours are
+ * invented outside these ramps; dark surfaces use the neutral ramp.
+ * Dark mode is class-based: `.dark` is set on <html> (default dark).
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary-50: #caffff;
+  --color-primary-100: #baf4ff;
+  --color-primary-200: #a2e5ff;
+  --color-primary-300: #80cdea;
+  --color-primary-400: #53adcd;
+  --color-primary-500: #2a8eaf;
+  --color-primary-600: #007a9a;
+  --color-primary-700: #00607b;
+  --color-primary-800: #004f67;
+  --color-primary-900: #004055;
+  --color-primary-950: #002432;
+
+  --color-secondary-50: #fff4b6;
+  --color-secondary-100: #ffe8a4;
+  --color-secondary-200: #f3d78a;
+  --color-secondary-300: #dfb947;
+  --color-secondary-400: #bf9b2a;
+  --color-secondary-500: #a17d00;
+  --color-secondary-600: #896700;
+  --color-secondary-700: #705200;
+  --color-secondary-800: #5d4200;
+  --color-secondary-900: #4c3500;
+  --color-secondary-950: #2c1c00;
+
+  --color-neutral-50: #f5f5f5;
+  --color-neutral-100: #eaeaea;
+  --color-neutral-200: #d9d9d9;
+  --color-neutral-300: #c0c0c0;
+  --color-neutral-400: #9f9f9f;
+  --color-neutral-500: #828282;
+  --color-neutral-600: #6c6c6c;
+  --color-neutral-700: #575757;
+  --color-neutral-800: #464646;
+  --color-neutral-900: #373737;
+  --color-neutral-950: #1f1f1f;
+
+  --color-teal: #007a9a;
+  --color-teal-dark: #006987;
+  --color-gold: #dfb947;
+
+  --font-sans: var(--font-open-sans), "Open Sans", system-ui, sans-serif;
+  --font-heading: var(--font-titillium), "Titillium Web", system-ui, sans-serif;
+  --font-accent: var(--font-raleway), "Raleway", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "Fira Code", monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply bg-white text-neutral-900 font-sans dark:bg-neutral-950 dark:text-neutral-100;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading font-semibold tracking-tight;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-secondary-300);
+    color: #1f1f1f;
+  }
+}
+
+@utility container-site {
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility card {
+  @apply rounded-md border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900;
+}
+
+@utility muted {
+  @apply text-neutral-500 dark:text-neutral-400;
+}
+
+/* Thin, dark-friendly scrollbars for dense data panes. */
+@utility scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-300) transparent;
+}

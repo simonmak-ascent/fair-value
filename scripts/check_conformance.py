@@ -18,16 +18,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from mcp_server import method_spec as ms
 from mcp_server import standards as std
 from mcp_server import tool_surface as ts
+from mcp_server.deferred import DEFERRED
 from mcp_server.engine import is_implemented
 
 ROOT = Path(__file__).resolve().parent.parent
 BASELINE_PATH = ROOT / "standards" / "coverage-baseline.json"
-
-#: Methods intentionally not implemented because they require an optional
-#: third-party engine (QuantLib) or a heavier numerical scheme.
-DEFERRED = {
-    "calculate_convertible_bond": {"quantlib", "finite_difference"},
-}
 
 #: Methods deliberately left uncited because they are not framed by a
 #: valuation standard: proprietary sector KPIs (calculate_sector_metrics), the
