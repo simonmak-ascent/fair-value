@@ -96,9 +96,11 @@ ENVELOPE_OUTPUT = _ENVELOPE_OUTPUT
 
 
 _BEHAVIOR = (
-    "Read-only and deterministic: no state is mutated and only calculate_company_summary performs "
-    "network I/O. Each method requires its exact inputs (no defaults), so a missing input, an "
-    "unknown method, or an extra field returns an INVALID_ARGUMENT error envelope rather than raising."
+    "Read-only and deterministic: it performs no network I/O (except calculate_company_summary's "
+    "ticker fetch), mutates no state, and returns the same result for the same inputs. Each method "
+    "requires its exact inputs (no defaults), so a missing input, an unknown method, or an extra "
+    "field returns an error envelope (code INVALID_ARGUMENT) instead of raising. The result "
+    "envelope carries status, method, value, assumptions, formula_ref, data_timestamp, steps and error."
 )
 
 
