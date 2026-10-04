@@ -1,0 +1,12 @@
+{
+  "surface": "2.0",
+  "corpus_version": "2025.1",
+  "standards": {
+    "IVS": "2025",
+    "IFRS13": "2025",
+    "IFRS16": "2022",
+    "IAS36": "2023"
+  },
+  "retrieved": "2026-10-04",
+  "note": "Tracked editions of the standards cited in standards/taxonomy.json. Bump an entry when the corresponding corpus extract is refreshed."
+}

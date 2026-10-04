@@ -6,6 +6,8 @@ from typing import Any, Dict
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+import pytest
+
 from mcp_server.engine import dispatch
 from src.derivatives import fixed_income as fi
 from src.derivatives.term_structure import discount_factor as fi_discount_factor
@@ -90,3 +92,32 @@ def test_dispatch_zero_curve_ok():
     )
     assert res["status"] == "ok", res
     assert len(res["zero_rates"]) == 2
+
+
+def test_matrix_pricing_interpolates_between_benchmarks():
+    res = fi.matrix_pricing(3.0, [1.0, 5.0], [0.02, 0.06])
+    assert res["value"] == 0.04
+
+
+def test_matrix_pricing_exact_and_bounds():
+    assert fi.matrix_pricing(1.0, [1.0, 5.0], [0.02, 0.06])["value"] == 0.02
+    assert fi.matrix_pricing(5.0, [1.0, 5.0], [0.02, 0.06])["value"] == 0.06
+    with pytest.raises(ValueError):
+        fi.matrix_pricing(9.0, [1.0, 5.0], [0.02, 0.06])
+    with pytest.raises(ValueError):
+        fi.matrix_pricing(3.0, [5.0, 1.0], [0.02, 0.06])
+
+
+def test_dispatch_matrix_pricing_carries_ivs_citation():
+    res = dispatch(
+        "calculate_fixed_income",
+        {
+            "method": "matrix_pricing",
+            "target_tenor": 3.0,
+            "benchmark_tenors": [1.0, 5.0],
+            "benchmark_yields": [0.02, 0.06],
+        },
+    )
+    assert res["status"] == "ok", res
+    assert res["value"] == 0.04
+    assert "IVS.103.A05" in res["citations"]["ivs"]

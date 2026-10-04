@@ -259,6 +259,9 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "price": _n("Dirty price of the instrument in reporting currency."),
     "par_rates": _nums("Par (coupon) rates per tenor, aligned with tenors (decimal)."),
     "tenors": _nums("Tenors in years, aligned with par_rates or zero_rates."),
+    "target_tenor": _n("Target tenor in years for matrix pricing (interpolated)."),
+    "benchmark_tenors": _nums("Benchmark tenors in years, sorted, aligned with benchmark_yields."),
+    "benchmark_yields": _nums("Benchmark yields (decimal) at each benchmark tenor."),
     "zero_rates": _nums("Zero (spot) rates per tenor, decimal, annual compounding."),
     "times": _nums("Cash-flow times in years, aligned with cash_flows."),
     "t1": _n("Forward period start in years (>=0)."),
@@ -374,6 +377,19 @@ def register_tool_meta(tool: str, title: str, description: str) -> None:
 def tool_meta(tool: str) -> Dict[str, str]:
     """Return the title/description for ``tool`` (empty when unset)."""
     return dict(_TOOL_META.get(tool, {}))
+
+
+# VDD A-008 boundary: which tools are valuation *calculations* vs other
+# capabilities (e.g. report review) kept on the server but outside the
+# calculation surface.
+SURFACE_KINDS: Dict[str, str] = {
+    "calculate_report_review": "review",
+}
+
+
+def surface_kind(tool: str) -> str:
+    """Return ``"calculation"`` (default) or ``"review"`` for ``tool``."""
+    return SURFACE_KINDS.get(tool, "calculation")
 
 
 def tools() -> List[str]:
@@ -505,6 +521,7 @@ def catalog() -> Dict[str, Any]:
                     "standards": list(spec.standards),
                     "approach": spec.approach,
                     "solution_type": spec.solution_type,
+                    "surface": surface_kind(tool),
                     "citations": {k: list(v) for k, v in spec.citations.items()},
                     "divergences": [getattr(d, "parameter", d) for d in spec.divergences],
                 }

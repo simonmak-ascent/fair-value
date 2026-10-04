@@ -76,9 +76,22 @@ def _write_baseline(report: dict) -> None:
     )
 
 
+def _duplicate_methods(registry: dict) -> list:
+    """Return messages for method names registered under more than one tool."""
+    seen: dict = {}
+    dups: list = []
+    for tool, table in registry.items():
+        for method in table:
+            if method in seen and seen[method] != tool:
+                dups.append(f"duplicate method name '{method}' in {seen[method]} and {tool}")
+            seen[method] = tool
+    return dups
+
+
 def main(argv: list) -> int:
     problems = list(ms.validate_registry())
     problems += list(ts.validate_surface())
+    problems += _duplicate_methods(ms._REGISTRY)
 
     total = implemented = 0
     for tool in ms.tools():

@@ -9,6 +9,9 @@ flowchart TD
   T --> calculate_fixed_income_bond_yield["bond_yield (n/a)"]
   T --> calculate_fixed_income_duration["duration (n/a)"]
   T --> calculate_fixed_income_convexity["convexity (n/a)"]
+  T --> calculate_fixed_income_matrix_pricing["matrix_pricing (market)"]
+  calculate_fixed_income_matrix_pricing -. cites .-> IVS_103_A05[IVS.103.A05]
+  calculate_fixed_income_matrix_pricing -. cites .-> IFRS_13_62[IFRS.13.62]
   T --> calculate_fixed_income_discount_factor["discount_factor (n/a)"]
   T --> calculate_fixed_income_zero_curve["zero_curve (n/a)"]
   T --> calculate_fixed_income_forward_rate["forward_rate (n/a)"]
@@ -105,6 +108,42 @@ second-order price sensitivity
 
 **Risks & limits**
 
+- Standards alignment is declared per method; see the cited clauses.
+
+## `matrix_pricing`
+
+interpolate a yield from benchmark securities by their relationship
+
+**Formula:** IVS 103 A10.05 matrix pricing: interpolated benchmark yield
+
+**Approach:** market  
+**Solution:** closed_form
+
+**Inputs**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target_tenor` | number | Target tenor in years for matrix pricing (interpolated). |
+| `benchmark_tenors` | array | Benchmark tenors in years, sorted, aligned with benchmark_yields. |
+| `benchmark_yields` | array | Benchmark yields (decimal) at each benchmark tenor. |
+
+**Standards (verbatim)**
+
+- **IVS.103.A05** — Matrix pricing
+  > A10.05 A subset of the comparable transactions method is matrix pricing, which is principally used to value some types of financial instruments, such as debt securities, without relying exclusively on quoted prices for the specific securities, but rather relying on the securities' relationship to other benchmark quoted securities and their attributes (ie, yield).
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-103-market-approach-methods)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `evidence_hierarchy`: IVS — IVS 103 comparable-evidence grading (market-derived inputs); IFRS/IAS — IFRS 13 input hierarchy (Level 2 observable inputs where quoted prices are unavailable)
+
+**Risks & limits**
+
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'evidence_hierarchy': the two regimes treat this differently (IVS 103 comparable-evidence grading (market-derived inputs) vs IFRS 13 input hierarchy (Level 2 observable inputs where quoted prices are unavailable)); the choice is the caller's, not a default.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `discount_factor`

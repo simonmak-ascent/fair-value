@@ -1049,6 +1049,13 @@ _FIXED_INCOME = (
         ("IFRS 13",),
     ),
     MethodSpec(
+        "matrix_pricing",
+        "interpolate a yield from benchmark securities by their relationship",
+        ("target_tenor", "benchmark_tenors", "benchmark_yields"),
+        "IVS 103 A10.05 matrix pricing: interpolated benchmark yield",
+        ("IVS 103", "IFRS 13"),
+    ),
+    MethodSpec(
         "discount_factor",
         "present value of one unit at a single rate",
         ("rate", "years", "frequency"),

@@ -124,6 +124,7 @@ def tool_help(tool: str) -> Dict[str, Any]:
         "tool": tool,
         "title": meta.get("title", tool),
         "description": meta.get("description", ""),
+        "surface": ms.surface_kind(tool),
         "methods": methods,
         "mermaid": _mermaid(tool, methods),
     }

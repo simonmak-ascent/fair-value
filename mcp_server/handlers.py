@@ -1181,6 +1181,13 @@ _register(
     "calculate_fixed_income",
     {
         m: (lambda m=m, **kw: _fixed_income(m, **kw))
-        for m in ("bond_price", "bond_yield", "duration", "convexity", *_CURVE_METHODS)
+        for m in (
+            "bond_price",
+            "bond_yield",
+            "duration",
+            "convexity",
+            "matrix_pricing",
+            *_CURVE_METHODS,
+        )
     },
 )

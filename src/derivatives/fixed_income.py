@@ -61,3 +61,36 @@ def convexity(
     price = sum(cf / (1 + r) ** t for t, cf in enumerate(flows, start=1))
     total = sum(t * (t + 1) * cf / (1 + r) ** (t + 2) for t, cf in enumerate(flows, start=1))
     return {"value": total / price / frequency**2}
+
+
+def matrix_pricing(
+    target_tenor: float, benchmark_tenors: List[float], benchmark_yields: List[float]
+) -> Dict[str, Any]:
+    """Interpolate a yield for ``target_tenor`` from benchmark securities.
+
+    IVS 103 A10.05 matrix pricing: a security's yield is inferred from its
+    relationship to benchmark quoted securities. Linear interpolation between the
+    two bracketing benchmarks; exact/edge tenors return the nearest benchmark,
+    and out-of-range tenors raise (extrapolation is not matrix pricing).
+    """
+    tenors = [float(t) for t in benchmark_tenors]
+    yields = [float(y) for y in benchmark_yields]
+    if len(tenors) != len(yields):
+        raise ValueError("benchmark_tenors and benchmark_yields must be the same length")
+    if len(tenors) < 2:
+        raise ValueError("matrix pricing needs at least two benchmark tenors")
+    if any(b <= a for a, b in zip(tenors, tenors[1:])):
+        raise ValueError("benchmark_tenors must be strictly increasing")
+    target = float(target_tenor)
+    if target < tenors[0] or target > tenors[-1]:
+        raise ValueError("target_tenor is outside the benchmark range")
+    for i in range(len(tenors) - 1):
+        lo, hi = tenors[i], tenors[i + 1]
+        if lo <= target <= hi:
+            if hi == lo:
+                y = yields[i]
+            else:
+                w = (target - lo) / (hi - lo)
+                y = yields[i] * (1 - w) + yields[i + 1] * w
+            return {"value": y, "lower_tenor": lo, "upper_tenor": hi}
+    raise ValueError("matrix pricing could not bracket target_tenor")

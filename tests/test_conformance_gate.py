@@ -55,3 +55,10 @@ def test_ratchet_flags_new_orphan_clause():
         assert any("orphan clauses" in p for p in problems)
     finally:
         gate.BASELINE_PATH.write_text(original, encoding="utf-8")
+
+
+def test_duplicate_method_detection():
+    fake = {"tool_a": {"x": object()}, "tool_b": {"x": object()}}
+    dups = gate._duplicate_methods(fake)
+    assert dups and "'x'" in dups[0]
+    assert gate._duplicate_methods({"tool_a": {"x": object()}}) == []
