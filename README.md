@@ -20,27 +20,6 @@ This project provides comprehensive financial valuation capabilities including:
 - Excel model review and validation
 - PDF/Word/Image document analysis
 
-## Quick start (≤ 5 minutes)
-
-Fastest path — no install:
-
-- **Hosted MCP (Streamable HTTP):** `https://fair-value.ascent-partners.com/mcp`
-- **Run locally, no install:** `uvx --from "fair-value[mcp]" fair-value-mcp`
-
-Then call any of the 16 `calculate_*` tools (DCF, WACC (FF5), multiples, residual income,
-options, credit risk, actuarial PV, convertible bonds, …). Client config: [MCP Server](#mcp-server).
-
-## Architecture
-
-```mermaid
-flowchart LR
-  CLIENT["AI agent / OpenCode"] -->|"stdio (uvx) or Streamable HTTP"| MCP["fair-value-mcp<br/>16 calculate_* tools"]
-  HOST["Hosted · fair-value.ascent-partners.com"] --> CLIENT
-  MCP --> REG["method-spec registry<br/>(valuation://methods)"]
-  REG --> CORE["valuation engine<br/>DCF · NAV · CCA · WACC (FF5) · KMV<br/>derivatives · report review"]
-  CORE --> DATA["market data (yfinance)"]
-```
-
 ## Installation
 
 ```bash
