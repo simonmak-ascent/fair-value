@@ -1,0 +1,5 @@
+# Extends the default gitleaks ruleset. See https://github.com/gitleaks/gitleaks
+title = "fair-value gitleaks config"
+
+[extend]
+useDefault = true
