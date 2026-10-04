@@ -2,83 +2,83 @@
 
 ## Summary
 
-The `fair-value` MCP server was redesigned around a single **method-spec
-registry** and expanded into **16 native `calculate_*` tools / 123 methods**
-covering corporate, startup, and intangible valuation, derivatives, credit
-risk, fixed income, actuarial PV, and report review — aligned to **IVS 2025**
-and IFRS. The previous sibling-delegation model was retired.
+The `fair-value` server was redesigned through a spec-driven (VDD) process around
+a single **method-spec registry** and a **standards taxonomy**, then expanded to
+**16 native `calculate_*` tools / 138 methods** covering corporate, startup, and
+intangible valuation, derivatives, credit risk, fixed income, actuarial PV, and
+report review — aligned to **IVS 2025** and **IFRS/IAS**. Every result carries a
+deterministic-first envelope (`value` + `statistics` + `citations`), and a
+conformance gate enforces standard citations in CI. The previous
+sibling-delegation model was retired.
 
-## Success (as of 2026-10-03)
+## Success (as of 2026-10-04)
 
 | Area | Result |
 |------|--------|
-| Tools / methods | 16 tools, 130 methods |
-| Implemented | 128/130 (2 deferred: `finite_difference`, `quantlib`) |
-| Lint / types | ruff clean; mypy clean (17 files) |
-| Tests | 286 passed, 2 skipped (CI, no QuantLib); 292 passed with QuantLib |
-| Conformance | `16 tools; 128/130 implemented, 2 explicitly deferred` |
+| Tools / methods | 16 tools, 138 methods |
+| Implemented | 136/138 (2 deferred: `finite_difference`, `quantlib`) |
+| Standards citations | 120/138 methods, **0 orphan clauses** |
+| Lint / types | ruff clean; mypy clean (21 files) |
+| Tests | 364 passed, 2 skipped (CI, with QuantLib); 360 passed, 6 skipped without |
+| Conformance | `16 tools; 136/138 implemented, 2 deferred; citations 120/138, 0 orphan clauses` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
-| TDQS coherence | 4.3–4.5 (naming 5, completeness 4–5, disambiguation 4, tool_count 4) |
 
-### What was built
+### Redesign (A-001 … A-012)
 
-- **Registry-derived surface** — `mcp_server/method_spec.py` +
-  `method_spec_seed.py` define every tool/method/parameter; `tool_surface.py`
-  derives the MCP surface; `engine.py` enforces a strict **no-defaults**
-  contract (missing input, unknown method, or extra field → typed error).
-- **Convertible bonds** — Tsiveriotis-Fernandes lattice and a
-  Longstaff-Schwartz Monte-Carlo engine (two independent methods that agree to
-  ~4%). Fixed a real issuer-call bug that returned ~3.9 instead of ~89.
-- **Structured products** — CBBC, derivative/inline warrants, ELI/ELN,
-  autocallable, accumulator/decumulator, CLN, TRS, CFD.
-- **Loss-making companies** — margin-ramp DCF, revenue multiple, Merton,
-  scenario, VC, distressed waterfall, bank residual income, SPAC, each with a
-  dispersion kernel (mean, σ, percentiles, long-tail).
-- **Fixed income**, including a **HIBOR/HKD-style term structure** (par-rate
-  bootstrap, forward rates, curve discounting), **expected value**
-  (continuous/MC/decision tree), **report review** (IVS/IFRS rule engine) and a
-  **standards taxonomy** served at `valuation://standards`.
+- **A-001 — dual-standard taxonomy** (`standards/taxonomy.json`,
+  `mcp_server/standards.py`): one clause per IVS/IFRS rule, mapped from methods;
+  `citations_for` / `methods_for` / `coverage_report`; clause ids like
+  `IVS.103.A20`, `IFRS.13.62`, `IVS.500.A10`.
+- **A-002 — verbatim corpus** (`standards/source/*.md`, `standards/provenance.json`):
+  the clause text with edition, rights holder, and retrieval provenance.
+- **A-003 — envelope** (`src/output/result.py`): `statistics` / `solution_type` /
+  `citations`; `engine.py` attaches the registry's solution type and citations.
+- **A-004 — coverage**: asset-standard methods (relief-from-royalty, MPEEM,
+  with/without, recoverable amount, liability fulfilment, inventory/development
+  residuals) and `matrix_pricing`.
+- **A-005 — conformance gate** (`scripts/check_conformance.py`): taxonomy/corpus
+  validation, coverage ratchet, orphan check, and an absolute
+  `CITATION_EXEMPT` check (only the sector KPIs, the report-review surface, and
+  the company profile may be uncited).
+- **A-006 — transparency docs** (`mcp_server/docs.py`, `scripts/gen_docs.py`):
+  `-help` records and a generated method reference.
+- **A-007 — REST API** (`mcp_server/rest.py`): `/v1/…`, served with MCP by the
+  ASGI app.
+- **A-008 — surface boundary**: `calculate_report_review` is classified `review`.
+- **A-009 — deterministic-first**: `monte_carlo` requires a `seed` and returns a
+  reproducible distribution.
+- **A-010 — duplicate-method guard** (none currently).
+- **A-011 — OpenAPI** (`mcp_server/openapi.py`): no new dependency.
+- **A-012 — versioning** (`standards/versions.json`, `standards/CHANGELOG.md`).
+- **A-013 — DB persistence**: deliberately out of scope (WON'T).
 
-### TDQS progression
+### Coverage
 
-`3.6 A` (old, delegated surface) → `4.2` → `4.5 A` (registry surface + grouped
-method matrix + behaviour footer + per-tool disambiguation + fixed-income tool).
-Repeat runs of the identical surface score 4.4–4.5 (LLM variance ±0.1).
+The taxonomy cites **IVS 103, 105, 210, 220, 230, 300, 400, 410, 500** and
+**IFRS 13/9/16/17, IAS 36/19/37** (verbatim clause text in `standards/source/`).
+The 18 uncited methods are the deliberate exception set. See
+[Standards reference](standards.md) and [Methods](methods.md).
 
 ## Further development (prioritised)
 
-### P0 — Lift `parameter_semantics`
-The dimension is capped at ~4 because the schema is already ~100% documented
-and the description's added value is the method→input map. A **discriminated
-`oneOf` input schema** (per-method required sets expressed in the emitted
-schema) is the main untried lever; validate against a TDQS run and keep a
-rollback.
-
 ### P1 — `finite_difference` convertible engine
-A Crank-Nicolson TF solver was prototyped but dipped below the straight-bond
-floor (the debt grid diffuses the terminal conversion step). Needs a
-regime-aware or smoother treatment before it can replace the deferral.
+A Crank-Nicolson Tsiveriotis-Fernandes solver was prototyped but dipped below the
+straight-bond floor (the debt grid diffuses the terminal conversion step). Needs a
+regime-aware or smoother treatment before it can replace the deferral. `quantlib`
+is deferred only for the optional engine.
 
-### P1 — QuantLib parity tests
-- **Done**: `tests/test_quantlib_parity.py` checks QuantLib vs the native
-  Black-Scholes across strikes and call/put, skipped when QuantLib is absent.
-  Verified on the compute box with QuantLib 1.43: 290 tests pass.
-
-### P2 — HK-market depth
-- HIBOR/HKD curve construction — **done**: `calculate_fixed_income`
-  `zero_curve`/`forward_rate`/`pv_curve` (and `discount_factor`).
-- HKEX structured-product conventions — **done**: `cbbc_residual` (knock-out
-  residual value) and `inline_warrant_avg` (averaged fixings).
-- HKFRS-specific report-review checks — **done**: HKAS 40 / HKAS 36 / HKFRS 9
-  gap rules and `reporting_basis` detection in `calculate_report_review`.
+### P1 — `quantlib` conditional implementation
+`quantlib` is registered but returns a typed error envelope. On a host with the
+optional engine (CI installs QuantLib), it can be enabled behind a handler
+guarded by `QUANTLIB_AVAILABLE`.
 
 ### P2 — Release & deployment
-Version lockstep is ready (`pyproject.toml` ↔ `server.json`). Release is
-tag-triggered (`release.yml` → PyPI → MCP Registry); redeploy the hosted ASGI
-app and re-run any deployed-surface audit. **Not yet performed.**
+Version lockstep is ready (`pyproject.toml` ↔ `server.json`, both `0.2.4`).
+Release is tag-triggered (`release.yml` → PyPI → MCP Registry); the hosted ASGI
+app (MCP + REST) is deployed on Vercel. **Tag not yet cut.**
 
 ### P3 — Docs & examples
-- Worked HK examples — **done**: `examples/hk_examples.py` (convertible, inline
-  warrant, loss-making listing), rendered in `docs/examples.md` and covered by
-  the test suite. Keep `valuation://methods` as the source of truth.
+Method reference is generated (`scripts/gen_docs.py`); worked HK examples live in
+`examples/hk_examples.py` and render in [Examples](examples.md). Keep
+`valuation://methods` / `valuation://standards` as the source of truth.

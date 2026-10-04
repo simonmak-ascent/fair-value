@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a defect in a tool, the engine, the API, or the docs
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Please do not include secrets or private data.
+  - type: input
+    id: tool
+    attributes:
+      label: Tool / endpoint
+      description: e.g. `calculate_dcf` (`dcf`) or `POST /v1/calculate/calculate_dcf`
+      placeholder: calculate_dcf
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Exact call/command and inputs. JSON payloads preferred.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include the returned envelope (`status`, `value`, `error`).
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: 0.2.4 or a commit SHA
+    validations:
+      required: true
+  - type: input
+    id: standards
+    attributes:
+      label: Affected standard clause (if any)
+      placeholder: IVS.103.A20 / IFRS.13.62
+    validations:
+      required: false

@@ -14,16 +14,20 @@ fair-value-mcp --http     # Streamable HTTP (default 127.0.0.1:8000)
 
 ## Surface
 
-- **Tools** — 16 native `calculate_*` tools derived from the method-spec registry
-  (DCF, cost of capital, multiples, residual income, options, expected value,
-  credit risk, actuarial PV, sector metrics, fair-value adjustments, convertible
-  bonds, structured products, loss-making companies, fixed income, report review,
-  company summary).
+- **Tools** — 16 native `calculate_*` tools / **138 methods** derived from the
+  method-spec registry (DCF, cost of capital, multiples, residual/asset
+  valuation, options, expected value, credit risk, actuarial PV, sector metrics,
+  fair-value adjustments, convertible bonds, structured products, loss-making
+  companies, fixed income, report review, company summary). Every result carries
+  `statistics` and `citations`; add `-help` (or `help=true`) for the generated
+  transparency record.
 - **Prompts** — guided workflows: `value_company_dcf`, `review_valuation_report`,
   `explain_cost_of_capital`.
 - **Resources** — `valuation://methods`: a machine-readable catalogue of methods,
   formula references, and governing standards; `valuation://standards`: the
-  IVS/IFRS taxonomy referenced by the tools.
+  IVS/IFRS taxonomy with per-clause text and the methods citing each.
+
+The same core is served as a **REST API** at `/v1` (see [REST API](api.md)).
 
 ## Registry
 

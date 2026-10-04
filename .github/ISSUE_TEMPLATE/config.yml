@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/simonmak-ascent/fair-value#documentation
+    about: Methods, standards reference, REST API, and hosting.
+  - name: Security policy
+    url: https://github.com/simonmak-ascent/fair-value/security/policy
+    about: Please report vulnerabilities privately, not as a public issue.
