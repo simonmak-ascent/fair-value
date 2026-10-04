@@ -25,7 +25,10 @@
 | `IFRS.13.61` | Valuation techniques | `annuity`, `bank_residual_income`, `build_up`, `capm`, `country_risk`, `currency_adjusted`, `dcf`, `esg`, `growing_annuity`, `hierarchy_level`, `highest_best_use`, `monte_carlo`, `npv`, `perpetuity`, `portfolio_beta`, `residual_income`, `rnpv`, `startup_capm`, `terminal_gordon`, `terminal_multiple`, `wacc` |
 | `IFRS.13.62` | Three valuation techniques | `accumulator`, `asian_average`, `autocallable`, `barrier_first_passage`, `binomial_american`, `biological_asset`, `black76`, `black_scholes`, `bond_price`, `bond_yield`, `cap_rate`, `cap_table`, `cbbc`, `cbbc_residual`, `cfd`, `continuous`, `convexity`, `credit_linked_note`, `cva_dva`, `dcf`, `ddm`, `debt_waterfall`, `decision_tree`, `decumulator`, `derivative_warrant`, `development_residual`, `digital`, `discount_factor`, `discrete`, `distressed_waterfall`, `duration`, `eli`, `eln`, `ev_arr`, `ev_ebitda`, `ev_gmv`, `ev_revenue`, `finite_difference`, `football_field`, `forward_rate`, `garman_kohlhagen`, `goodwill`, `held_for_sale`, `inline_warrant`, `inline_warrant_avg`, `inventory_nrv`, `inventory_residual`, `investment_property`, `justified_pb`, `lattice_intensity`, `lattice_tsf`, `liability_fulfilment`, `lsmc`, `margin_ramp_dcf`, `matrix_pricing`, `merton_equity`, `monte_carlo`, `mpeem`, `npv`, `pb`, `pe`, `ppa`, `ppe_revaluation`, `ps`, `pv_curve`, `quantlib`, `range`, `regression`, `relief_from_royalty`, `revenue_multiple`, `royalty_cap`, `scenario`, `share_based`, `sotp`, `spac_deal`, `spac_redemption`, `trs`, `vc_method`, `with_without`, `zero_curve` |
 | `IFRS.13.69` | Blockage factors | `control_premium`, `dloc`, `dlom`, `minority_discount` |
-| `IFRS.17.32` | Initial recognition of insurance contracts | `ifrs17_gmm`, `ifrs17_paa`, `ifrs17_vfa` |
+| `IFRS.17.32` | Initial recognition of insurance contracts | `ifrs17_gmm` |
+| `IFRS.17.45` | Variable fee approach | `ifrs17_vfa` |
+| `IFRS.17.53` | Premium allocation approach (eligibility) | `ifrs17_paa` |
+| `IFRS.17.55` | Premium allocation approach (measurement) | `ifrs17_paa` |
 | `IFRS.9.5.5.17` | Measurement of expected credit losses | `cumulative_pd`, `ecl_lifetime`, `ecl_staged`, `hazard`, `pd_from_spread`, `provision_matrix` |
 | `IFRS.9.5.5.5` | 12-month expected credit losses | `ecl_12m` |
 | `IFRS16.26` | Lease liability measurement | `ibr`, `lease_pv` |

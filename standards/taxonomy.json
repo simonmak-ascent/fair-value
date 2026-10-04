@@ -219,6 +219,27 @@
       "label": "Projected unit credit method (definition)",
       "summary": "Each period of service gives rise to an additional unit of benefit entitlement, measured separately.",
       "source_ref": "source/ias-19.md#paragraph-68"
+    },
+    {
+      "id": "IFRS.17.45",
+      "standard": "IFRS17",
+      "label": "Variable fee approach",
+      "summary": "For direct participation contracts, the contractual service margin is adjusted for the entity's share of the underlying items and related changes.",
+      "source_ref": "source/ifrs-17.md#paragraph-45"
+    },
+    {
+      "id": "IFRS.17.53",
+      "standard": "IFRS17",
+      "label": "Premium allocation approach (eligibility)",
+      "summary": "May simplify measurement under the PAA only if it would not differ materially or the coverage period is one year or less.",
+      "source_ref": "source/ifrs-17.md#paragraph-53"
+    },
+    {
+      "id": "IFRS.17.55",
+      "standard": "IFRS17",
+      "label": "Premium allocation approach (measurement)",
+      "summary": "Liability for remaining coverage measured as premiums received less insurance acquisition cash flows, adjusted over the coverage period.",
+      "source_ref": "source/ifrs-17.md#paragraph-55"
     }
   ],
   "methods": [
@@ -1679,7 +1700,8 @@
           "IVS.105.A10"
         ],
         "ifrs": [
-          "IFRS.17.32"
+          "IFRS.17.53",
+          "IFRS.17.55"
         ]
       },
       "solution_type": "closed_form",
@@ -1693,7 +1715,7 @@
           "IVS.105.A10"
         ],
         "ifrs": [
-          "IFRS.17.32"
+          "IFRS.17.45"
         ]
       },
       "solution_type": "closed_form",

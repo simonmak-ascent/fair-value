@@ -20,6 +20,10 @@ Volume II** (HKFRS/HKAS, verbatim IFRS/IAS adoptions; recorded in
   service margin; replaced with the verbatim `§32` initial-recognition text.
 - **IAS 19** — the definition quoted as `§67` is `§68`; `§67` is the requirement
   to use the method. Restored `§67` and added `IAS.19.68`.
+- **IFRS 17 measurement models** — `ifrs17_paa` and `ifrs17_vfa` were both cited
+  to `§32` (initial recognition). Added the PAA paragraphs (`IFRS.17.53`
+  eligibility, `IFRS.17.55` measurement) and the VFA paragraph (`IFRS.17.45`);
+  `ifrs17_gmm` keeps `§32`.
 
 Verified unchanged: IFRS 13 §61/§62/§69, IFRS 16 §26, IAS 36 §6/§18/§55,
 IAS 37 §36/§39 (HKFRS 13/16/9, HKAS 36/37 match the AASB extracts verbatim; the

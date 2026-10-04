@@ -232,6 +232,12 @@ def test_new_ifrs_corpus_and_citations():
     # ecl_12m cites the 12-month rule; the other ECL methods cite the measurement basis.
     assert citations_for(taxonomy, "ecl_12m")["ifrs"] == ["IFRS.9.5.5.5"]
     assert citations_for(taxonomy, "ecl_lifetime")["ifrs"] == ["IFRS.9.5.5.17"]
+    # IFRS 17 measurement models are cited to their specific paragraphs.
+    assert "premium allocation approach" in clause_text(taxonomy, "IFRS.17.53")["text"]
+    assert "premium allocation approach" in clause_text(taxonomy, "IFRS.17.55")["text"]
+    assert "direct participation features" in clause_text(taxonomy, "IFRS.17.45")["text"]
+    assert citations_for(taxonomy, "ifrs17_paa")["ifrs"] == ["IFRS.17.53", "IFRS.17.55"]
+    assert citations_for(taxonomy, "ifrs17_vfa")["ifrs"] == ["IFRS.17.45"]
 
 
 def test_ivs500_corpus_and_citations():

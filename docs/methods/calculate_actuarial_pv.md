@@ -10,10 +10,11 @@ flowchart TD
   calculate_actuarial_pv_ifrs17_gmm -. cites .-> IFRS_17_32[IFRS.17.32]
   T --> calculate_actuarial_pv_ifrs17_paa["ifrs17_paa (income)"]
   calculate_actuarial_pv_ifrs17_paa -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_actuarial_pv_ifrs17_paa -. cites .-> IFRS_17_32[IFRS.17.32]
+  calculate_actuarial_pv_ifrs17_paa -. cites .-> IFRS_17_53[IFRS.17.53]
+  calculate_actuarial_pv_ifrs17_paa -. cites .-> IFRS_17_55[IFRS.17.55]
   T --> calculate_actuarial_pv_ifrs17_vfa["ifrs17_vfa (income)"]
   calculate_actuarial_pv_ifrs17_vfa -. cites .-> IVS_105_A10[IVS.105.A10]
-  calculate_actuarial_pv_ifrs17_vfa -. cites .-> IFRS_17_32[IFRS.17.32]
+  calculate_actuarial_pv_ifrs17_vfa -. cites .-> IFRS_17_45[IFRS.17.45]
   T --> calculate_actuarial_pv_ias19_puc["ias19_puc (income)"]
   calculate_actuarial_pv_ias19_puc -. cites .-> IVS_105_A10[IVS.105.A10]
   calculate_actuarial_pv_ias19_puc -. cites .-> IAS_19_67[IAS.19.67]
@@ -82,9 +83,12 @@ IFRS 17 premium allocation approach
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.17.32** — Initial recognition of insurance contracts
-  > On initial recognition, an entity shall measure a group of insurance contracts at the total of: (a) the fulfilment cash flows, which comprise: (i) estimates of future cash flows (paragraphs 33–35); (ii) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of the future cash flows (paragraph 36); and (iii) a risk adjustment for non-financial risk (paragraph 37); and (b) the contractual service margin, measured applying paragraphs 38–39.
-  > — IFRS Foundation (source/ifrs-17.md#paragraph-32)
+- **IFRS.17.53** — Premium allocation approach (eligibility)
+  > An entity may simplify the measurement of a group of insurance contracts using the premium allocation approach set out in paragraphs 55–59 if, and only if, at the inception of the group: (a) the entity reasonably expects that such simplification would produce a measurement of the liability for remaining coverage for the group that would not differ materially from the one that would be produced applying the requirements in paragraphs 32–52; or (b) the coverage period of each contract in the group (including insurance contract services arising from all premiums within the contract boundary determined at that date applying paragraph 34) is one year or less.
+  > — IFRS Foundation (source/ifrs-17.md#paragraph-53)
+- **IFRS.17.55** — Premium allocation approach (measurement)
+  > Using the premium allocation approach, an entity shall measure the liability for remaining coverage as follows: (a) on initial recognition, the carrying amount of the liability is: (i) the premiums, if any, received at initial recognition; (ii) minus any insurance acquisition cash flows at that date, unless the entity chooses to recognise the payments as an expense applying paragraph 59(a); and (iii) plus or minus any amount arising from the derecognition at that date of any asset for insurance acquisition cash flows, and any other asset or liability previously recognised for cash flows related to the group of contracts (see paragraph B66A). (b) at the end of each subsequent reporting period, the carrying amount of the liability is the carrying amount at the start of the reporting period: (i) plus the premiums received in the period; (ii) minus insurance acquisition cash flows; unless the entity chooses to recognise the payments as an expense applying paragraph 59(a); (iii) plus any amounts relating to the amortisation of insurance acquisition cash flows recognised as an expense in the reporting period; unless the entity chooses to recognise insurance acquisition cash flows as an expense applying paragraph 59(a); (iv) plus any adjustment to a financing component, applying paragraph 56; (v) minus the amount recognised as insurance revenue for services provided in that period (see paragraph B126); and (vi) minus any investment component paid or transferred to the liability for incurred claims.
+  > — IFRS Foundation (source/ifrs-17.md#paragraph-55)
 
 **Risks & limits**
 
@@ -114,9 +118,9 @@ IFRS 17 variable fee approach
 - **IVS.105.A10** — Valuation models
   > 30.01 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 105 Valuation Models means "fit for purpose" in terms of assets or liabilities being valued, the scope of work and the valuation method. The valuer must apply professional judgement to balance the characteristics of a valuation model in order to choose the most appropriate valuation model.
   > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-105-valuation-models)
-- **IFRS.17.32** — Initial recognition of insurance contracts
-  > On initial recognition, an entity shall measure a group of insurance contracts at the total of: (a) the fulfilment cash flows, which comprise: (i) estimates of future cash flows (paragraphs 33–35); (ii) an adjustment to reflect the time value of money and the financial risks related to the future cash flows, to the extent that the financial risks are not included in the estimates of the future cash flows (paragraph 36); and (iii) a risk adjustment for non-financial risk (paragraph 37); and (b) the contractual service margin, measured applying paragraphs 38–39.
-  > — IFRS Foundation (source/ifrs-17.md#paragraph-32)
+- **IFRS.17.45** — Variable fee approach
+  > For insurance contracts with direct participation features (see paragraphs B101–B118), the carrying amount of the contractual service margin of a group of contracts at the end of the reporting period equals the carrying amount at the start of the reporting period adjusted for the amounts specified in subparagraphs (a)–(e) below. An entity is not required to identify these adjustments separately. Instead, a combined amount may be determined for some, or all, of the adjustments. The adjustments are: (a) the effect of any new contracts added to the group (see paragraph 28); (b) the change in the amount of the entity's share of the fair value of the underlying items (see paragraph B104(b)(i)), except to the extent that paragraph B115 (on risk mitigation) applies, or the changes give rise to a loss or reverse such a loss (see paragraph 48); (c) the changes in fulfilment cash flows relating to future service, as specified in paragraphs B101–B118, except to the extent that paragraph B115 applies, or the changes give rise to a loss or are allocated to the loss component (see paragraph 50(b)); (d) the effect of any currency exchange differences arising on the contractual service margin; and (e) the amount recognised as insurance revenue because of the transfer of insurance contract services in the period, determined by the allocation of the contractual service margin remaining at the end of the reporting period (before any allocation) over the current and remaining coverage period, applying paragraph B119.
+  > — IFRS Foundation (source/ifrs-17.md#paragraph-45)
 
 **Risks & limits**
 
