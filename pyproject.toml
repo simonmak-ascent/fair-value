@@ -7,12 +7,15 @@ name = "fair-value"
 version = "0.2.4"
 description = "Financial valuation library (DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review) aligned to IVS 2025 / IFRS."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Simon Mak" }]
 keywords = ["valuation", "dcf", "nav", "cca", "wacc", "ivs", "ifrs", "mcp"]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Topic :: Office/Business :: Financial",
 ]

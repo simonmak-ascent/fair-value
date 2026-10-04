@@ -191,7 +191,7 @@ flowchart LR
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.10+
 - yfinance, pandas, numpy, scipy
 - fastmcp (MCP extra), openpyxl, pdfplumber, python-docx
 - QuantLib, pandas_datareader, pytesseract/easyocr (all optional, with native fallbacks)
