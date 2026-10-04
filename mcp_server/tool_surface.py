@@ -96,8 +96,8 @@ ENVELOPE_OUTPUT = _ENVELOPE_OUTPUT
 
 
 _BEHAVIOR = (
-    "Read-only and deterministic: it performs no network I/O (except calculate_company_summary's "
-    "ticker fetch), mutates no state, and returns the same result for the same inputs. Each method "
+    "Read-only and deterministic: it performs no network or database I/O, mutates no state, and "
+    "returns the same result for the same inputs. Each method "
     "requires its exact inputs (no defaults), so a missing input, an unknown method, or an extra "
     "field returns an error envelope (code INVALID_ARGUMENT) instead of raising. The result "
     "envelope carries status, method, value, assumptions, formula_ref, data_timestamp, steps and error."
@@ -134,7 +134,7 @@ def _build_surface() -> Tuple[ToolSpec, ...]:
                 input_schema=ms.input_schema(tool),
                 output_schema=_ENVELOPE_OUTPUT,
                 handler=f"engine:{tool}",
-                annotations=_annotations(open_world=tool == "calculate_company_summary"),
+                annotations=_annotations(),
             )
         )
     return tuple(specs)

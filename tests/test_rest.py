@@ -27,7 +27,7 @@ def test_health():
     body = res.json()
     assert body["status"] == "ok"
     assert body["api_version"] == "v1"
-    assert body["tools"] == 16
+    assert body["tools"] == 14
 
 
 def test_tools_and_methods():

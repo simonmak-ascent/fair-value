@@ -40,9 +40,6 @@ TOOL_ALIASES: Dict[str, str] = {
     "comps": "calculate_market_multiple",
     "comparable_company_analysis": "calculate_market_multiple",
     "market_approach": "calculate_market_multiple",
-    # company data
-    "get_valuation_summary": "calculate_company_summary",
-    "company_summary": "calculate_company_summary",
 }
 
 # canonical tool -> {alias method name -> canonical method name}

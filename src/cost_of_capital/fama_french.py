@@ -8,49 +8,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Try to import pandas_datareader, fallback to manual download
-try:
-    import pandas_datareader as pdr
-    from pandas_datareader.famafrench import get_available_datasets  # noqa: F401
-
-    PANDAS_DATAREADER_AVAILABLE = True
-except ImportError:
-    PANDAS_DATAREADER_AVAILABLE = False
-    logger.warning("pandas_datareader not available, using manual FF5 download")
-
-
-def fetch_ff_factors(start_date: str, end_date: str) -> pd.DataFrame:
-    """
-    Fetch Fama-French 5 factors from Kenneth French data library
-
-    Args:
-        start_date: Start date in 'YYYY-MM-DD' format
-        end_date: End date in 'YYYY-MM-DD' format
-
-    Returns:
-        DataFrame with FF5 factors
-    """
-    if not PANDAS_DATAREADER_AVAILABLE:
-        logger.warning("pandas_datareader not available")
-        return pd.DataFrame()
-
-    try:
-        # FF5 factors dataset (Fama-French 5 Factors (2x3))
-        ff5 = pdr.get_data_famafrench(
-            "F-F_Research_Data_5_Factors_2x3", start=start_date[:4], end=end_date[:4]
-        )
-
-        # Main factors are in the first table
-        factors = ff5[0]
-
-        # Rename columns for clarity
-        factors.columns = ["Mkt-RF", "SMB", "HML", "RMW", "CMA", "RF"]
-
-        return factors
-    except Exception as e:
-        logger.error(f"Error fetching FF5 factors: {e}")
-        return pd.DataFrame()
-
 
 def calculate_factor_betas(
     ticker: str, factors: pd.DataFrame, returns: pd.Series
@@ -158,81 +115,6 @@ def get_risk_free_rate() -> float:
     # This should ideally be fetched from FRED or similar
     # Using a reasonable estimate
     return 0.04  # 4%
-
-
-def full_ff5_analysis(
-    ticker: str, risk_free_rate: float = None, market_premium: float = None
-) -> Dict:
-    """
-    Complete FF5 cost of equity analysis
-
-    Args:
-        ticker: Stock ticker
-        risk_free_rate: Risk-free rate (default: 4%)
-        market_premium: Market risk premium (default: 5.5%)
-
-    Returns:
-        Complete analysis results
-    """
-    from .fetch_data import get_historical_prices
-
-    # Defaults
-    if risk_free_rate is None:
-        risk_free_rate = get_risk_free_rate()
-    if market_premium is None:
-        market_premium = get_market_premium()
-
-    # Fetch FF5 factors
-    import datetime
-
-    end = datetime.datetime.now()
-    start = end - datetime.timedelta(days=365 * 3)  # 3 years
-
-    factors = fetch_ff_factors(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"))
-
-    if factors.empty:
-        return {
-            "error": "Could not fetch FF5 factors",
-            "fallback_cost_of_equity": risk_free_rate + market_premium,
-        }
-
-    # Get stock returns
-    prices = get_historical_prices(ticker, start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"))
-
-    if prices.empty:
-        return {
-            "error": "Could not fetch price data",
-            "fallback_cost_of_equity": risk_free_rate + market_premium,
-        }
-
-    # Calculate returns
-    returns = prices["Close"].pct_change().dropna()
-
-    # Align with factors
-    common_dates = returns.index.intersection(factors.index)
-    returns = returns.loc[common_dates]
-
-    # Calculate betas
-    betas = calculate_factor_betas(ticker, factors, returns)
-
-    if not betas:
-        return {
-            "error": "Could not calculate factor betas",
-            "fallback_cost_of_equity": risk_free_rate + market_premium,
-        }
-
-    # Calculate cost of equity
-    cost_of_equity = calculate_cost_of_equity_ff5(risk_free_rate, betas, market_premium)
-
-    return {
-        "ticker": ticker,
-        "risk_free_rate": risk_free_rate,
-        "market_premium": market_premium,
-        "factor_betas": betas,
-        "cost_of_equity": cost_of_equity,
-        "r_squared": betas.get("r_squared", 0),
-        "n_observations": betas.get("n_observations", 0),
-    }
 
 
 # Import statsmodels for regression

@@ -17,7 +17,7 @@ def test_seed_tools_registered():
 
 
 def test_all_tools_registered():
-    assert len(ms.tools()) == 16
+    assert len(ms.tools()) == 14
     for name in (
         "calculate_dcf",
         "calculate_discount_rate",
@@ -32,8 +32,6 @@ def test_all_tools_registered():
         "calculate_convertible_bond",
         "calculate_structured_product",
         "calculate_loss_making_company",
-        "calculate_report_review",
-        "calculate_company_summary",
     ):
         assert name in ms.tools(), name
 
@@ -44,7 +42,7 @@ def test_registry_is_sound():
 
 def test_catalog_lists_every_method():
     cat = ms.catalog()
-    assert cat["tool_count"] == 16
+    assert cat["tool_count"] == 14
     assert cat["method_count"] == sum(len(ms.methods_for(t)) for t in ms.tools())
     entry = next(e for e in cat["methods"] if e["tool"] == "calculate_dcf" and e["method"] == "dcf")
     assert entry["required"] == ["cash_flows", "discount_rate"]

@@ -1,13 +1,13 @@
 {
-  "surface_version": "2.0",
+  "surface_version": "3.0",
   "generated_from": "mcp_server.method_spec + standards.taxonomy",
   "counts": {
-    "tools": 16,
-    "methods": 138,
-    "implemented": 136,
+    "tools": 14,
+    "methods": 135,
+    "implemented": 133,
     "deferred": 2,
     "cited": 120,
-    "uncited": 18,
+    "uncited": 15,
     "orphan_clauses": 0,
     "clauses": 27
   },
@@ -568,15 +568,6 @@
       ]
     },
     {
-      "id": "calculate_company_summary",
-      "title": "Company profile and market inputs",
-      "description": "Company-summary engine. Return a company profile with live market metrics (price, shares, beta, volatility, market capitalisation) to seed valuation inputs. Use this to seed inputs for the other calculate_* tools; it does not compute a valuation itself, and it omits missing fields rather than inventing them. Supplying a ticker performs a network fetch. Read-only. Returns the shared result envelope.",
-      "surface": "calculation",
-      "methods": [
-        "profile"
-      ]
-    },
-    {
       "id": "calculate_convertible_bond",
       "title": "Convertible and exchangeable bond valuation",
       "description": "Convertible-bond engine. Value callable and puttable convertible or exchangeable bonds with credit risk using a Tsiveriotis-Fernandes lattice (equity discounted at the risk-free rate, debt at a credit spread), with conversion, issuer call, holder put, coupon schedule, and a straight-bond floor. Use this for HK-listed convertible and exchangeable bonds. Read-only and deterministic. Returns the shared result envelope.",
@@ -734,16 +725,6 @@
         "digital",
         "range",
         "share_based"
-      ]
-    },
-    {
-      "id": "calculate_report_review",
-      "title": "Valuation report review and standards audit",
-      "description": "Report-review engine. Audit a valuation document against an IVS 2025 and IFRS/HKFRS checklist: methodology, assumptions, discount rate, standards basis, fair-value conclusion, valuation date, and fair-value hierarchy, each mapped to the governing standard. Macro-enabled files are refused. Read-only. Returns the shared result envelope with findings and a compliance score.",
-      "surface": "review",
-      "methods": [
-        "audit",
-        "draft"
       ]
     },
     {
@@ -1113,28 +1094,6 @@
         "IVS/IFRS divergence on 'measurement_objective': the two regimes treat this differently (IVS 220 Bottom-Up: costs to fulfil plus a reasonable mark-up vs IAS 37.36 best estimate of the expenditure required to settle (no profit margin)); the choice is the caller's, not a default.",
         "Standards alignment is declared per method; see the cited clauses."
       ],
-      "implemented": true
-    },
-    {
-      "tool": "calculate_company_summary",
-      "method": "profile",
-      "summary": "company profile and live market metrics for valuation inputs",
-      "formula_ref": "market data",
-      "approach": null,
-      "solution_type": null,
-      "standards": [],
-      "inputs": [
-        {
-          "name": "ticker",
-          "type": "string",
-          "description": "Equity ticker, e.g. '9988.HK'."
-        }
-      ],
-      "required": [
-        "ticker"
-      ],
-      "citations": [],
-      "risks": [],
       "implemented": true
     },
     {
@@ -5714,59 +5673,6 @@
       ],
       "risks": [
         "Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.",
-        "Standards alignment is declared per method; see the cited clauses."
-      ],
-      "implemented": true
-    },
-    {
-      "tool": "calculate_report_review",
-      "method": "audit",
-      "summary": "audit a valuation document against methodology, assumptions and IFRS/HKFRS basis",
-      "formula_ref": "IVS 2025 review; standards decision tree",
-      "approach": null,
-      "solution_type": null,
-      "standards": [
-        "IVS 2025",
-        "IFRS 13"
-      ],
-      "inputs": [
-        {
-          "name": "file_path",
-          "type": "string",
-          "description": "Path to the report (.xlsx/.xls/.pdf/.docx/image)."
-        }
-      ],
-      "required": [
-        "file_path"
-      ],
-      "citations": [],
-      "risks": [
-        "Standards alignment is declared per method; see the cited clauses."
-      ],
-      "implemented": true
-    },
-    {
-      "tool": "calculate_report_review",
-      "method": "draft",
-      "summary": "draft the required structure of a valuation report",
-      "formula_ref": "IVS 2025 / IFRS 13 report skeleton",
-      "approach": null,
-      "solution_type": null,
-      "standards": [
-        "IVS 2025"
-      ],
-      "inputs": [
-        {
-          "name": "report_type",
-          "type": "string",
-          "description": "Valuation report type to draft a structure for."
-        }
-      ],
-      "required": [
-        "report_type"
-      ],
-      "citations": [],
-      "risks": [
         "Standards alignment is declared per method; see the cited clauses."
       ],
       "implemented": true

@@ -10,7 +10,7 @@ export default function StatusPage() {
       <DocsHeader
         eyebrow="Operate"
         title="Status & roadmap"
-        description="The server was redesigned around a single method-spec registry and a standards taxonomy, then expanded to 16 tools / 138 methods."
+        description="The server was redesigned around a single method-spec registry and a standards taxonomy, then expanded to 14 tools / 135 methods."
       />
 
       <div className="grid grid-cols-2 gap-6 rounded-md border border-neutral-200 p-5 sm:grid-cols-4 dark:border-neutral-800">

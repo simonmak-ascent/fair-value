@@ -4,25 +4,17 @@ Main valuation engine - public entry point for all valuation operations.
 A-001: this module is a thin facade over the computation modules in ``src/``.
 It validates the requested operation, lazily imports the concrete
 implementation, delegates, and normalizes the outcome into a shared
-result/error envelope. Network access happens only when a valuation is
-actually requested, never at import time.
+result/error envelope. It performs no network or database I/O: every input is
+supplied explicitly by the caller (market-data acquisition belongs to apdb-etl).
 """
 
 import argparse
-import logging
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent))
-
-logger = logging.getLogger(__name__)
-
-_SUPPORTED_SPREADSHEETS = {".xlsx", ".xls"}
-_SUPPORTED_PDFS = {".pdf"}
-_SUPPORTED_WORDS = {".docx", ".doc"}
-_SUPPORTED_IMAGES = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"}
 
 # Method-specific kwargs accepted from ``params`` (keeps unknown keys out of
 # the delegated calls).
@@ -81,35 +73,6 @@ def _with_disclaimer(result: Dict) -> Dict:
 
 
 # ---------------------------------------------------------------------------
-# Data provider seam (monkeypatched in tests so the suite stays offline)
-# ---------------------------------------------------------------------------
-
-
-def _get_market_metrics(ticker: str) -> Dict:
-    from src.fetch_data import get_key_metrics
-
-    return get_key_metrics(ticker)
-
-
-def _get_company_info(ticker: str) -> Dict:
-    from src.fetch_data import get_company_info
-
-    return get_company_info(ticker)
-
-
-def _get_stock_price(ticker: str) -> float:
-    from src.fetch_data import get_stock_price
-
-    return get_stock_price(ticker)
-
-
-def _get_volatility(ticker: str) -> float:
-    from src.fetch_data import get_volatility
-
-    return get_volatility(ticker)
-
-
-# ---------------------------------------------------------------------------
 # Valuation entry points
 # ---------------------------------------------------------------------------
 
@@ -132,36 +95,27 @@ def run_valuation(ticker: str, method: str, params: Optional[Dict] = None) -> Di
 
 
 def run_dcf(ticker: str, params: Dict) -> Dict:
-    """Run a DCF valuation from explicit inputs or current market data."""
-    from src.valuation.dcf import dcf_valuation, dcf_from_market_data
+    """Run a DCF valuation from explicit inputs (no market-data fetch)."""
+    from src.valuation.dcf import dcf_valuation
 
+    if params.get("revenue") is None:
+        return _error(
+            "MISSING_INPUT",
+            "DCF requires explicit inputs (at least 'revenue')",
+            method="DCF",
+            ticker=ticker,
+        )
     try:
-        if params.get("revenue") is not None:
-            kwargs = {k: v for k, v in params.items() if k in _DCF_KWARGS}
-            result = dcf_valuation(ticker=ticker, **kwargs)
-        else:
-            metrics = _get_market_metrics(ticker)
-            result = dcf_from_market_data(
-                ticker,
-                metrics,
-                wacc=params.get("wacc", 0.10),
-                terminal_growth=params.get("terminal_growth", 0.025),
-                years=params.get("years", 5),
-            )
+        kwargs = {k: v for k, v in params.items() if k in _DCF_KWARGS}
+        result = dcf_valuation(ticker=ticker, **kwargs)
     except TypeError as exc:
         return _error("MISSING_INPUT", f"Invalid DCF inputs: {exc}", method="DCF", ticker=ticker)
-    except Exception as exc:  # data/provider failure
-        return _error("DATA_UNAVAILABLE", f"DCF failed: {exc}", method="DCF", ticker=ticker)
+    except Exception as exc:
+        return _error("COMPUTATION_ERROR", f"DCF failed: {exc}", method="DCF", ticker=ticker)
 
     if not result or result.get("error"):
         reason = (result or {}).get("error", "no data available")
         return _error("DATA_UNAVAILABLE", reason, method="DCF", ticker=ticker)
-
-    data_timestamp = None
-    if params.get("revenue") is None:
-        from src.output.result import utc_now_iso
-
-        data_timestamp = utc_now_iso()
 
     return _ok(
         "DCF",
@@ -174,7 +128,6 @@ def run_dcf(ticker: str, params: Dict) -> Dict:
             "terminal_growth": result.get("terminal_growth"),
         },
         formula_ref="DCF (Gordon/exit-multiple terminal value)",
-        data_timestamp=data_timestamp,
         steps=["project FCF", "discount", "terminal value", "bridge to equity"],
     )
 
@@ -202,6 +155,7 @@ def run_nav(ticker: str, params: Dict) -> Dict:
                 holdings,
                 liabilities=params.get("liabilities", 0),
                 shares_outstanding=params.get("shares_outstanding", 1),
+                listed_prices=params.get("listed_prices"),
             )
         except Exception as exc:
             return _error("DATA_UNAVAILABLE", f"NAV failed: {exc}", method="NAV", ticker=ticker)
@@ -229,6 +183,7 @@ def run_nav(ticker: str, params: Dict) -> Dict:
                 total_liabilities=params.get("total_liabilities", 0),
                 minority_interest=params.get("minority_interest", 0),
                 minority_discount=params.get("minority_discount", 0.0),
+                listed_prices=params.get("listed_prices"),
             )
             per_share = calculate_nav_per_share(nav, params.get("shares_outstanding", 1))
         except Exception as exc:
@@ -256,10 +211,12 @@ def run_cca(ticker: str, params: Dict) -> Dict:
     peer_metrics = params.get("peer_metrics")
 
     if target_metrics is None:
-        try:
-            target_metrics = _get_market_metrics(ticker)
-        except Exception as exc:
-            return _error("DATA_UNAVAILABLE", f"CCA failed: {exc}", method="CCA", ticker=ticker)
+        return _error(
+            "MISSING_INPUT",
+            "CCA requires explicit 'target_metrics' (no market-data fetch)",
+            method="CCA",
+            ticker=ticker,
+        )
 
     if peer_metrics is not None and len(peer_metrics) == 0:
         return _error("DATA_UNAVAILABLE", "no peer data available", method="CCA", ticker=ticker)
@@ -297,143 +254,6 @@ def run_cca(ticker: str, params: Dict) -> Dict:
 
 
 # ---------------------------------------------------------------------------
-# Report review
-# ---------------------------------------------------------------------------
-
-
-def review_report(file_path: str) -> Dict:
-    """Dispatch a report file to the analyzer matching its type."""
-    if not file_path or not str(file_path).strip():
-        return _error("INVALID_ARGUMENT", "file_path is required", method="review")
-
-    path = Path(file_path)
-    from src.report_review import guards
-
-    try:
-        guards.validate_path(str(path))
-    except guards.InputValidationError as exc:
-        return _error(exc.code, exc.message, method="review")
-
-    suffix = path.suffix.lower()
-    if suffix in _SUPPORTED_SPREADSHEETS or suffix in _SUPPORTED_WORDS:
-        macro = guards.detect_macros(str(path))
-        if macro.get("has_macros") or macro.get("is_macro_capable"):
-            return _error(
-                "MACROS_DETECTED",
-                "macro-enabled documents are rejected by the report-review guard",
-                method="review",
-            )
-    if suffix in _SUPPORTED_SPREADSHEETS:
-        return review_excel(str(path))
-    if suffix in _SUPPORTED_PDFS:
-        return review_pdf(str(path))
-    if suffix in _SUPPORTED_WORDS:
-        return review_word(str(path))
-    if suffix in _SUPPORTED_IMAGES:
-        return review_image(str(path))
-    return _error("UNSUPPORTED_FILE_TYPE", f"Unsupported file type: {suffix}", method="review")
-
-
-def review_excel(file_path: str) -> Dict:
-    try:
-        from src.report_review import excel_analyzer
-
-        return _with_disclaimer(excel_analyzer.analyze_excel_model(file_path))
-    except Exception as exc:
-        return _error("DATA_UNAVAILABLE", f"Excel review failed: {exc}", method="review")
-
-
-def review_pdf(file_path: str) -> Dict:
-    try:
-        from src.report_review import pdf_analyzer
-
-        return _with_disclaimer(pdf_analyzer.analyze_pdf_report(file_path))
-    except Exception as exc:
-        return _error("DATA_UNAVAILABLE", f"PDF review failed: {exc}", method="review")
-
-
-def review_word(file_path: str) -> Dict:
-    try:
-        from src.report_review import word_analyzer
-
-        return _with_disclaimer(word_analyzer.analyze_word_report(file_path))
-    except Exception as exc:
-        return _error("DATA_UNAVAILABLE", f"Word review failed: {exc}", method="review")
-
-
-def review_image(file_path: str) -> Dict:
-    try:
-        from src.report_review import image_analyzer
-
-        return _with_disclaimer(image_analyzer.extract_valuation_data(file_path))
-    except Exception as exc:
-        return _error("DATA_UNAVAILABLE", f"Image review failed: {exc}", method="review")
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def scan_directory(directory: str = ".") -> List[Dict]:
-    """Scan a directory for valuation files.
-
-    Returns a list of ``{path, type, size}`` records. If the directory does
-    not exist, returns a single-element list carrying an ``INVALID_ARGUMENT``
-    error object (never raises).
-    """
-    path = Path(directory)
-    if not path.exists() or not path.is_dir():
-        return [
-            {
-                "error": {
-                    "code": "INVALID_ARGUMENT",
-                    "message": f"not a directory: {directory}",
-                }
-            }
-        ]
-
-    from src.constants import SUPPORTED_FILE_TYPES
-
-    patterns: List[str] = []
-    for extensions in SUPPORTED_FILE_TYPES.values():
-        patterns.extend(extensions)
-
-    found_files: List[Path] = []
-    for pattern in patterns:
-        found_files.extend(path.glob(f"**/*{pattern}"))
-
-    return [
-        {"path": str(f), "type": f.suffix.lower(), "size": f.stat().st_size} for f in found_files
-    ]
-
-
-def get_valuation_summary(ticker: str) -> Dict:
-    """Return a company/metrics/price/volatility summary (absent -> None)."""
-
-    def _safe(fn):
-        try:
-            return fn(ticker)
-        except Exception as exc:
-            logger.warning("summary fetch failed for %s: %s", ticker, exc)
-            return None
-
-    from src.output.result import DISCLAIMER, utc_now_iso
-
-    return {
-        "ticker": ticker,
-        "status": "ok",
-        "company": _safe(_get_company_info),
-        "metrics": _safe(_get_market_metrics),
-        "price": _safe(_get_stock_price),
-        "volatility": _safe(_get_volatility),
-        "data_timestamp": utc_now_iso(),
-        "data_sources": "Yahoo Finance (yfinance)",
-        "disclaimer": DISCLAIMER,
-    }
-
-
-# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -442,22 +262,14 @@ def _main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Financial Valuation Engine")
     parser.add_argument("--ticker", help="Stock ticker")
     parser.add_argument("--method", default="dcf", help="Valuation method")
-    parser.add_argument("--review", help="Review file path")
-    parser.add_argument("--scan", help="Scan directory")
 
     args = parser.parse_args(argv)
 
-    if not (args.ticker or args.review or args.scan):
+    if not args.ticker:
         parser.print_help(sys.stderr)
         return 2
 
-    if args.review:
-        print(review_report(args.review))
-    elif args.scan:
-        for f in scan_directory(args.scan):
-            print(f)
-    else:
-        print(run_valuation(args.ticker, args.method))
+    print(run_valuation(args.ticker, args.method))
     return 0
 
 

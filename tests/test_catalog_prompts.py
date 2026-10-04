@@ -46,9 +46,9 @@ class _FakeServer:
 
 def test_catalog_shape():
     cat = catalog.build_catalog()
-    assert cat["tool_count"] == 16
+    assert cat["tool_count"] == 14
     assert cat["method_count"] == len(cat["methods"])
-    assert cat["surface_version"] == "2.0"
+    assert cat["surface_version"] == "3.0"
 
 
 def test_catalog_every_method_has_metadata():
@@ -60,7 +60,7 @@ def test_catalog_every_method_has_metadata():
 
 def test_catalog_json_roundtrips():
     parsed = json.loads(catalog.catalog_json())
-    assert parsed["tool_count"] == 16
+    assert parsed["tool_count"] == 14
 
 
 def test_standards_taxonomy_covers_ivs_and_ifrs():
@@ -75,14 +75,12 @@ def test_standards_taxonomy_covers_ivs_and_ifrs():
 def test_prompt_set():
     assert set(prompts.GUIDED_PROMPTS) == {
         "value_company_dcf",
-        "review_valuation_report",
         "explain_cost_of_capital",
     }
 
 
 def test_prompts_render_text_mentioning_tools():
     assert "calculate_dcf" in prompts.value_company_dcf("ACME")
-    assert "calculate_report_review" in prompts.review_valuation_report("r.pdf")
     assert "calculate_discount_rate" in prompts.explain_cost_of_capital("ACME")
 
 
@@ -92,12 +90,13 @@ def test_prompts_render_text_mentioning_tools():
 def test_register_prompts_on_fake_server():
     server = _FakeServer()
     names = register_prompts(server)
-    assert len(names) == 3
-    assert len(server.prompts) == 3
+    assert len(names) == 2
+    assert len(server.prompts) == 2
 
 
 def test_register_resources_on_fake_server():
     server = _FakeServer()
     uris = register_resources(server)
-    assert uris == ["valuation://methods", "valuation://standards"]
+    assert uris == ["valuation://methods", "fair-value://methods", "valuation://standards"]
     assert "valuation://standards" in server.resources
+    assert "fair-value://methods" in server.resources

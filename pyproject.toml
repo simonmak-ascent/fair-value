@@ -23,7 +23,6 @@ dependencies = [
     "numpy>=1.24.0",
     "scipy>=1.10.0",
     "pandas>=2.0.0",
-    "yfinance>=0.2.0",
     "python-dateutil>=2.8.0",
 ]
 
@@ -31,7 +30,6 @@ dependencies = [
 # MCP server dependencies (A-004) — never required for the base library.
 mcp = ["fastmcp>=2.0"]
 # Optional analysis backends.
-ocr = ["pytesseract>=0.3.10", "easyocr>=1.7.0"]
 quant = ["QuantLib-Python>=1.17"]
 docs = ["mkdocs"]
 # Observability (A-016): no-op unless SENTRY_DSN is set.

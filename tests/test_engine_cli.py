@@ -33,10 +33,3 @@ def test_cli_unknown_method_no_traceback():
     assert "Traceback" not in res.stdout
     assert "Traceback" not in res.stderr
     assert "UNKNOWN_METHOD" in res.stdout
-
-
-def test_cli_scan_lists_files(tmp_path):
-    (tmp_path / "model.xlsx").write_text("x")
-    res = _run(["--scan", str(tmp_path)])
-    assert res.returncode == 0
-    assert "model.xlsx" in res.stdout

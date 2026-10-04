@@ -13,19 +13,19 @@ mcp-name: io.github.simonmak-ascent/fair-value
 ## Overview
 
 A single valuation core — exposed as an **MCP server**, a **REST API**, and a
-Python library — whose **16 native `calculate_*` tools / 138 methods** cover
+Python library — whose **14 native `calculate_*` tools / 135 methods** cover
 corporate, startup, and intangible valuation aligned to **IVS 2025** and
 **IFRS/IAS**:
 
 - DCF / NAV / CCA / residual income, market multiples, cost of capital (WACC, Fama-French 5-Factor, build-up)
 - Options, fixed income (term-structure curves), convertible bonds, structured products
 - IFRS 9 / HKFRS 9 credit risk (ECL, PD/LGD, CVA/DVA), actuarial PV (IFRS 17, IAS 19, IAS 37)
-- Fair-value adjustments (IFRS 13), expected value, loss-making-company methods, report review
+- Fair-value adjustments (IFRS 13), expected value, and loss-making-company methods
 
 Every result is a **deterministic-first** envelope carrying the centre value,
 `solution_type`, `statistics` (σ / percentiles, and seeded samples for the few
 stochastic methods), and `citations` resolving to verbatim `IVS`/`IFRS` clauses.
-**120 / 138 methods carry standards citations and the taxonomy has 0 orphan
+**120 / 135 methods carry standards citations and the taxonomy has 0 orphan
 clauses**, enforced by a conformance gate in CI.
 
 ## Quick start (≤ 5 minutes)
@@ -37,18 +37,18 @@ Fastest path — no install:
 - **Frontage & docs:** `https://fair-value.ascent-partners.com/`
 - **Run locally, no install:** `uvx --from "fair-value[mcp]" fair-value-mcp`
 
-Then call any of the 16 `calculate_*` tools (add `-help` / `help=true` for the
+Then call any of the 14 `calculate_*` tools (add `-help` / `help=true` for the
 generated transparency record). Client config: [MCP Server](#mcp-server).
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  CLIENT["AI agent / OpenCode"] -->|"stdio (uvx) or Streamable HTTP"| MCP["fair-value-mcp<br/>16 calculate_* tools · 138 methods"]
+  CLIENT["AI agent / OpenCode"] -->|"stdio (uvx) or Streamable HTTP"| MCP["fair-value-mcp<br/>14 calculate_* tools · 135 methods"]
   HOST["Hosted · fair-value.ascent-partners.com<br/>docs/landing at / · MCP at /mcp · REST at /v1"] --> CLIENT
   MCP --> REG["method-spec registry<br/>(valuation://methods)"]
   REG --> STD["standards taxonomy + corpus<br/>IVS 2025 · IFRS/IAS · (valuation://standards)"]
-  REG --> CORE["valuation engine<br/>DCF · NAV · CCA · WACC (FF5) · derivatives<br/>credit risk · actuarial · report review"]
+  REG --> CORE["valuation engine<br/>DCF · NAV · CCA · WACC (FF5) · derivatives<br/>credit risk · actuarial"]
   CORE --> DATA["market data (yfinance)"]
   CORE --> ENV["result envelope<br/>value + statistics + citations"]
 ```
@@ -76,11 +76,11 @@ fair-value-mcp            # stdio
 fair-value-mcp --http     # Streamable HTTP
 ```
 
-The server exposes 16 native `calculate_*` tools spanning DCF, cost of capital,
+The server exposes 14 native `calculate_*` tools spanning DCF, cost of capital,
 market multiples, residual/asset valuation, options, expected value, credit
 risk, actuarial PV, sector metrics, fair-value adjustments, convertible bonds,
-structured products, loss-making companies, fixed income, report review, and
-company profiles — all derived from one method-spec registry. Add `-help` to any
+structured products, loss-making companies, and fixed income —
+all derived from one method-spec registry. Add `-help` to any
 tool (or `help=true`) for its generated documentation with formula reference,
 inputs, and governing clauses.
 
@@ -122,11 +122,9 @@ Python function (`api/index.py`).
 ## Quick Start (Python)
 
 ```python
-from valuation_engine import run_valuation, review_report, scan_directory
+from valuation_engine import run_valuation
 
-result = run_valuation('9988.HK', 'dcf')     # DCF valuation (shared envelope)
-review = review_report('/path/to/model.xlsx')  # IVS/IFRS report review
-files = scan_directory('/path/to/reports/')    # discover valuation files
+result = run_valuation('9988.HK', 'dcf')  # DCF valuation (shared envelope)
 ```
 
 ## Standards & citations
@@ -143,8 +141,8 @@ or the taxonomy/corpus drifts. See [Standards reference](docs/standards.md).
 
 ```mermaid
 flowchart LR
-  SEED["method_spec_seed.py<br/>method tables · 138 methods"] --> SPEC["method_spec.py<br/>parameter vocabulary"]
-  SPEC --> SURF["tool_surface.py<br/>16 calculate_* tools"]
+  SEED["method_spec_seed.py<br/>method tables · 135 methods"] --> SPEC["method_spec.py<br/>parameter vocabulary"]
+  SPEC --> SURF["tool_surface.py<br/>15 calculate_* tools"]
   SPEC --> STD["standards.py<br/>taxonomy · citations"]
   SURF --> SRV["server.py (FastMCP)"]
   SRV --> STDIO["stdio · uvx fair-value-mcp"]
@@ -158,12 +156,10 @@ flowchart LR
 ```
 src/
 ├── constants.py            # standards references
-├── fetch_data.py           # data fetching (yfinance)
 ├── valuation/              # DCF, NAV, CCA, asset standards (relief-from-royalty, MPEEM, residual)
 ├── cost_of_capital/        # WACC, FF5, KMV
 ├── credit_risk/            # ECL, PD/LGD, CVA/DVA
 ├── derivatives/            # options, swaps, convertible bonds, structured products, fixed income
-├── report_review/          # Excel / PDF / Word / image analysis (IVS/IFRS rule engine)
 └── output/                 # shared result envelope (value + statistics + citations)
 mcp_server/
 ├── method_spec.py + method_spec_seed.py   # single source of truth for tools/methods
@@ -196,17 +192,6 @@ sequenceDiagram
     O-->>C: status · method · value · statistics · assumptions · citations · disclaimer
 ```
 
-## Report review pipeline
-
-```mermaid
-flowchart LR
-    F["Excel / PDF / Word / image"] --> G{"Guards"}
-    G -->|macro-enabled or remote formulas| REF["Refused / flagged"]
-    G -->|safe| P["Parse<br/>openpyxl · pdfplumber · python-docx · OCR"]
-    P --> CH["Checks (report_review/)"]
-    CH --> FI["Findings + audit"]
-    FI --> ENV["Shared envelope"]
-```
 
 ## Requirements
 

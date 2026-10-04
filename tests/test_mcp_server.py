@@ -68,7 +68,7 @@ def test_build_server_exposes_all_tools():
     server = srv.build_server()
     tools = asyncio.run(server.list_tools())
     assert {t.name for t in tools} == set(ts.tool_names())
-    assert len(tools) == 16
+    assert len(tools) == 14
 
 
 @pytest.mark.skipif(not srv.FASTMCP_AVAILABLE, reason="fastmcp not installed")

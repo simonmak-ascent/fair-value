@@ -10,7 +10,7 @@ export default function PlaygroundPage() {
       <DocsHeader
         eyebrow="Interface"
         title="Playground"
-        description="Call any of the 138 methods with a generated input form. Requests go to the live /v1 API on this host."
+        description="Call any of the 135 methods with a generated input form. Requests go to the live /v1 API on this host."
       />
       <Prose>
         <p>

@@ -1,7 +1,7 @@
 """Shared fixtures for the engine wiring tests (A-001).
 
-Every fixture keeps the suite offline: network-backed provider functions in
-``valuation_engine`` are replaced, and market-derived DCF is stubbed per-test.
+Every fixture keeps the suite offline. The engine performs no network or
+database I/O, so inputs are supplied explicitly.
 """
 
 import sys
@@ -10,32 +10,6 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-
-FAKE_METRICS = {
-    "revenue": 1000.0,
-    "revenue_growth": 0.05,
-    "ebitda_margin": 0.20,
-    "shares_outstanding": 100.0,
-    "eps": 5.0,
-    "book_value_per_share": 50.0,
-    "sales_per_share": 10.0,
-    "ebitda": 200.0,
-    "net_debt": 50.0,
-    "sector": "Technology",
-}
-
-
-@pytest.fixture
-def fake_provider(monkeypatch):
-    """Replace the network-backed provider seam functions."""
-    import valuation_engine as ve
-
-    monkeypatch.setattr(ve, "_get_market_metrics", lambda t: dict(FAKE_METRICS))
-    monkeypatch.setattr(ve, "_get_company_info", lambda t: {"name": "Test Co"})
-    monkeypatch.setattr(ve, "_get_stock_price", lambda t: 42.0)
-    monkeypatch.setattr(ve, "_get_volatility", lambda t: 0.25)
-    return ve
 
 
 @pytest.fixture

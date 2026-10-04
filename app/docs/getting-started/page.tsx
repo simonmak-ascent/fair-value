@@ -28,7 +28,7 @@ export default function GettingStarted() {
       <DocsHeader
         eyebrow="Get started"
         title="Getting started"
-        description="Call 138 valuation methods in under five minutes — over MCP, REST, or Python."
+        description="Call 137 valuation methods in under five minutes — over MCP, REST, or Python."
       />
 
       <Prose>

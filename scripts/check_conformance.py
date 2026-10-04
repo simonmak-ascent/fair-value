@@ -25,9 +25,8 @@ ROOT = Path(__file__).resolve().parent.parent
 BASELINE_PATH = ROOT / "standards" / "coverage-baseline.json"
 
 #: Methods deliberately left uncited because they are not framed by a
-#: valuation standard: proprietary sector KPIs (calculate_sector_metrics), the
-#: report-review surface (a boundary, not a valuation method), and the company
-#: profile summary. Every other method must cite at least one clause.
+#: valuation standard: proprietary sector KPIs (calculate_sector_metrics). Every
+#: other method must cite at least one clause.
 CITATION_EXEMPT = {
     # calculate_sector_metrics — SaaS/marketplace/token KPIs
     "ltv",
@@ -45,11 +44,6 @@ CITATION_EXEMPT = {
     "token",
     "nvt",
     "metcalfe",
-    # calculate_report_review — the review surface, not a calculation
-    "audit",
-    "draft",
-    # calculate_company_summary — descriptive profile
-    "profile",
 }
 
 

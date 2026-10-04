@@ -10,7 +10,7 @@ const CARDS = [
   {
     href: "/docs/mcp",
     title: "MCP server",
-    body: "Transports, the 16 tools, `-help`, and the valuation:// resources.",
+    body: "Transports, the 14 tools, `-help`, and the valuation:// resources.",
   },
   {
     href: "/docs/api",
@@ -20,7 +20,7 @@ const CARDS = [
   {
     href: "/docs/playground",
     title: "Playground",
-    body: "Call any of the 138 methods with a generated input form.",
+    body: "Call any of the 135 methods with a generated input form.",
   },
   {
     href: "/docs/methods",

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s · fair-value",
   },
   description:
-    "138 valuation methods across 16 MCP tools, cited to IVS 2025 and IFRS/IAS. Deterministic-first results with statistics and verbatim standard citations, over MCP and REST.",
+    "135 valuation methods across 14 MCP tools, cited to IVS 2025 and IFRS/IAS. Deterministic-first results with statistics and verbatim standard citations, over MCP and REST.",
   keywords: [
     "valuation",
     "DCF",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Ascent Partners Group Ltd" }],
   openGraph: {
     title: "fair-value — valuation MCP server & REST API",
-    description: "138 valuation methods, cited to IVS 2025 / IFRS-IAS, over MCP and REST.",
+    description: "135 valuation methods, cited to IVS 2025 / IFRS-IAS, over MCP and REST.",
     type: "website",
     siteName: "fair-value",
     url: siteUrl,

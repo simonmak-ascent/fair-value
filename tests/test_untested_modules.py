@@ -2,8 +2,7 @@
 
 Covers: valuation.nav, valuation.multiples, valuation.sensitivity,
 cost_of_capital.fama_french, cost_of_capital.kmv, credit_risk.pd_models,
-output.report_formatter, output.chart_data, constants, and the text-extraction
-helpers of report_review.pdf_analyzer / word_analyzer / image_analyzer.
+output.report_formatter, output.chart_data, and constants.
 """
 
 import sys
@@ -256,35 +255,6 @@ def test_constants_tables():
 
 
 # ---------------------------------------------------------------------------
-# report_review text extractors (pure; no optional deps)
-# ---------------------------------------------------------------------------
-def test_pdf_text_extractors():
-    from src.report_review import pdf_analyzer as pa
-
-    assert pa.extract_fair_value("Fair Value: $12.50")["matches"] == ["12.50"]
-    assert pa.extract_methodology("We use a DCF model")["methodology"] == "DCF"
-    assert pa.extract_assumptions("WACC: 8.5% growth rate: 3%")["wacc"] == "8.5"
-    assert pa.extract_standards_compliance("Prepared per IFRS 13")["is_compliant"] is True
-    assert pa.verify_valuation_conclusion("Conclusion and disclaimer")["has_conclusion"]
-
-
-def test_word_text_extractors():
-    from src.report_review import word_analyzer as wa
-
-    concl = wa.extract_valuation_conclusion("Fair value: $9.99 using DCF")
-    assert concl["fair_value"] == "9.99"
-    assert wa.check_ivs_compliance("In accordance with IVS and IFRS")["has_standards"]
-
-
-def test_image_analyzer_graceful_without_ocr(tmp_path):
-    from src.report_review import image_analyzer as ia
-
-    # Missing file and/or missing OCR backend must not raise; returns "".
-    out = ia.extract_text_from_image(str(tmp_path / "nope.png"))
-    assert isinstance(out, str)
-
-
-# ---------------------------------------------------------------------------
 # import smoke for every source module
 # ---------------------------------------------------------------------------
 def test_all_src_modules_import():
@@ -292,7 +262,6 @@ def test_all_src_modules_import():
 
     modules = [
         "src.constants",
-        "src.fetch_data",
         "src.valuation.dcf",
         "src.valuation.nav",
         "src.valuation.multiples",
@@ -307,11 +276,6 @@ def test_all_src_modules_import():
         "src.derivatives.greeks",
         "src.credit_risk.ecl",
         "src.credit_risk.pd_models",
-        "src.report_review.excel_analyzer",
-        "src.report_review.pdf_analyzer",
-        "src.report_review.word_analyzer",
-        "src.report_review.image_analyzer",
-        "src.report_review.guards",
         "src.output.report_formatter",
         "src.output.chart_data",
         "src.output.result",

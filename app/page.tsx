@@ -168,7 +168,7 @@ export default function HomePage() {
         <div className="container-site py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="font-heading text-2xl font-semibold tracking-tight">16 tools</h2>
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">14 tools</h2>
               <p className="mt-2 text-[14px] muted">
                 {counts.implemented} of {counts.methods} methods implemented · {counts.deferred} deferred
                 · {counts.cited} cited · {counts.orphan_clauses} orphan clauses.

@@ -1159,40 +1159,6 @@ _register(
 )
 
 
-def _company_profile(ticker):
-    import valuation_engine as ve
-
-    info = ve._get_company_info(ticker) or {}
-    metrics = ve._get_market_metrics(ticker) or {}
-    profile = {"ticker": ticker, **info, **metrics}
-    price = profile.get("price", profile.get("current_price"))
-    return {"value": price, "profile": profile}
-
-
-_register(
-    "calculate_company_summary",
-    {"profile": _company_profile},
-)
-
-
-def _report_audit(file_path):
-    from src.report_review.audit import audit_report
-
-    return audit_report(file_path)
-
-
-def _report_draft(report_type):
-    from src.report_review.audit import draft_report
-
-    return draft_report(report_type)
-
-
-_register(
-    "calculate_report_review",
-    {"audit": _report_audit, "draft": _report_draft},
-)
-
-
 _CURVE_METHODS = ("discount_factor", "zero_curve", "forward_rate", "pv_curve")
 
 

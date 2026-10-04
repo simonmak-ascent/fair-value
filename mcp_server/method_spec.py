@@ -285,10 +285,6 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "quantity": _n("Number of units (biological assets)."),
     "costs_to_sell": _n("Incremental costs to sell / dispose (IAS 41)."),
     "noi": _n("Net operating income of the property (IAS 40)."),
-    "report_type": _enum(
-        ["dcf", "market", "credit", "report_review"],
-        "Valuation report type to draft a structure for.",
-    ),
     "call_price": _n("CBBC call price (mandatory-call trigger level)."),
     "entitlement": _n("CBBC entitlement: units of underlying per contract."),
     "fixing_days": _i("Number of closing fixings averaged for settlement (>=1)."),
@@ -391,16 +387,14 @@ def tool_meta(tool: str) -> Dict[str, str]:
     return dict(_TOOL_META.get(tool, {}))
 
 
-# VDD A-008 boundary: which tools are valuation *calculations* vs other
-# capabilities (e.g. report review) kept on the server but outside the
-# calculation surface.
-SURFACE_KINDS: Dict[str, str] = {
-    "calculate_report_review": "review",
-}
+# Every registered tool is a valuation *calculation*. Report review was
+# extracted to its own service (valuation-report-review), so the surface is now
+# homogeneous; ``surface_kind`` is retained for the catalog schema.
+SURFACE_KINDS: Dict[str, str] = {}
 
 
 def surface_kind(tool: str) -> str:
-    """Return ``"calculation"`` (default) or ``"review"`` for ``tool``."""
+    """Return the surface kind for ``tool`` (always ``"calculation"`` now)."""
     return SURFACE_KINDS.get(tool, "calculation")
 
 
@@ -539,7 +533,7 @@ def catalog() -> Dict[str, Any]:
                 }
             )
     return {
-        "surface_version": "2.0",
+        "surface_version": "3.0",
         "tool_count": len(tools()),
         "method_count": len(entries),
         "methods": entries,
@@ -551,6 +545,46 @@ def catalog_json() -> str:
     import json
 
     return json.dumps(catalog(), indent=2, sort_keys=True)
+
+
+def methods_resource() -> Dict[str, Any]:
+    """Canonical cross-service methods resource (see apdb-etl ``docs/boundary.md``).
+
+    Shape::
+
+        {server, version, tools:[{tool, title, methods:[
+            {method, label, summary, required, optional}]}]}
+
+    The apdb-etl data plane reads this from ``fair-value://methods``.
+    """
+    tools_out: List[Dict[str, Any]] = []
+    for tool in tools():
+        meta = tool_meta(tool)
+        title = meta.get("title", tool.replace("_", " ").title())
+        methods_out: List[Dict[str, Any]] = []
+        for name, spec in spec_for_tool(tool).items():
+            methods_out.append(
+                {
+                    "method": name,
+                    "label": title,
+                    "summary": spec.summary,
+                    "required": list(spec.required),
+                    "optional": [],
+                }
+            )
+        tools_out.append({"tool": tool, "title": title, "methods": methods_out})
+    return {
+        "server": "fair-value",
+        "version": catalog()["surface_version"],
+        "tools": tools_out,
+    }
+
+
+def methods_resource_json() -> str:
+    """Return :func:`methods_resource` serialized as deterministic JSON."""
+    import json
+
+    return json.dumps(methods_resource(), indent=2, sort_keys=True)
 
 
 register_seed()

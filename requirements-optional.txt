@@ -1,9 +1,7 @@
-# Fair Value — optional analysis / report-review backends.
+# Fair Value — optional analysis backends.
 # None are required for the core library or the MCP server; every import is
-# guarded, so install only what you need.
-
-# Factor data
-pandas-datareader>=0.10.0
+# guarded, so install only what you need. Document parsing / report review has
+# moved to the valuation-report-review service.
 
 # Statistical analysis
 statsmodels>=0.15.0
@@ -11,22 +9,6 @@ scikit-learn>=1.7.2
 
 # Derivatives pricing (native NumPy/SciPy fallback exists)
 QuantLib-Python>=1.17
-
-# Excel analysis
-openpyxl>=3.1.5
-xlrd>=2.0.2
-
-# PDF analysis
-pypdf2>=3.0.1
-pdfplumber>=0.11.10
-
-# Word analysis
-python-docx>=1.2.0
-
-# Image/OCR analysis
-pytesseract>=0.3.10
-Pillow>=12.3.0
-easyocr>=1.7.0
 
 # Utilities
 requests>=2.34.2

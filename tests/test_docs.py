@@ -65,5 +65,4 @@ def test_generated_docs_present():
 
 
 def test_surface_classification():
-    assert docs.tool_help("calculate_report_review")["surface"] == "review"
     assert docs.tool_help("calculate_dcf")["surface"] == "calculation"

@@ -167,10 +167,15 @@ def register_prompts(server: Any) -> List[str]:
 def register_resources(server: Any) -> List[str]:
     """Register the machine-readable catalog and standards resources; return URIs."""
     from .catalog import catalog_json, standards_json
+    from .method_spec import methods_resource_json
 
     def method_catalog() -> str:
         """Machine-readable catalog of valuation methods, formulas, and standards."""
         return catalog_json()
+
+    def methods_canonical() -> str:
+        """Canonical cross-service methods resource (server/version/tools)."""
+        return methods_resource_json()
 
     def standards_catalog() -> str:
         """Machine-readable taxonomy of IVS/IFRS standards referenced by the tools."""
@@ -179,6 +184,7 @@ def register_resources(server: Any) -> List[str]:
     registered: List[str] = []
     for uri, name, fn in (
         ("valuation://methods", "valuation_methods", method_catalog),
+        ("fair-value://methods", "fair_value_methods", methods_canonical),
         ("valuation://standards", "valuation_standards", standards_catalog),
     ):
         try:

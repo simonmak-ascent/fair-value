@@ -10,36 +10,11 @@ import pytest
 import valuation_engine as ve
 
 
-def _stub_market_dcf(monkeypatch, value=10.0):
-    import src.valuation.dcf as dcf_mod
-
-    def _fake(ticker, metrics, wacc=0.10, terminal_growth=0.025, years=5):
-        return {
-            "ticker": ticker,
-            "method": "DCF",
-            "enterprise_value": 1000.0,
-            "equity_value": 900.0,
-            "value_per_share": value,
-            "wacc": wacc,
-            "terminal_growth": terminal_growth,
-        }
-
-    monkeypatch.setattr(dcf_mod, "dcf_from_market_data", _fake)
-
-
 def test_dcf_explicit_inputs(dcf_inputs):
     res = ve.run_valuation("TEST", "dcf", dcf_inputs)
     assert res["status"] == "ok"
     assert res["method"] == "DCF"
     assert res["value_per_share"] > 0
-
-
-def test_dcf_default_market_path(fake_provider, monkeypatch):
-    _stub_market_dcf(monkeypatch, value=10.0)
-    res = ve.run_valuation("TEST", "dcf", {})
-    assert res["status"] == "ok"
-    assert res["value_per_share"] == 10.0
-    assert "pending_implementation" not in str(res)
 
 
 def test_dcf_invalid_inputs_is_missing_input():

@@ -69,4 +69,4 @@ def test_uncited_methods_are_exactly_the_exempt_set():
     report = std.coverage_report(ms._REGISTRY, ms._TAXONOMY)
     assert report["orphan_clauses"] == []
     assert set(report["uncited_methods"]) == gate.CITATION_EXEMPT
-    assert len(report["uncited_methods"]) == 18
+    assert len(report["uncited_methods"]) == 15

@@ -61,14 +61,6 @@ _TOOL_META = {
         "Loss-making and pre-profit company valuation",
         "Loss-making-company engine. Value currently unprofitable companies with margin-ramp DCF, revenue multiples, Merton structural equity, the VC method, distressed waterfalls, bank residual income, and SPAC deals; every method returns a central value plus a dispersion (sigma, percentiles, long-tail). Use this when earnings-based multiples break down; for standalone probability weighting of arbitrary scenarios use calculate_expected_value, and for a single going-concern DCF use calculate_dcf.",
     ),
-    "calculate_report_review": (
-        "Valuation report review and standards audit",
-        "Report-review engine. Audit a valuation document against an IVS 2025 and IFRS/HKFRS checklist: methodology, assumptions, discount rate, standards basis, fair-value conclusion, valuation date, and fair-value hierarchy, each mapped to the governing standard. Macro-enabled files are refused. Read-only. Returns the shared result envelope with findings and a compliance score.",
-    ),
-    "calculate_company_summary": (
-        "Company profile and market inputs",
-        "Company-summary engine. Return a company profile with live market metrics (price, shares, beta, volatility, market capitalisation) to seed valuation inputs. Use this to seed inputs for the other calculate_* tools; it does not compute a valuation itself, and it omits missing fields rather than inventing them. Supplying a ticker performs a network fetch. Read-only. Returns the shared result envelope.",
-    ),
     "calculate_fixed_income": (
         "Fixed income and term structure analytics",
         "Fixed-income engine. Price plain coupon bonds, solve for yield to maturity, measure interest-rate sensitivity via Macaulay and modified duration and convexity, and build a HIBOR/HKD-style term structure: bootstrap a zero curve from par rates, infer forward rates, and discount cash flows on the curve. Use this for vanilla bonds, rate risk and discount curves; for convertibles use calculate_convertible_bond and for structured payoffs use calculate_structured_product.",
@@ -1013,33 +1005,6 @@ _LOSS_MAKING = (
     ),
 )
 
-_REPORT = (
-    MethodSpec(
-        "audit",
-        "audit a valuation document against methodology, assumptions and IFRS/HKFRS basis",
-        ("file_path",),
-        "IVS 2025 review; standards decision tree",
-        ("IVS 2025", "IFRS 13"),
-    ),
-    MethodSpec(
-        "draft",
-        "draft the required structure of a valuation report",
-        ("report_type",),
-        "IVS 2025 / IFRS 13 report skeleton",
-        ("IVS 2025",),
-    ),
-)
-
-_COMPANY = (
-    MethodSpec(
-        "profile",
-        "company profile and live market metrics for valuation inputs",
-        ("ticker",),
-        "market data",
-    ),
-)
-
-
 _FIXED_INCOME = (
     MethodSpec(
         "bond_price",
@@ -1122,8 +1087,6 @@ def register_all() -> None:
     register("calculate_convertible_bond", _CONVERTIBLE_BOND)
     register("calculate_structured_product", _STRUCTURED)
     register("calculate_loss_making_company", _LOSS_MAKING)
-    register("calculate_report_review", _REPORT)
-    register("calculate_company_summary", _COMPANY)
     register("calculate_fixed_income", _FIXED_INCOME)
     for tool, (title, description) in _TOOL_META.items():
         register_tool_meta(tool, title, description)
