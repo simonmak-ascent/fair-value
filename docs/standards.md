@@ -22,7 +22,7 @@
 | `IAS.36.6` | Value in use | `viu_pre_tax` |
 | `IAS.37.36` | Best estimate of a provision | `ias37_provision` |
 | `IFRS.13.61` | Valuation techniques | — |
-| `IFRS.13.62` | Three valuation techniques | `dcf`, `development_residual`, `inventory_residual`, `investment_property`, `liability_fulfilment`, `matrix_pricing`, `monte_carlo`, `mpeem`, `npv`, `ppe_revaluation`, `relief_from_royalty`, `with_without` |
+| `IFRS.13.62` | Three valuation techniques | `black_scholes`, `bond_price`, `dcf`, `development_residual`, `inventory_residual`, `investment_property`, `liability_fulfilment`, `matrix_pricing`, `monte_carlo`, `mpeem`, `npv`, `ppe_revaluation`, `relief_from_royalty`, `with_without` |
 | `IFRS.13.69` | Blockage factors | — |
 | `IFRS.17.32` | Fulfilment cash flows | `ifrs17_gmm` |
 | `IFRS.9.5.5.5` | Measurement of expected credit losses | `ecl_12m`, `ecl_lifetime`, `ecl_staged` |
@@ -37,3 +37,4 @@
 | `IVS.300.A10` | Depreciated replacement cost | `ppe_revaluation` |
 | `IVS.400.A10` | Income capitalisation | `investment_property` |
 | `IVS.410.A10` | Development property residual | `development_residual` |
+| `IVS.500.A10` | Financial instrument valuation models | `black_scholes`, `bond_price` |

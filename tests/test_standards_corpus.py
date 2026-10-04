@@ -223,3 +223,11 @@ def test_new_ifrs_corpus_and_citations():
     for method in ("ecl_lifetime", "ecl_staged", "ias19_puc", "ifrs17_gmm"):
         cites = citations_for(taxonomy, method)
         assert cites["ivs"] and cites["ifrs"], method
+
+
+def test_ivs500_corpus_and_citations():
+    taxonomy = load_taxonomy()
+    assert "fit for use" in clause_text(taxonomy, "IVS.500.A10")["text"]
+    for method in ("bond_price", "black_scholes"):
+        cites = citations_for(taxonomy, method)
+        assert "IVS.500.A10" in cites["ivs"] and cites["ifrs"]

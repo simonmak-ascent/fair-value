@@ -5,7 +5,9 @@ Fixed-income engine. Price plain coupon bonds, solve for yield to maturity, meas
 ```mermaid
 flowchart TD
   T[Calculate Fixed Income]
-  T --> calculate_fixed_income_bond_price["bond_price (n/a)"]
+  T --> calculate_fixed_income_bond_price["bond_price (income)"]
+  calculate_fixed_income_bond_price -. cites .-> IVS_500_A10[IVS.500.A10]
+  calculate_fixed_income_bond_price -. cites .-> IFRS_13_62[IFRS.13.62]
   T --> calculate_fixed_income_bond_yield["bond_yield (n/a)"]
   T --> calculate_fixed_income_duration["duration (n/a)"]
   T --> calculate_fixed_income_convexity["convexity (n/a)"]
@@ -24,8 +26,8 @@ present value of coupons and face from a yield
 
 **Formula:** Discounted cash flows at ytm/frequency
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -37,8 +39,23 @@ present value of coupons and face from a yield
 | `ytm` | number | Yield to maturity (decimal, annualised). |
 | `frequency` | integer | Coupon payments per year (1=annual, 2=semi-annual). |
 
+**Standards (verbatim)**
+
+- **IVS.500.A10** — Financial instrument valuation models
+  > 100.02 The valuer must determine that the valuation model is appropriate, which for the purposes of IVS 500 Financial Instruments means "fit for use" in terms of assets and/or liabilities being valued, the scope of work, and the valuation method.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-500-financial-instruments)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `measurement_objective`: IVS — IVS 500 fit-for-use financial-instrument model (IVS 105); IFRS/IAS — IFRS 13 fair value (income approach) / IFRS 9 amortised cost
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'measurement_objective': the two regimes treat this differently (IVS 500 fit-for-use financial-instrument model (IVS 105) vs IFRS 13 fair value (income approach) / IFRS 9 amortised cost); the choice is the caller's, not a default.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `bond_yield`

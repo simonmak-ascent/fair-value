@@ -18,10 +18,9 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 
 ### Pending (not yet in the corpus)
 
-- IVS 500 Financial Instruments: no public verbatim body was extractable (the
-  IVS 2025 extract carries only its title/TOC). Financial-instrument methods
-  (`bond_*`, `black_scholes`, `matrix_pricing`, …) are cited to IVS 103/105
-  instead. Add IVS 500 clauses as data when a source is obtained.
+- None. Every clause in the taxonomy is cited by at least one method (remaining
+  orphans are declared-but-unused clauses pending a matching method, tracked by
+  the coverage ratchet).
 
 ### Covered asset-standard & financial-method corpus (cited)
 
@@ -37,3 +36,4 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 - IFRS 9 expected credit losses (§5.5.5) — `ecl_12m`, `ecl_lifetime`, `ecl_staged`
 - IFRS 17 fulfilment cash flows (§32) — `ifrs17_gmm`
 - IAS 19 projected unit credit (§67) — `ias19_puc`
+- IVS 500 financial instruments (model fit-for-use, §100.02) — `bond_price`, `black_scholes`
