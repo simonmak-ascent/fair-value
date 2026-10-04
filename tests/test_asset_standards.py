@@ -84,3 +84,51 @@ def test_registered_and_dispatched_with_citations():
     )
     assert rr["status"] == "ok"
     assert "IVS.210.A10" in rr["citations"]["ivs"]
+
+
+def test_liability_fulfilment():
+    from src.valuation.asset_standards import liability_fulfilment
+
+    value = liability_fulfilment([100.0, 100.0], 0.10, 0.05)
+    assert value == pytest.approx(110 / 1.05 + 110 / 1.05**2, rel=1e-9)
+
+
+def test_inventory_residual():
+    from src.valuation.asset_standards import inventory_residual
+
+    assert inventory_residual(500.0, 120.0, 60.0) == 320.0
+
+
+def test_development_residual():
+    from src.valuation.asset_standards import development_residual
+
+    assert development_residual(1000.0, 600.0, 150.0) == 250.0
+
+
+def test_new_asset_methods_dispatch_with_citations():
+    from mcp_server.engine import dispatch
+
+    res = dispatch(
+        "calculate_residual",
+        {
+            "method": "development_residual",
+            "gross_development_value": 1000.0,
+            "development_costs": 600.0,
+            "developer_profit": 150.0,
+        },
+    )
+    assert res["status"] == "ok", res
+    assert res["value"] == 250.0
+    assert "IVS.410.A10" in res["citations"]["ivs"]
+
+    inv = dispatch(
+        "calculate_residual",
+        {"method": "inventory_residual", "selling_price": 500.0, "costs_to_complete": 120.0, "profit_allowance": 60.0},
+    )
+    assert inv["value"] == 320.0 and "IVS.230.A10" in inv["citations"]["ivs"]
+
+    liab = dispatch(
+        "calculate_residual",
+        {"method": "liability_fulfilment", "fulfilment_costs": [100.0], "mark_up": 0.1, "discount_rate": 0.05},
+    )
+    assert liab["status"] == "ok" and "IVS.220.A10" in liab["citations"]["ivs"]

@@ -410,6 +410,27 @@ _RESIDUAL = (
         "IAS 36.18: recoverable amount = max(FVLCD, VIU)",
         ("IAS 36",),
     ),
+    MethodSpec(
+        "liability_fulfilment",
+        "non-financial liability as discounted costs to fulfil plus a mark-up",
+        ("fulfilment_costs", "mark_up", "discount_rate"),
+        "IVS 220.60.04 Bottom-Up: PV of fulfilment costs plus mark-up",
+        ("IVS 220", "IFRS 13"),
+    ),
+    MethodSpec(
+        "inventory_residual",
+        "inventory value as selling price less remaining costs and profit",
+        ("selling_price", "costs_to_complete", "profit_allowance"),
+        "IVS 230.60.03 top-down residual method",
+        ("IVS 230", "IAS 2"),
+    ),
+    MethodSpec(
+        "development_residual",
+        "development property value as completed value less costs and profit",
+        ("gross_development_value", "development_costs", "developer_profit"),
+        "IVS 410.100.03 residual method",
+        ("IVS 410", "IFRS 13"),
+    ),
 )
 
 _OPTION = (

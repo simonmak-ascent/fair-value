@@ -314,6 +314,32 @@ def _recoverable_amount(
     return {"value": recoverable_amount(fair_value_less_costs_to_dispose, value_in_use)}
 
 
+def _liability_fulfilment(
+    fulfilment_costs: List[float], mark_up: float, discount_rate: float
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import liability_fulfilment
+
+    return {"value": liability_fulfilment(fulfilment_costs, mark_up, discount_rate)}
+
+
+def _inventory_residual(
+    selling_price: float, costs_to_complete: float, profit_allowance: float
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import inventory_residual
+
+    return {"value": inventory_residual(selling_price, costs_to_complete, profit_allowance)}
+
+
+def _development_residual(
+    gross_development_value: float, development_costs: float, developer_profit: float
+) -> Dict[str, Any]:
+    from src.valuation.asset_standards import development_residual
+
+    return {
+        "value": development_residual(gross_development_value, development_costs, developer_profit)
+    }
+
+
 # ---------------------------------------------------------------------------
 # calculate_option
 # ---------------------------------------------------------------------------
@@ -771,6 +797,9 @@ _register(
         "mpeem": _mpeem,
         "with_without": _with_without,
         "recoverable_amount": _recoverable_amount,
+        "liability_fulfilment": _liability_fulfilment,
+        "inventory_residual": _inventory_residual,
+        "development_residual": _development_residual,
     },
 )
 

@@ -75,3 +75,42 @@ def with_without(
 def recoverable_amount(fair_value_less_costs_to_dispose: float, value_in_use: float) -> float:
     """Recoverable amount (IAS 36.18): higher of FVLCD and value in use."""
     return max(float(fair_value_less_costs_to_dispose), float(value_in_use))
+
+
+def liability_fulfilment(
+    fulfilment_costs: Sequence[float], mark_up: float, discount_rate: float
+) -> float:
+    """Bottom-Up non-financial liability (IVS 220 §60.04).
+
+    ``value = sum_t costs_t * (1 + mark_up) / (1 + r)^t``: costs required to
+    fulfil the performance obligation plus a reasonable mark-up, discounted.
+    """
+    costs = list(fulfilment_costs)
+    if not costs:
+        raise ValueError("fulfilment_costs must be non-empty")
+    return sum(
+        float(c) * (1.0 + mark_up) / (1.0 + discount_rate) ** (t + 1) for t, c in enumerate(costs)
+    )
+
+
+def inventory_residual(
+    selling_price: float, costs_to_complete: float, profit_allowance: float
+) -> float:
+    """Top-Down inventory value (IVS 230 §60.03): a residual method.
+
+    ``value = selling_price - costs_to_complete - profit_allowance`` (estimated
+    selling price less remaining costs and estimated profit).
+    """
+    return float(selling_price) - float(costs_to_complete) - float(profit_allowance)
+
+
+def development_residual(
+    gross_development_value: float, development_costs: float, developer_profit: float
+) -> float:
+    """Residual method for development property (IVS 410 §100.03).
+
+    ``value = gross_development_value - development_costs - developer_profit``:
+    the residual after deducting all known/anticipated costs and risk from the
+    anticipated completed value.
+    """
+    return float(gross_development_value) - float(development_costs) - float(developer_profit)

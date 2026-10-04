@@ -15,8 +15,12 @@ flowchart TD
   T --> calculate_residual_cap_table["cap_table (n/a)"]
   T --> calculate_residual_sotp["sotp (n/a)"]
   T --> calculate_residual_spac_redemption["spac_redemption (n/a)"]
-  T --> calculate_residual_investment_property["investment_property (n/a)"]
-  T --> calculate_residual_ppe_revaluation["ppe_revaluation (n/a)"]
+  T --> calculate_residual_investment_property["investment_property (income)"]
+  calculate_residual_investment_property -. cites .-> IVS_400_A10[IVS.400.A10]
+  calculate_residual_investment_property -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_ppe_revaluation["ppe_revaluation (cost)"]
+  calculate_residual_ppe_revaluation -. cites .-> IVS_300_A10[IVS.300.A10]
+  calculate_residual_ppe_revaluation -. cites .-> IFRS_13_62[IFRS.13.62]
   T --> calculate_residual_biological_asset["biological_asset (n/a)"]
   T --> calculate_residual_residual_income["residual_income (n/a)"]
   T --> calculate_residual_justified_pb["justified_pb (n/a)"]
@@ -32,6 +36,15 @@ flowchart TD
   T --> calculate_residual_recoverable_amount["recoverable_amount (income)"]
   calculate_residual_recoverable_amount -. cites .-> IVS_103_A10[IVS.103.A10]
   calculate_residual_recoverable_amount -. cites .-> IAS_36_18[IAS.36.18]
+  T --> calculate_residual_liability_fulfilment["liability_fulfilment (income)"]
+  calculate_residual_liability_fulfilment -. cites .-> IVS_220_A10[IVS.220.A10]
+  calculate_residual_liability_fulfilment -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_inventory_residual["inventory_residual (income)"]
+  calculate_residual_inventory_residual -. cites .-> IVS_230_A10[IVS.230.A10]
+  calculate_residual_inventory_residual -. cites .-> IFRS_13_62[IFRS.13.62]
+  T --> calculate_residual_development_residual["development_residual (income)"]
+  calculate_residual_development_residual -. cites .-> IVS_410_A10[IVS.410.A10]
+  calculate_residual_development_residual -. cites .-> IFRS_13_62[IFRS.13.62]
 ```
 
 ## `goodwill`
@@ -241,8 +254,8 @@ investment property at fair value
 
 **Formula:** V = NOI / cap rate (IAS 40 / HKAS 40 income approach)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** income  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -251,8 +264,23 @@ investment property at fair value
 | `noi` | number | Net operating income of the property (IAS 40). |
 | `cap_rate` | number | Capitalisation rate as a decimal (0.06 = 6%). |
 
+**Standards (verbatim)**
+
+- **IVS.400.A10** — Income capitalisation
+  > A20.10 In some instances, particularly when the asset is operating at a stabilised level of growth and profits at the valuation date, it may not be necessary to consider an explicit forecast period and a terminal value may form the only basis of value (sometimes referred to as an income capitalisation method).
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-400-real-property-interests)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `capitalisation_rate`: IVS — IVS 400 income capitalisation of stabilised net income; IFRS/IAS — IAS 40 fair value (income approach under IFRS 13)
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'capitalisation_rate': the two regimes treat this differently (IVS 400 income capitalisation of stabilised net income vs IAS 40 fair value (income approach under IFRS 13)); the choice is the caller's, not a default.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `ppe_revaluation`
@@ -261,8 +289,8 @@ PP&E revaluation via depreciated replacement cost
 
 **Formula:** V = replacement cost - accumulated depreciation (IAS 16)
 
-**Approach:** n/a  
-**Solution:** n/a
+**Approach:** cost  
+**Solution:** closed_form
 
 **Inputs**
 
@@ -271,8 +299,23 @@ PP&E revaluation via depreciated replacement cost
 | `replacement_cost` | number | Depreciated-replacement-cost gross value of PP&E (IAS 16). |
 | `accumulated_depreciation` | number | Accumulated depreciation to deduct (IAS 16). |
 
+**Standards (verbatim)**
+
+- **IVS.300.A10** — Depreciated replacement cost
+  > A30.03 Usually replacement cost is adjusted for physical deterioration and all relevant forms of obsolescence. After such adjustments, this can be referred to as depreciated replacement cost.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-300-plant-equipment-and-infrastructure)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `obsolescence`: IVS — IVS 300 depreciated replacement cost (physical/functional/external obsolescence); IFRS/IAS — IAS 16 revaluation to fair value under IFRS 13
+
 **Risks & limits**
 
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'obsolescence': the two regimes treat this differently (IVS 300 depreciated replacement cost (physical/functional/external obsolescence) vs IAS 16 revaluation to fair value under IFRS 13); the choice is the caller's, not a default.
 - Standards alignment is declared per method; see the cited clauses.
 
 ## `biological_asset`
@@ -473,4 +516,112 @@ higher of fair value less costs of disposal and value in use
 
 - Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
 - IVS/IFRS divergence on 'measurement_objective': the two regimes treat this differently (IVS 103 basis of value and premise (e.g. market value) vs IAS 36.18 recoverable amount = higher of FVLCD and value in use (entity-specific)); the choice is the caller's, not a default.
+- Standards alignment is declared per method; see the cited clauses.
+
+## `liability_fulfilment`
+
+non-financial liability as discounted costs to fulfil plus a mark-up
+
+**Formula:** IVS 220.60.04 Bottom-Up: PV of fulfilment costs plus mark-up
+
+**Approach:** income  
+**Solution:** closed_form
+
+**Inputs**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `fulfilment_costs` | array | Costs required to fulfil the performance obligation per period (IVS 220 Bottom-Up). |
+| `mark_up` | number | Reasonable mark-up on fulfilment costs (decimal, IVS 220 Bottom-Up). |
+| `discount_rate` | number | Discount rate as a decimal (0.10 = 10%); pre-tax when method=viu_pre_tax. |
+
+**Standards (verbatim)**
+
+- **IVS.220.A10** — Non-financial liability (Bottom-Up)
+  > 60.04 Under the Bottom-Up Method, the non-financial liability is measured as the costs required to fulfil the performance obligation, plus a reasonable mark-up on those costs, discounted to present value. These costs may or may not include certain overhead items.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-220-non-financial-liabilities)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `mark_up`: IVS — IVS 220.60.04 includes a reasonable mark-up on fulfilment costs; IFRS/IAS — IAS 37 best estimate of the expenditure required to settle (no profit margin)
+
+**Risks & limits**
+
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'mark_up': the two regimes treat this differently (IVS 220.60.04 includes a reasonable mark-up on fulfilment costs vs IAS 37 best estimate of the expenditure required to settle (no profit margin)); the choice is the caller's, not a default.
+- Standards alignment is declared per method; see the cited clauses.
+
+## `inventory_residual`
+
+inventory value as selling price less remaining costs and profit
+
+**Formula:** IVS 230.60.03 top-down residual method
+
+**Approach:** income  
+**Solution:** closed_form
+
+**Inputs**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `selling_price` | number | Estimated selling price of the finished inventory (IVS 230 top-down). |
+| `costs_to_complete` | number | Remaining costs to complete work-in-process inventory (IVS 230). |
+| `profit_allowance` | number | Estimated profit allowance on the completion/disposal effort. |
+
+**Standards (verbatim)**
+
+- **IVS.230.A10** — Inventory top-down residual
+  > 60.03 The top-down method is a residual method that begins with the estimated selling price and deducts remaining costs and estimated profit.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-230-inventory)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `profit_allowance`: IVS — IVS 230.60.03 top-down deducts estimated profit; IFRS/IAS — IAS 2 measures at the lower of cost and NRV (no profit deduction)
+
+**Risks & limits**
+
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'profit_allowance': the two regimes treat this differently (IVS 230.60.03 top-down deducts estimated profit vs IAS 2 measures at the lower of cost and NRV (no profit deduction)); the choice is the caller's, not a default.
+- Standards alignment is declared per method; see the cited clauses.
+
+## `development_residual`
+
+development property value as completed value less costs and profit
+
+**Formula:** IVS 410.100.03 residual method
+
+**Approach:** income  
+**Solution:** closed_form
+
+**Inputs**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gross_development_value` | number | Anticipated value of the completed development (IVS 410 residual method). |
+| `development_costs` | number | All known/anticipated costs to complete the development. |
+| `developer_profit` | number | Required developer's profit/risk allowance (IVS 410). |
+
+**Standards (verbatim)**
+
+- **IVS.410.A10** — Development property residual
+  > 100.03 The residual method is so called because it indicates the residual amount after deducting all known or anticipated costs required to complete the development from the anticipated value of the project when completed after consideration of the risks associated with completion of the project. This is known as the residual value.
+  > — International Valuation Standards Council (IVSC) (source/ivs-2025.md#ivs-410-development-property)
+- **IFRS.13.62** — Three valuation techniques
+  > The objective of using a valuation technique is to estimate the price at which an orderly transaction to sell the asset or to transfer the liability would take place between market participants at the measurement date under current market conditions. Three widely used valuation techniques are the market approach, the cost approach and the income approach. The main aspects of those approaches are summarised in paragraphs B5–B11. An entity shall use valuation techniques consistent with one or more of those approaches to measure fair value.
+  > — IFRS Foundation (source/ifrs-13.md#paragraph-62)
+
+**IVS ↔ IFRS/IAS divergences**
+
+- `developer_profit`: IVS — IVS 410.100.03 residual deducts anticipated developer profit and risk; IFRS/IAS — IFRS 13 measures the completed asset at fair value (profit is in the exit price)
+
+**Risks & limits**
+
+- Deterministic model: the result is a point value with no modelled distribution; input error and model error are not quantified here.
+- IVS/IFRS divergence on 'developer_profit': the two regimes treat this differently (IVS 410.100.03 residual deducts anticipated developer profit and risk vs IFRS 13 measures the completed asset at fair value (profit is in the exit price)); the choice is the caller's, not a default.
 - Standards alignment is declared per method; see the cited clauses.

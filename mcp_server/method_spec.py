@@ -143,6 +143,18 @@ PARAMS: Dict[str, Dict[str, Any]] = {
         "After-tax cash flows absent the asset (IVS 210 with-and-without), aligned with "
         "with_cash_flows."
     ),
+    "fulfilment_costs": _nums(
+        "Costs required to fulfil the performance obligation per period (IVS 220 Bottom-Up)."
+    ),
+    "mark_up": _n("Reasonable mark-up on fulfilment costs (decimal, IVS 220 Bottom-Up)."),
+    "selling_price": _n("Estimated selling price of the finished inventory (IVS 230 top-down)."),
+    "costs_to_complete": _n("Remaining costs to complete work-in-process inventory (IVS 230)."),
+    "profit_allowance": _n("Estimated profit allowance on the completion/disposal effort."),
+    "gross_development_value": _n(
+        "Anticipated value of the completed development (IVS 410 residual method)."
+    ),
+    "development_costs": _n("All known/anticipated costs to complete the development."),
+    "developer_profit": _n("Required developer's profit/risk allowance (IVS 410)."),
     "net_realisable_value": _n("Estimated NRV in reporting currency."),
     "fair_value_less_costs_to_sell": _n("FV less costs to sell in reporting currency."),
     "claims": _objs("Ordered claims [{name, amount, priority}] for a waterfall."),

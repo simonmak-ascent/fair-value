@@ -17,7 +17,7 @@
 | `IAS.36.55` | Pre-tax discount rate | — |
 | `IAS.36.6` | Value in use | `viu_pre_tax` |
 | `IFRS.13.61` | Valuation techniques | — |
-| `IFRS.13.62` | Three valuation techniques | `dcf`, `matrix_pricing`, `monte_carlo`, `mpeem`, `npv`, `relief_from_royalty`, `with_without` |
+| `IFRS.13.62` | Three valuation techniques | `dcf`, `development_residual`, `inventory_residual`, `investment_property`, `liability_fulfilment`, `matrix_pricing`, `monte_carlo`, `mpeem`, `npv`, `ppe_revaluation`, `relief_from_royalty`, `with_without` |
 | `IFRS.13.69` | Blockage factors | — |
 | `IFRS16.26` | Lease liability measurement | `lease_pv` |
 | `IVS.103.A05` | Matrix pricing | `matrix_pricing` |
@@ -25,3 +25,8 @@
 | `IVS.103.A20` | Income approach and DCF | `dcf`, `lease_pv`, `monte_carlo`, `npv`, `viu_pre_tax` |
 | `IVS.105.A10` | Valuation models | — |
 | `IVS.210.A10` | Intangible asset methods | `mpeem`, `relief_from_royalty`, `with_without` |
+| `IVS.220.A10` | Non-financial liability (Bottom-Up) | `liability_fulfilment` |
+| `IVS.230.A10` | Inventory top-down residual | `inventory_residual` |
+| `IVS.300.A10` | Depreciated replacement cost | `ppe_revaluation` |
+| `IVS.400.A10` | Income capitalisation | `investment_property` |
+| `IVS.410.A10` | Development property residual | `development_residual` |

@@ -18,9 +18,18 @@ date), bump `standards/versions.json`, and add an entry here. This is a
 
 ### Pending (not yet in the corpus)
 
-- IVS 220 Non-Financial Liabilities, IVS 230 Inventory, IVS 300 Plant/Equipment,
-  IVS 400 Real Property, IVS 410 Development Property, IVS 500 Financial
-  Instruments — bodies not yet extracted verbatim (IVS 410/220 were not cleanly
-  available in the local extract). Add as data when sourced.
-- IFRS 9 ECL, IFRS 17 FCF, IAS 19 PUC, IAS 37 — methods exist; corpus extracts to
-  be added so their methods can be cited.
+- IVS 500 Financial Instruments, and the IFRS liability/provision bodies
+  (IFRS 9 ECL, IFRS 17 FCF, IAS 19 PUC, IAS 37) — methods exist but their
+  corpus extracts are not yet added, so they are not yet cited. Add as data when
+  sourced.
+
+### Covered asset-standard methods (corpus + cited)
+
+- IVS 210 intangibles (relief-from-royalty, MPEEM, with-and-without)
+- IVS 220 non-financial liabilities (Bottom-Up, §60.04) — `liability_fulfilment`
+- IVS 230 inventory (top-down residual, §60.03) — `inventory_residual`
+- IVS 300 plant & equipment (depreciated replacement cost, A30.03) — `ppe_revaluation`
+- IVS 400 real property (income capitalisation, A20.10) — `investment_property`
+- IVS 410 development property (residual method, §100.03) — `development_residual`
+- IVS 103 matrix pricing (A10.05) — `matrix_pricing`
+- IAS 36 recoverable amount (§18) — `recoverable_amount`; IAS 36 VIU/pre-tax rate
