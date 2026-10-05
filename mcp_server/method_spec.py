@@ -566,7 +566,9 @@ def methods_resource() -> Dict[str, Any]:
             methods_out.append(
                 {
                     "method": name,
-                    "label": title,
+                    # Per-method label (was the tool title for every method, which
+                    # made every label identical); fall back to the tool title.
+                    "label": spec.summary or title,
                     "summary": spec.summary,
                     "required": list(spec.required),
                     # fair-value's locked no-defaults contract: every listed
