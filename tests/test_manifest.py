@@ -48,6 +48,12 @@ def test_version_locked_to_pyproject():
     assert manifest["version"] == _version()
 
 
+def test_package_version_locked_to_manifest():
+    import mcp_server
+
+    assert mcp_server.__version__ == _manifest()["version"] == _version()
+
+
 def test_package_is_pypi_uvx():
     pkg = _manifest()["packages"][0]
     assert pkg["registryType"] == "pypi"

@@ -14,6 +14,7 @@ import argparse
 import inspect
 from typing import Any, Callable, Dict, List, Optional
 
+from . import __version__
 from .tool_surface import (
     SERVER_NAME,
     TOOL_SURFACE,
@@ -132,7 +133,7 @@ def build_server() -> Any:
             "fastmcp is not installed; install the 'mcp' extra: pip install 'fair-value[mcp]'"
         )
 
-    server: Any = FastMCP(SERVER_NAME)  # type: ignore[misc]
+    server: Any = FastMCP(SERVER_NAME, version=__version__)  # type: ignore[misc]
     for spec in TOOL_SURFACE:
         fn = _make_tool(spec)
         try:
