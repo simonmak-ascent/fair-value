@@ -8,7 +8,7 @@ statsmodels>=0.15.0
 scikit-learn>=1.7.2
 
 # Derivatives pricing (native NumPy/SciPy fallback exists)
-QuantLib-Python>=1.17
+QuantLib-Python>=1.18
 
 # Utilities
 requests>=2.34.2

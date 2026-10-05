@@ -1,5 +1,5 @@
 numpy>=1.24.0
-scipy>=1.10.0
-pandas>=2.0.0
-python-dateutil>=2.8.0
+scipy>=1.15.3
+pandas>=2.3.3
+python-dateutil>=2.9.0.post0
 fastmcp>=2.0
