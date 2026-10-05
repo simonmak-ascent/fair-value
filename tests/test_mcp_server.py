@@ -91,3 +91,20 @@ def test_build_server_tool_call_roundtrip():
     res = asyncio.run(go())
     assert res["status"] == "ok", res
     assert res["value"] is not None
+
+
+@pytest.mark.skipif(not srv.FASTMCP_AVAILABLE, reason="fastmcp not installed")
+def test_server_reports_package_version():
+    import asyncio
+
+    import mcp_server
+    from fastmcp import Client
+
+    server = srv.build_server()
+
+    async def go():
+        async with Client(server) as client:
+            return client.server_info
+
+    info = asyncio.run(go())
+    assert info.version == mcp_server.__version__
