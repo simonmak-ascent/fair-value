@@ -1,0 +1,9 @@
+{
+  "hash": "c64e6b2d89025f48a682ced4408e2e391f7bf5f8df0de5b018b6c0a156c3cbfd",
+  "server": "fair-value",
+  "version": "3.0",
+  "tool_count": 14,
+  "method_count": 135,
+  "param_count": 221,
+  "note": "Canonical hash of the fair-value://methods resource. If this changes intentionally, update this file and regenerate the apdb-etl bundled catalog (pnpm data-plane:gen-catalog)."
+}
