@@ -2,7 +2,7 @@
 # Installs the valuation library and the MCP server (the hosted ASGI entrypoint
 # uses this file as its deploy manifest). Optional heavy/analysis backends are
 # in requirements-optional.txt; dev/CI tooling is in requirements-dev.txt.
-numpy>=1.24.0
+numpy>=2.2.6
 scipy>=1.15.3
 pandas>=2.3.3
 python-dateutil>=2.9.0.post0
