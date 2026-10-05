@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fair-value"
 version = "0.2.5"
-description = "Financial valuation library (DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review) aligned to IVS 2025 / IFRS."
+description = "Financial valuation library (DCF/NAV/CCA, cost of capital, derivatives, credit risk, fixed income) aligned to IVS 2025 / IFRS."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

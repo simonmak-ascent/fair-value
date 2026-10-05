@@ -2,7 +2,7 @@
 
 ## Overview
 
-Professional financial valuation system for OpenCode that performs valuations according to IAS/IFRS and IVS standards with comprehensive report review capabilities.
+Professional financial valuation system for OpenCode that performs valuations according to IAS/IFRS and IVS standards.
 
 ## Trigger Conditions
 
@@ -208,10 +208,10 @@ System: Calculate fixed vs floating leg values
 
 | Data Type | Source |
 |-----------|--------|
-| Stock prices | Yahoo Finance (yfinance) |
+| Stock prices | Provided as cited inputs by apdb-etl |
 | Financial statements | Yahoo Finance |
 | FF factors | Kenneth French Data Library |
-| Market data | Real-time (yfinance) |
+| Market data | Provided as cited inputs by apdb-etl |
 | Economic data | pandas-datareader |
 
 ## Error Handling
@@ -223,7 +223,6 @@ System: Calculate fixed vs floating leg values
 
 ## Limitations
 
-- yfinance data may have delays
 - KMV requires equity volatility
 - Convertible bond pricing simplified
 - Forward-looking ECL requires macro data

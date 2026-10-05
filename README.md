@@ -49,7 +49,7 @@ flowchart LR
   MCP --> REG["method-spec registry<br/>(valuation://methods)"]
   REG --> STD["standards taxonomy + corpus<br/>IVS 2025 · IFRS/IAS · (valuation://standards)"]
   REG --> CORE["valuation engine<br/>DCF · NAV · CCA · WACC (FF5) · derivatives<br/>credit risk · actuarial"]
-  CORE --> DATA["market data (yfinance)"]
+  CORE --> DATA["inputs from apdb-etl (cited)"]
   CORE --> ENV["result envelope<br/>value + statistics + citations"]
 ```
 
@@ -196,7 +196,7 @@ sequenceDiagram
 ## Requirements
 
 - Python 3.10+
-- yfinance, pandas, numpy, scipy
+- pandas, numpy, scipy, python-dateutil
 - fastmcp (MCP extra), openpyxl, pdfplumber, python-docx
 - QuantLib, pandas_datareader, pytesseract/easyocr (all optional, with native fallbacks)
 

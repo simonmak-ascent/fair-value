@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.simonmak-ascent/fair-value",
   "title": "Fair Value MCP Server",
-  "description": "Valuation MCP: DCF/NAV/CCA, cost of capital, derivatives, credit risk, report review.",
+  "description": "Valuation MCP: DCF/NAV/CCA, cost of capital, derivatives, credit risk, fixed income, structured products.",
   "version": "0.2.5",
   "websiteUrl": "https://github.com/simonmak-ascent/fair-value",
   "repository": {
