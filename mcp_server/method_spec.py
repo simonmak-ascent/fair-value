@@ -569,6 +569,10 @@ def methods_resource() -> Dict[str, Any]:
                     "label": title,
                     "summary": spec.summary,
                     "required": list(spec.required),
+                    # fair-value's locked no-defaults contract: every listed
+                    # parameter is required, so `optional` is intentionally empty
+                    # (see validate_arguments). Consumers must not read this as
+                    # "optional params were omitted".
                     "optional": [],
                 }
             )
