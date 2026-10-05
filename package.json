@@ -4,7 +4,7 @@
   "private": true,
   "description": "Next.js frontage (docs + API explorer) for the fair-value MCP server and REST API.",
   "scripts": {
-    "prebuild": "python3 scripts/gen_web_data.py || echo '[gen_web_data] skipped — using committed data/catalog.json'",
+    "prebuild": "python3 scripts/gen_web_data.py",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

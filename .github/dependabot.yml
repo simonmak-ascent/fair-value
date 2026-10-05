@@ -8,6 +8,12 @@ updates:
     groups:
       python-dependencies:
         patterns: ["*"]
+        # Keep major bumps out of the group so each lands as its own
+        # reviewable, revertable PR. exclude-patterns is the definitive
+        # guard: update-types alone can silently suppress individual major
+        # PRs (dependabot-core#14202).
+        update-types: ["minor", "patch"]
+        exclude-patterns: ["numpy", "fastmcp"]
 
   - package-ecosystem: github-actions
     directory: "/"
