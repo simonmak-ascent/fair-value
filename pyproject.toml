@@ -60,7 +60,7 @@ exclude = ["build", "dist", ".venv"]
 
 [tool.ruff.lint]
 # Pragmatic correctness-focused set for a legacy scientific codebase.
-select = ["E", "F", "W"]
+select = ["E", "F", "W", "NPY201"]
 ignore = ["E501", "E402", "E741", "W291", "W293", "W605"]
 per-file-ignores = { "tests/*" = ["F401"] }
 

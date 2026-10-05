@@ -30,6 +30,9 @@ jobs:
           # and the parity tests (otherwise skipped). Lightweight single wheel.
           pip install QuantLib
 
+      - name: Check dependency consistency
+        run: python -m pip check
+
       - name: Lint (ruff)
         run: ruff check .
 
@@ -57,6 +60,11 @@ jobs:
         run: |
           pip install .
           python -c "import mcp_server.server as s; assert s.FASTMCP_AVAILABLE, 'fastmcp not installed'; s.build_server(); print('server build smoke ok')"
+
+      - name: Build sdist + wheel
+        run: |
+          python -m pip install build
+          python -m build
 
   docs:
     runs-on: ubuntu-latest
@@ -92,7 +100,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate catalog data
-        run: python scripts/gen_web_data.py
+        run: |
+          python scripts/gen_web_data.py
+          git diff --exit-code -- data/catalog.json
 
       - name: Type-check
         run: pnpm typecheck
