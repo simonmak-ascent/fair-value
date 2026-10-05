@@ -1,0 +1,35 @@
+name: E2E (hosted)
+
+# Exercises a deployed fair-value endpoint (MCP + REST) over the wire.
+# Runs nightly and on demand; never on push (the default CI stays offline).
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Base URL of the deployment to test
+        required: false
+        default: https://fair-value.ascent-partners.com
+  schedule:
+    - cron: "0 6 * * *" # daily, 06:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install test runner
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Hosted MCP + REST end-to-end
+        env:
+          FAIR_VALUE_E2E_URL: ${{ github.event.inputs.base_url || 'https://fair-value.ascent-partners.com' }}
+        run: python -m pytest tests/test_e2e_hosted.py -v
