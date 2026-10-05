@@ -457,7 +457,7 @@ def input_schema(tool: str) -> Dict[str, Any]:
         "method": {
             "type": "string",
             "enum": list(table),
-            "description": "Formula to apply; each value lists its own required inputs in the description.",
+            "description": "Formula to apply; the tool description lists the exact inputs each value requires.",
         }
     }
     for spec in table.values():

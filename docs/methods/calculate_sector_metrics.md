@@ -1,6 +1,6 @@
 # Sector-specific operating metrics
 
-Sector-metric engine. Compute the metrics that anchor valuation in specific industries: SaaS (ARR, NRR, magic number, Rule of 40), marketplaces (take rate, GMV multiple), lending (LTV/CAC), and crypto (NVT, Metcalfe). Use these as inputs to a multiple or DCF. Read-only and deterministic. Returns the shared result envelope.
+Sector-metric engine. Compute the metrics that anchor valuation in specific industries: SaaS (ARR, NRR, magic number, Rule of 40), marketplaces (take rate, GMV multiple), lending (LTV/CAC), and crypto (NVT, Metcalfe). It returns operating metrics, not a valuation; use them as inputs to calculate_market_multiple or calculate_dcf.
 
 ```mermaid
 flowchart TD

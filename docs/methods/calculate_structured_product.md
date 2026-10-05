@@ -1,6 +1,6 @@
 # Structured product and derivative pricing
 
-Structured-product engine. Value HKEX-listed and OTC structures: CBBCs, derivative and inline warrants, equity-linked notes and investments, autocallables, accumulators and decumulators, credit-linked notes, TRS, and CFDs. Use this for equity-linked and credit-linked payoff structures; for a plain option or warrant use calculate_option.
+Structured-product engine. Value HKEX-listed and OTC structures: CBBCs, derivative and inline warrants, equity-linked notes and investments, autocallables, accumulators and decumulators, credit-linked notes, TRS, and CFDs. Use this for equity-linked and credit-linked payoff structures; for a plain option or warrant use calculate_option, for a convertible or exchangeable bond use calculate_convertible_bond, and for a vanilla bond or term structure use calculate_fixed_income.
 
 ```mermaid
 flowchart TD

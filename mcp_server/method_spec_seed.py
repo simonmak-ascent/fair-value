@@ -15,7 +15,7 @@ _TOOL_META = {
     ),
     "calculate_discount_rate": (
         "Cost of capital and discount rates",
-        "Cost-of-capital engine. Compute WACC, cost of equity (CAPM), cost of debt, unlevered/relevered beta, and country or size premiums from an explicit capital structure and market inputs. Use this to derive the discount rate an income-approach valuation needs. Read-only and deterministic. Returns the shared result envelope.",
+        "Cost-of-capital engine. Compute WACC, cost of equity (CAPM), cost of debt, unlevered/relevered beta, and country or size premiums from an explicit capital structure and market inputs. Use this to derive the discount rate an income-approach valuation needs; it returns a rate, not a valuation, so feed the result to calculate_dcf, or to calculate_residual for IFRS-basis measurement.",
     ),
     "calculate_market_multiple": (
         "Market multiples and comparable pricing",
@@ -35,7 +35,7 @@ _TOOL_META = {
     ),
     "calculate_credit_loss": (
         "Credit loss and impairment",
-        "Credit-risk engine (IFRS 9 / HKFRS 9). Compute 12-month, lifetime, and staged expected credit loss, PD/LGD/EAD, provision matrices, hazard rates, and CVA/DVA. Use this for impairment, fair-value credit adjustment, and loan-loss provisioning; for the credit component of a specific convertible bond use calculate_convertible_bond.",
+        "Credit-risk engine (IFRS 9 / HKFRS 9). Compute 12-month, lifetime, and staged expected credit loss, PD/LGD/EAD, provision matrices, hazard rates, and CVA/DVA. Use this for impairment, fair-value credit adjustment, and loan-loss provisioning; for the credit component of a specific convertible bond use calculate_convertible_bond, and for liquidity, control or marketability discounts rather than credit loss use calculate_fair_value_adjustment.",
     ),
     "calculate_actuarial_pv": (
         "Actuarial present value",
@@ -43,19 +43,19 @@ _TOOL_META = {
     ),
     "calculate_sector_metrics": (
         "Sector-specific operating metrics",
-        "Sector-metric engine. Compute the metrics that anchor valuation in specific industries: SaaS (ARR, NRR, magic number, Rule of 40), marketplaces (take rate, GMV multiple), lending (LTV/CAC), and crypto (NVT, Metcalfe). Use these as inputs to a multiple or DCF. Read-only and deterministic. Returns the shared result envelope.",
+        "Sector-metric engine. Compute the metrics that anchor valuation in specific industries: SaaS (ARR, NRR, magic number, Rule of 40), marketplaces (take rate, GMV multiple), lending (LTV/CAC), and crypto (NVT, Metcalfe). It returns operating metrics, not a valuation; use them as inputs to calculate_market_multiple or calculate_dcf.",
     ),
     "calculate_fair_value_adjustment": (
         "Fair value adjustments (IFRS 13)",
-        "Fair-value-adjustment engine (IFRS 13). Compute exit-price adjustments including credit, liquidity, control and marketability discounts, blockage, and the fair-value hierarchy level. Use this to move from an indicated value to the fair value recognised in the accounts. Read-only and deterministic. Returns the shared result envelope.",
+        "Fair-value-adjustment engine (IFRS 13). Compute exit-price adjustments including credit, liquidity, control and marketability discounts, blockage, and the fair-value hierarchy level. Use this to move from an indicated value to the fair value recognised in the accounts; for liquidity/marketability inputs of a listed instrument prefer calculate_market_multiple, and for expected credit loss use calculate_credit_loss.",
     ),
     "calculate_convertible_bond": (
         "Convertible and exchangeable bond valuation",
-        "Convertible-bond engine. Value callable and puttable convertible or exchangeable bonds with credit risk using a Tsiveriotis-Fernandes lattice (equity discounted at the risk-free rate, debt at a credit spread), with conversion, issuer call, holder put, coupon schedule, and a straight-bond floor. Use this for HK-listed convertible and exchangeable bonds. Read-only and deterministic. Returns the shared result envelope.",
+        "Convertible-bond engine. Value callable and puttable convertible or exchangeable bonds with credit risk using a Tsiveriotis-Fernandes lattice (equity discounted at the risk-free rate, debt at a credit spread), with conversion, issuer call, holder put, coupon schedule, and a straight-bond floor. Use this for convertible and exchangeable bonds; for a plain bond or rate curve use calculate_fixed_income, and for a standalone option or warrant use calculate_option. The lattice_tsf, lattice_intensity, finite_difference, lsmc and quantlib methods are alternative numerical schemes for the same valuation and take identical inputs (Tsiveriotis-Fernandes is the reference, lsmc is Monte Carlo, quantlib needs the optional engine); choose one.",
     ),
     "calculate_structured_product": (
         "Structured product and derivative pricing",
-        "Structured-product engine. Value HKEX-listed and OTC structures: CBBCs, derivative and inline warrants, equity-linked notes and investments, autocallables, accumulators and decumulators, credit-linked notes, TRS, and CFDs. Use this for equity-linked and credit-linked payoff structures; for a plain option or warrant use calculate_option.",
+        "Structured-product engine. Value HKEX-listed and OTC structures: CBBCs, derivative and inline warrants, equity-linked notes and investments, autocallables, accumulators and decumulators, credit-linked notes, TRS, and CFDs. Use this for equity-linked and credit-linked payoff structures; for a plain option or warrant use calculate_option, for a convertible or exchangeable bond use calculate_convertible_bond, and for a vanilla bond or term structure use calculate_fixed_income.",
     ),
     "calculate_loss_making_company": (
         "Loss-making and pre-profit company valuation",

@@ -1,6 +1,6 @@
 # Fair value adjustments (IFRS 13)
 
-Fair-value-adjustment engine (IFRS 13). Compute exit-price adjustments including credit, liquidity, control and marketability discounts, blockage, and the fair-value hierarchy level. Use this to move from an indicated value to the fair value recognised in the accounts. Read-only and deterministic. Returns the shared result envelope.
+Fair-value-adjustment engine (IFRS 13). Compute exit-price adjustments including credit, liquidity, control and marketability discounts, blockage, and the fair-value hierarchy level. Use this to move from an indicated value to the fair value recognised in the accounts; for liquidity/marketability inputs of a listed instrument prefer calculate_market_multiple, and for expected credit loss use calculate_credit_loss.
 
 ```mermaid
 flowchart TD

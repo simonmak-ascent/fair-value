@@ -1,6 +1,6 @@
 # Convertible and exchangeable bond valuation
 
-Convertible-bond engine. Value callable and puttable convertible or exchangeable bonds with credit risk using a Tsiveriotis-Fernandes lattice (equity discounted at the risk-free rate, debt at a credit spread), with conversion, issuer call, holder put, coupon schedule, and a straight-bond floor. Use this for HK-listed convertible and exchangeable bonds. Read-only and deterministic. Returns the shared result envelope.
+Convertible-bond engine. Value callable and puttable convertible or exchangeable bonds with credit risk using a Tsiveriotis-Fernandes lattice (equity discounted at the risk-free rate, debt at a credit spread), with conversion, issuer call, holder put, coupon schedule, and a straight-bond floor. Use this for convertible and exchangeable bonds; for a plain bond or rate curve use calculate_fixed_income, and for a standalone option or warrant use calculate_option. The lattice_tsf, lattice_intensity, finite_difference, lsmc and quantlib methods are alternative numerical schemes for the same valuation and take identical inputs (Tsiveriotis-Fernandes is the reference, lsmc is Monte Carlo, quantlib needs the optional engine); choose one.
 
 ```mermaid
 flowchart TD

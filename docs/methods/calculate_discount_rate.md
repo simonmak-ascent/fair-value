@@ -1,6 +1,6 @@
 # Cost of capital and discount rates
 
-Cost-of-capital engine. Compute WACC, cost of equity (CAPM), cost of debt, unlevered/relevered beta, and country or size premiums from an explicit capital structure and market inputs. Use this to derive the discount rate an income-approach valuation needs. Read-only and deterministic. Returns the shared result envelope.
+Cost-of-capital engine. Compute WACC, cost of equity (CAPM), cost of debt, unlevered/relevered beta, and country or size premiums from an explicit capital structure and market inputs. Use this to derive the discount rate an income-approach valuation needs; it returns a rate, not a valuation, so feed the result to calculate_dcf, or to calculate_residual for IFRS-basis measurement.
 
 ```mermaid
 flowchart TD

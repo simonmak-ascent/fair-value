@@ -96,11 +96,9 @@ ENVELOPE_OUTPUT = _ENVELOPE_OUTPUT
 
 
 _BEHAVIOR = (
-    "Read-only and deterministic: it performs no network or database I/O, mutates no state, and "
-    "returns the same result for the same inputs. Each method "
-    "requires its exact inputs (no defaults), so a missing input, an unknown method, or an extra "
-    "field returns an error envelope (code INVALID_ARGUMENT) instead of raising. The result "
-    "envelope carries status, method, value, assumptions, formula_ref, data_timestamp, steps and error."
+    "Supply exactly one method with its declared inputs (no defaults). An unknown method, a "
+    "missing input, or an extra field returns an error envelope (code INVALID_ARGUMENT) "
+    "instead of raising."
 )
 
 
@@ -111,7 +109,8 @@ def _tidy(base: str) -> str:
         for sentence in base.split(". ")
         if "Read-only" not in sentence and "shared result envelope" not in sentence
     ]
-    return ". ".join(s for s in kept if s).strip()
+    text = ". ".join(s for s in kept if s).strip()
+    return text if not text or text.endswith(".") else text + "."
 
 
 def _build_surface() -> Tuple[ToolSpec, ...]:
