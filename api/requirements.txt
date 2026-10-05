@@ -2,4 +2,4 @@ numpy>=2.2.6
 scipy>=1.15.3
 pandas>=2.3.3
 python-dateutil>=2.9.0.post0
-fastmcp>=2.0
+fastmcp>=4.0.10

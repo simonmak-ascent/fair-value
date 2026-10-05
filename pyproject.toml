@@ -28,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 # MCP server dependencies (A-004) — never required for the base library.
-mcp = ["fastmcp>=2.0"]
+mcp = ["fastmcp>=4.0.10"]
 # Optional analysis backends.
 quant = ["QuantLib-Python>=1.18"]
 docs = ["mkdocs"]
