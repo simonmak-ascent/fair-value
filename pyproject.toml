@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -20,20 +20,20 @@ classifiers = [
     "Topic :: Office/Business :: Financial",
 ]
 dependencies = [
-    "numpy>=1.24.0",
-    "scipy>=1.10.0",
-    "pandas>=2.0.0",
-    "python-dateutil>=2.8.0",
+    "numpy>=2.2.6",
+    "scipy>=1.15.3",
+    "pandas>=2.3.3",
+    "python-dateutil>=2.9.0.post0",
 ]
 
 [project.optional-dependencies]
 # MCP server dependencies (A-004) — never required for the base library.
-mcp = ["fastmcp>=2.0"]
+mcp = ["fastmcp>=4.0.10"]
 # Optional analysis backends.
-quant = ["QuantLib-Python>=1.17"]
+quant = ["QuantLib-Python>=1.18"]
 docs = ["mkdocs"]
 # Observability (A-016): no-op unless SENTRY_DSN is set.
-observability = ["sentry-sdk>=2.0"]
+observability = ["sentry-sdk>=2.71.0"]
 # Sibling MCP whose tool surface is delegated to (A-005). Only
 # startup-valuation is installable alongside this package (namespaced modules).
 # intangible-valuation ships a top-level ``mcp_server`` package that collides
