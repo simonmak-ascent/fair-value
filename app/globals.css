@@ -7,19 +7,22 @@
  * invented outside these ramps; dark surfaces use the neutral ramp.
  * Dark mode is class-based: `.dark` is set on <html> (default dark).
  */
-@custom-variant dark (&:where(.dark, .dark *));
+/* Dark is the site default; toggled via data-theme on <html> (APG parity). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
-  --color-primary-50: #caffff;
-  --color-primary-100: #baf4ff;
-  --color-primary-200: #a2e5ff;
-  --color-primary-300: #80cdea;
-  --color-primary-400: #53adcd;
-  --color-primary-500: #2a8eaf;
-  --color-primary-600: #007a9a;
-  --color-primary-700: #00607b;
-  --color-primary-800: #004f67;
-  --color-primary-900: #004055;
+  /* Palette locked to the Ascent Partners design tokens (@simonmak-ascent/shared).
+   * Accent = #005467 (teal-dark), brand teal = #0085ae, gold = #dfb947. */
+  --color-primary-50: #e8f5f8;
+  --color-primary-100: #cde9ef;
+  --color-primary-200: #9ed4e0;
+  --color-primary-300: #5fb6c9;
+  --color-primary-400: #2a97ae;
+  --color-primary-500: #0085ae;
+  --color-primary-600: #005467;
+  --color-primary-700: #00455a;
+  --color-primary-800: #003a4c;
+  --color-primary-900: #00303f;
   --color-primary-950: #002432;
 
   --color-secondary-50: #fff4b6;
@@ -34,20 +37,20 @@
   --color-secondary-900: #4c3500;
   --color-secondary-950: #2c1c00;
 
-  --color-neutral-50: #f5f5f5;
-  --color-neutral-100: #eaeaea;
-  --color-neutral-200: #d9d9d9;
-  --color-neutral-300: #c0c0c0;
-  --color-neutral-400: #9f9f9f;
-  --color-neutral-500: #828282;
-  --color-neutral-600: #6c6c6c;
-  --color-neutral-700: #575757;
-  --color-neutral-800: #464646;
-  --color-neutral-900: #373737;
-  --color-neutral-950: #1f1f1f;
+  --color-neutral-50: #f8f8f8;
+  --color-neutral-100: #f8f8f8;
+  --color-neutral-200: #efefef;
+  --color-neutral-300: #cccccc;
+  --color-neutral-400: #b3b3b3;
+  --color-neutral-500: #999999;
+  --color-neutral-600: #767676;
+  --color-neutral-700: #545454;
+  --color-neutral-800: #3c3c3c;
+  --color-neutral-900: #262626;
+  --color-neutral-950: #1c1c1c;
 
-  --color-teal: #007a9a;
-  --color-teal-dark: #006987;
+  --color-teal: #0085ae;
+  --color-teal-dark: #005467;
   --color-gold: #dfb947;
 
   --font-sans: var(--font-open-sans), "Open Sans", system-ui, sans-serif;
@@ -79,7 +82,7 @@
 }
 
 @utility container-site {
-  max-width: 1180px;
+  max-width: var(--ap-max-width-site, 65.125rem);
   margin-inline: auto;
   padding-inline: 1.25rem;
   @media (width >= 64rem) {

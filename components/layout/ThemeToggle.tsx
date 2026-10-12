@@ -2,31 +2,34 @@
 
 import { useEffect, useState } from "react";
 
+const KEY = "apg-theme";
+
+/** Dark/light switch — APG parity (data-theme + localStorage["apg-theme"]). */
 export function ThemeToggle() {
   const [dark, setDark] = useState(true);
 
   useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
+    setDark(document.documentElement.getAttribute("data-theme") !== "light");
   }, []);
 
   function toggle() {
-    const next = !document.documentElement.classList.contains("dark");
-    document.documentElement.classList.toggle("dark", next);
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", next);
     try {
-      localStorage.setItem("theme", next ? "dark" : "light");
+      localStorage.setItem(KEY, next);
     } catch {
       /* ignore */
     }
-    setDark(next);
+    setDark(next === "dark");
   }
 
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label="Toggle dark mode"
-      title="Toggle dark mode"
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-neutral-300 text-neutral-600 transition-colors hover:border-primary-500 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-primary-400 dark:hover:text-primary-300"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      title={dark ? "Switch to light mode" : "Switch to dark mode"}
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-neutral-300 text-neutral-500 transition-colors hover:border-primary-500 hover:text-primary-600 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-primary-400 dark:hover:text-primary-300"
     >
       {dark ? (
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
