@@ -47,8 +47,8 @@ const REGISTRY = "io.github.simonmak-ascent/fair-value";
 
 export const LANDING_COPY: Record<Locale, LandingCopy> = {
   en: {
-    type: "MCP server",
-    name: "Valuation MCP",
+    type: "MCP server + REST API",
+    name: "Fair Value",
     value:
       "Give AI agents a deterministic, IVS/IFRS-cited valuation engine for company and financial-instrument valuations.",
     thesis:
@@ -92,8 +92,8 @@ export const LANDING_COPY: Record<Locale, LandingCopy> = {
     navLangLabel: "Language",
   },
   zh: {
-    type: "MCP 服务器",
-    name: "Valuation MCP",
+    type: "MCP 服务器 + REST API",
+    name: "Fair Value",
     value: "为 AI 代理提供确定性的、引用 IVS/IFRS 的企业及金融工具估值引擎。",
     thesis: "估值是一场论证。这就是我们所做的论证——确定，且引用复核者会查证的准则。",
     stats: [
@@ -134,8 +134,8 @@ export const LANDING_COPY: Record<Locale, LandingCopy> = {
     navLangLabel: "语言",
   },
   hk: {
-    type: "MCP 伺服器",
-    name: "Valuation MCP",
+    type: "MCP 伺服器 + REST API",
+    name: "Fair Value",
     value: "為 AI 代理提供確定性的、引用 IVS/IFRS 的企業及金融工具估值引擎。",
     thesis: "估值是一場論證。這就是我們所做的論證——確定，且引用覆核者會查證的準則。",
     stats: [
