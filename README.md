@@ -117,7 +117,8 @@ pnpm typecheck && pnpm lint
 ```
 
 Routing: `/` and `/docs/*` are Next.js; `/mcp` and `/v1/*` are rewritten to the
-Python function (`api/index.py`).
+Python function (`api/index.py`). The frontage is localized — `en` at `/`,
+`zh` at `/zh`, `hk` at `/hk` — via per-locale root layouts with hreflang.
 
 ## Quick Start (Python)
 
