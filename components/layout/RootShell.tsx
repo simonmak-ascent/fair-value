@@ -25,6 +25,10 @@ export const metadata: Metadata = {
     siteName: "fair-value",
     url: siteUrl,
   },
+  alternates: {
+    canonical: siteUrl,
+    languages: { "en-GB": siteUrl, "zh-Hans": `${siteUrl}/zh`, "zh-Hant-HK": `${siteUrl}/hk`, "x-default": siteUrl },
+  },
   robots: { index: true, follow: true },
 };
 
