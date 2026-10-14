@@ -32,7 +32,7 @@ cmd_deploy() { # <slot>  (static: publish docs; python slot optional)
 
 cmd_switch() { # <slot>
   write_app_vhost "$PROD_FRAG" "$1" static
-  if py_has && [ -n "$(py_slot_port "$1" 2>/dev/null || true)" ]; then systemctl restart "${APP}-mcp@$1"; fi
+  if py_has && [ -n "$(py_slot_port "$1" 2>/dev/null || true)" ]; then py_restart_slot "$1"; fi
   caddy_reload
   printf '%s\n' "$1" > "$ACTIVE_FILE"
   log "prod docs /docs${py_has:+ · py :$(py_slot_port "$1" 2>/dev/null || echo -)}"
