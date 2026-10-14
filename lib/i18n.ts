@@ -43,7 +43,7 @@ export interface LandingCopy {
 }
 
 const ENDPOINT = "https://fair-value.ascent-partners.com/mcp";
-const REGISTRY = "io.github.simonmak-ascent/fair-value";
+const REGISTRY = "com.ascent-partners/fair-value";
 
 export const LANDING_COPY: Record<Locale, LandingCopy> = {
   en: {

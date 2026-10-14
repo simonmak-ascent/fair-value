@@ -32,7 +32,7 @@ The same core is served as a **REST API** at `/v1` (see [REST API](api.md)).
 ## Registry
 
 - PyPI: `fair-value`
-- MCP Registry: `io.github.simonmak-ascent/fair-value`
+- MCP Registry: `com.ascent-partners/fair-value`
 - Hosted: `https://fair-value.ascent-partners.com/mcp` (Streamable HTTP; the frontage and docs are at `/`)
 
 Directory sites (Glama, PulseMCP, mcp.so) ingest the official MCP Registry, so

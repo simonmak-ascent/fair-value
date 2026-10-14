@@ -7,7 +7,7 @@
 - Hosted MCP endpoint (Streamable HTTP, no API key): https://fair-value.ascent-partners.com/mcp
 - Hosted REST API: https://fair-value.ascent-partners.com/v1 (OpenAPI: https://fair-value.ascent-partners.com/v1/openapi.json)
 - Local stdio server: `uvx --from 'fair-value[mcp]' fair-value-mcp` or `pip install 'fair-value[mcp]' && fair-value-mcp`
-- Official MCP Registry name: `io.github.simonmak-ascent/fair-value`
+- Official MCP Registry name: `com.ascent-partners/fair-value`
 
 ## MCP tools
 

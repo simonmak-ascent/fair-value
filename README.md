@@ -8,7 +8,7 @@
 
 Professional financial valuation system for OpenCode with IFRS/IVS compliance.
 
-mcp-name: io.github.simonmak-ascent/fair-value
+mcp-name: com.ascent-partners/fair-value
 
 ## Overview
 

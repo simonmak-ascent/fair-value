@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.simonmak-ascent/fair-value",
+  "name": "com.ascent-partners/fair-value",
   "title": "Fair Value MCP Server",
   "description": "Valuation MCP: DCF/NAV/CCA, WACC, derivatives, credit risk, fixed income, structured products.",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "websiteUrl": "https://github.com/simonmak-ascent/fair-value",
   "repository": {
     "url": "https://github.com/simonmak-ascent/fair-value",
@@ -13,22 +13,33 @@
     {
       "registryType": "pypi",
       "identifier": "fair-value",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "runtimeHint": "uvx",
       "runtimeArguments": [
-        { "type": "named", "name": "--from", "value": "fair-value[mcp]" }
+        {
+          "type": "named",
+          "name": "--from",
+          "value": "fair-value[mcp]"
+        }
       ],
       "packageArguments": [
-        { "type": "positional", "value": "fair-value-mcp" }
+        {
+          "type": "positional",
+          "value": "fair-value-mcp"
+        }
       ],
-      "transport": { "type": "stdio" }
+      "transport": {
+        "type": "stdio"
+      }
     }
   ],
   "icons": [
     {
       "src": "https://raw.githubusercontent.com/simonmak-ascent/fair-value/main/assets/icon.svg",
       "mimeType": "image/svg+xml",
-      "sizes": ["any"]
+      "sizes": [
+        "any"
+      ]
     }
   ],
   "remotes": [
