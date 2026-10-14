@@ -1,0 +1,29 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["simonmak-ascent"],
+  "name": "fair-value",
+  "description": "Fair-value MCP for AI agents — 14 tools spanning 135 methods: DCF/NAV/CCA, cost of capital (WACC/CAPM), derivatives, credit risk, fixed income, and structured products, aligned to IVS 2025 / IFRS. Read-only, pure computation.",
+  "repository": "https://github.com/simonmak-ascent/fair-value",
+  "license": "MIT",
+  "runtime": "python",
+  "installInstructions": {
+    "pip": "pip install 'fair-value[mcp]' && fair-value-mcp",
+    "uvx": "uvx --from 'fair-value[mcp]' fair-value-mcp"
+  },
+  "categories": ["finance", "research-and-data", "developer-tools"],
+  "keywords": [
+    "valuation",
+    "dcf",
+    "wacc",
+    "cost-of-capital",
+    "derivatives",
+    "credit-risk",
+    "fixed-income",
+    "structured-products",
+    "ifrs",
+    "ivs",
+    "finance",
+    "mcp",
+    "model-context-protocol"
+  ]
+}
