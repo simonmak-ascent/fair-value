@@ -1,0 +1,24 @@
+# Fair Value
+
+> Open-source (MIT) Python library, REST API and MCP server for financial valuation: 14 read-only, deterministic tools spanning 135 methods — DCF/NAV/CCA, cost of capital (WACC/CAPM), derivatives, credit risk, fixed income and structured products — aligned to IVS 2025 / IFRS.
+
+## Connect
+
+- Hosted MCP endpoint (Streamable HTTP, no API key): https://fair-value.ascent-partners.com/mcp
+- Hosted REST API: https://fair-value.ascent-partners.com/v1 (OpenAPI: https://fair-value.ascent-partners.com/v1/openapi.json)
+- Local stdio server: `uvx --from 'fair-value[mcp]' fair-value-mcp` or `pip install 'fair-value[mcp]' && fair-value-mcp`
+- Official MCP Registry name: `io.github.simonmak-ascent/fair-value`
+
+## MCP tools
+
+All tools are pure computation (no I/O), read-only and idempotent; a `method` parameter selects the formula inside each tool.
+
+- `calculate_dcf`, `calculate_market_multiple`, `calculate_residual`, `calculate_sector_metrics`
+- `calculate_discount_rate` (WACC/CAPM), `calculate_expected_value`
+- `calculate_option`, `calculate_structured_product`, `calculate_convertible_bond`, `calculate_fixed_income`
+- `calculate_credit_loss`, `calculate_fair_value_adjustment`, `calculate_actuarial_pv`, `calculate_loss_making_company`
+
+## Docs
+
+- Documentation: https://fair-value.ascent-partners.com/docs
+- Method catalogue: https://fair-value.ascent-partners.com/v1/methods
