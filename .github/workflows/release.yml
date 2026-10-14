@@ -12,6 +12,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: mcp-registry-publish
     steps:
       - uses: actions/checkout@v7
 
@@ -33,5 +34,5 @@ jobs:
         run: |
           curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" \
             | tar xz mcp-publisher
-          ./mcp-publisher login github-oidc
+          mcp-publisher login dns --domain ascent-partners.com --private-key ${{ secrets.MCP_PRIVATE_KEY }}
           ./mcp-publisher publish
