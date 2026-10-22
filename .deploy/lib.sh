@@ -403,6 +403,10 @@ write_app_vhost() {
     # docs (mkdocs) at /docs
     if mf docs >/dev/null 2>&1; then
       local dpath; dpath="$(mf docs.path 2>/dev/null || echo /docs)"
+      # A Next-rendered playground can coexist with the static mkdocs tree.
+      if [ "$(mf docs.playground 2>/dev/null || echo false)" = "true" ]; then
+        printf '\thandle %s/playground* {\n\t\treverse_proxy 127.0.0.1:%s\n\t}\n' "$dpath" "$(slot_port "$slot")"
+      fi
       printf '\thandle_path %s/* {\n\t\troot * /srv/sites/%s/docs\n\t\tfile_server\n\t}\n' "$dpath" "$APP"
     fi
     # python MCP/REST routes

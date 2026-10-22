@@ -45,7 +45,7 @@ apps:
     preview_host: "preview-{{ts}}.ascent-partners.com"
     tls:
       cert: /etc/caddy/certs-website/ascent.fullchain.pem
-      key:  /etc/caddy/certs-website/ascent.key
+      key: /etc/caddy/certs-website/ascent.key
     keep_releases: 3
     # bind_ip: 10.20.1.200   # OPTIONAL later: secondary private IP (+ EIP) for isolation
 
@@ -63,7 +63,11 @@ apps:
     artifact: .next/standalone
     health: ["/"]
     preview_host: "preview-fv-{{ts}}.ascent-partners.com"
-    tls: { cert: /etc/caddy/certs-website/ascent.fullchain.pem, key: /etc/caddy/certs-website/ascent.key }
+    tls:
+      {
+        cert: /etc/caddy/certs-website/ascent.fullchain.pem,
+        key: /etc/caddy/certs-website/ascent.key,
+      }
     keep_releases: 3
     routes: { python: ["/mcp*", "/v1/*"] }
     python:
@@ -71,7 +75,7 @@ apps:
       package: "."
       requirements: api/requirements.txt
       cmd: "uvicorn mcp_server.asgi:app --host 127.0.0.1 --port {port}"
-    docs: { build: "mkdocs build --strict", dir: site }
+    docs: { build: "mkdocs build --strict", dir: site, playground: true }
 
   - name: startup-valuation
     repo: simonmak-ascent/startup-valuation
@@ -84,15 +88,29 @@ apps:
     artifact: .next/standalone
     health: ["/"]
     preview_host: "preview-sv-{{ts}}.ascent-partners.com"
-    tls: { cert: /etc/caddy/certs-website/ascent.fullchain.pem, key: /etc/caddy/certs-website/ascent.key }
+    tls:
+      {
+        cert: /etc/caddy/certs-website/ascent.fullchain.pem,
+        key: /etc/caddy/certs-website/ascent.key,
+      }
     keep_releases: 3
     routes: { python: ["/api", "/api/calculate", "/api/index.py"] }
     python:
       slots: { blue: 8020, green: 8030 }
       package: "."
       endpoints:
-        - { name: api,       launcher: pylaunch, app: "api.index:handler",     paths: ["/api", "/api/health", "/api/healthz", "/api/index.py"] }
-        - { name: calculate, launcher: pylaunch, app: "api.calculate:handler", paths: ["/api/calculate"] }
+        - {
+            name: api,
+            launcher: pylaunch,
+            app: "api.index:handler",
+            paths: ["/api", "/api/health", "/api/healthz", "/api/index.py"],
+          }
+        - {
+            name: calculate,
+            launcher: pylaunch,
+            app: "api.calculate:handler",
+            paths: ["/api/calculate"],
+          }
     docs: { build: "mkdocs build --strict", dir: site }
 
   - name: intangible-valuation
@@ -106,15 +124,29 @@ apps:
     artifact: .next/standalone
     health: ["/"]
     preview_host: "preview-iv-{{ts}}.ascent-partners.com"
-    tls: { cert: /etc/caddy/certs-website/ascent.fullchain.pem, key: /etc/caddy/certs-website/ascent.key }
+    tls:
+      {
+        cert: /etc/caddy/certs-website/ascent.fullchain.pem,
+        key: /etc/caddy/certs-website/ascent.key,
+      }
     keep_releases: 3
     routes: { python: ["/api/*"] }
     python:
       slots: { blue: 8050, green: 8060 }
       package: "."
       endpoints:
-        - { name: mcp, launcher: pylaunch, app: "api.mcp:handler",   paths: ["/api/mcp*"] }
-        - { name: api, launcher: pylaunch, app: "api.index:handler", paths: ["/api/*"] }
+        - {
+            name: mcp,
+            launcher: pylaunch,
+            app: "api.mcp:handler",
+            paths: ["/api/mcp*"],
+          }
+        - {
+            name: api,
+            launcher: pylaunch,
+            app: "api.index:handler",
+            paths: ["/api/*"],
+          }
     docs: { build: "mkdocs build --strict", dir: site }
 
   - name: hkex-listco-updates
@@ -124,14 +156,22 @@ apps:
     domain: hkex-listco-updates.ascent-partners.com
     geo: false
     preview_host: "preview-hkex-{{ts}}.ascent-partners.com"
-    tls: { cert: /etc/caddy/certs-website/ascent.fullchain.pem, key: /etc/caddy/certs-website/ascent.key }
+    tls:
+      {
+        cert: /etc/caddy/certs-website/ascent.fullchain.pem,
+        key: /etc/caddy/certs-website/ascent.key,
+      }
     health: ["/docs"]
     routes: { python: ["/api/*"] }
     python:
       slots: { blue: 8040, green: 8041 }
       package: "."
       cmd: "python wsgilaunch.py --app api.mcp:app --health api.healthz:app --port {port}"
-    docs: { build: "mkdocs build --strict && python3 scripts/build_llms.py", dir: site }
+    docs:
+      {
+        build: "mkdocs build --strict && python3 scripts/build_llms.py",
+        dir: site,
+      }
 
   # ── coso-mcp: Node MCP service (COSO internal-control review). Vercel → ecs-01.
   #    Host resolves via the *.ascent-partners.com wildcard (no per-host DNS record).
@@ -150,13 +190,17 @@ apps:
     entry: server.mjs
     health: ["/healthz"]
     preview_host: "preview-coso-{{ts}}.ascent-partners.com"
-    tls: { cert: /etc/caddy/certs-website/ascent.fullchain.pem, key: /etc/caddy/certs-website/ascent.key }
+    tls:
+      {
+        cert: /etc/caddy/certs-website/ascent.fullchain.pem,
+        key: /etc/caddy/certs-website/ascent.key,
+      }
     keep_releases: 3
 
   # ── Infrastructure (apg-infra itself): plan on PR, apply on main ──
   - name: apg-infra
     repo: simonmak-ascent/apg-infra
-    node: ecs-01                 # runs on the same self-hosted runner
+    node: ecs-01 # runs on the same self-hosted runner
     kind: terraform
     tf_dir: .
     tf_state:
