@@ -422,7 +422,11 @@ write_app_vhost() {
     printf '%s%s {\n' "$DOMAIN" "${aliases:+, $aliases}"
     printf '\tencode zstd gzip\n'
     printf '\ttls %s %s\n' "$cert" "$key"
-    printf '\tgeoip2_vars strict\n'
+    # Geo resolution mode. `trusted_proxies` honours X-Forwarded-For from the
+    # ALB; `strict` resolves the connecting address. The live estate runs
+    # trusted_proxies (applied fleet-wide 2026-10-23), so that is the default and
+    # a deploy no longer silently reverts it.
+    printf '\tgeoip2_vars %s\n' "$(mf geo_mode 2>/dev/null || echo trusted_proxies)"
     emit_security_headers
     # One canonical origin: permanently move any "www." alias to the apex host
     # (path + query preserved) so there is a single indexable origin. Other
