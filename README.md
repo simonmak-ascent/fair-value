@@ -194,6 +194,10 @@ sequenceDiagram
 ```
 
 
+## Development
+
+CI and deployment run through the APG workbench pipeline.
+
 ## Requirements
 
 - Python 3.10+
