@@ -194,7 +194,7 @@ case "$verb" in
   deploy) cmd_deploy "$@" ;;
   switch) cmd_switch "$@" ;;
   preview) cmd_preview "$@" ;;
-  rollback) cmd_rollback ;;
+  rollback) cmd_rollback "$@" ;;
   smoke) cmd_smoke "$@" ;;
   *) die "unknown verb: $verb" ;;
 esac
