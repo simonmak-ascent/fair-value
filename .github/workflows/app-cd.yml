@@ -97,14 +97,18 @@ jobs:
       # Runs once, on the primary node — it audits the site, not the fleet.
       - name: Mobile layout check (390px)
         if: matrix.runner == inputs.runner
-        run: node scripts/audit-e2e.mjs --mobile-only
+        run: |
+          [ -f scripts/audit-e2e.mjs ] || { echo "no mobile audit in this repo; skipping"; exit 0; }
+          node scripts/audit-e2e.mjs --mobile-only
 
       # Keyless search-engine submission (IndexNow); non-blocking by design —
       # a rejected batch must not fail or roll back a healthy deploy.
       - name: Submit to IndexNow
         if: matrix.runner == inputs.runner
         continue-on-error: true
-        run: node scripts/indexnow.mjs
+        run: |
+          [ -f scripts/indexnow.mjs ] || { echo "no IndexNow submitter in this repo; skipping"; exit 0; }
+          node scripts/indexnow.mjs
 
   # If any node failed, return every node to the slot it ran before the deploy —
   # a half-deployed fleet is worse than an old release everywhere.
