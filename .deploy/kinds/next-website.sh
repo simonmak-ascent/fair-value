@@ -6,7 +6,7 @@
 # `docs:` -> mkdocs published to /srv/sites/<app>/docs and served at /docs;
 # `routes.python:` -> Caddy path matchers routed to the python service.
 #
-# Verbs: build | deploy <slot> | switch <slot> | preview <ts> | rollback | smoke [port] [host]
+# Verbs: build | deploy <slot> | switch <slot> [--force] | preview <ts> | rollback [failed-slot] | smoke [port] [host]
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=../lib.sh
@@ -77,6 +77,9 @@ cmd_build() {
 
 cmd_deploy() { # <slot>
   local slot="$1" dest="$APP_ROOT/$1" artifact
+  # Remember what is live now, so a rollback returns to it even when the switch
+  # itself failed half-way (and on a node that had never run the peer slot).
+  remember_slot "$(active_slot)"
   # Every staging step names itself: a failure here once exited 1 with no output,
   # so the run rolled back with no clue which command died.
   log "deploy $slot: layout"
@@ -92,14 +95,28 @@ cmd_deploy() { # <slot>
   cp -a "$REPO_DIR/$artifact/." "$dest/" || die "artifact copy failed: $REPO_DIR/$artifact -> $dest"
   log "deploy $slot: restart unit ${APP}@${slot}"
   as_root systemctl enable --now "${APP}@${slot}" >/dev/null 2>&1 || true
-  as_root systemctl restart "${APP}@${slot}" || die "systemctl restart ${APP}@${slot} failed"
+  as_root systemctl restart "${APP}@${slot}" || die "as_root systemctl restart ${APP}@${slot} failed"
   sleep 3
   health_check "$(slot_port "$slot")" "$DOMAIN" || die "health check failed for $slot on :$(slot_port "$slot")"
   # python service (skip when this slot has no python slot, e.g. preview)
   if py_has && [ -n "$(py_slot_port "$slot" 2>/dev/null || true)" ]; then py_deploy "$slot" || die "py_deploy failed for $slot"; fi
 }
 
-cmd_switch() { # <slot>  (prod)
+cmd_switch() { # <slot> [--force]  (prod)
+  # Never move production onto a slot that is not serving. health_check takes a port and presents
+  # the production Host header, so the candidate can be verified on its own port before any traffic
+  # moves; the switch is the only place traffic moves, so the guard belongs here rather than in a
+  # workflow step that runs after it (which is what it did, so a build that failed the checks was
+  # already live and only then rolled back).
+  #
+  # --force exists for rollback: refusing to leave a bad slot is the opposite of what a rollback is
+  # for, so cmd_rollback passes it and this guard only blocks forward deploys.
+  local candidate_port force=0
+  [ "${2:-}" = "--force" ] && force=1
+  candidate_port="$(slot_port "$1")"
+  if [ "$force" = "0" ]; then
+    health_check "$candidate_port" "$DOMAIN" || die "refusing to switch: slot $1 (:$candidate_port) fails the health check (--force to override)"
+  fi
   write_app_vhost "$PROD_FRAG" "$1" next
   edge_errors_enabled && errors_publish "$1"
   if py_has && [ -n "$(py_slot_port "$1" 2>/dev/null || true)" ]; then py_restart_slot "$1"; fi
@@ -130,15 +147,46 @@ cmd_preview() { # <ts>
   echo "$ph"
 }
 
-cmd_rollback() {
-  local cur prev
-  cur="$(cat "$ACTIVE_FILE" 2>/dev/null || echo blue)"
-  [ "$cur" = "blue" ] && prev=green || prev=blue
-  cmd_switch "$prev"
-  log "rolled back to $prev"
+cmd_rollback() { # [failed-slot]
+  # Caveat this does not fix: if the peer slot was deployed from the same commit (a retry, or a
+  # redeploy of an unchanged commit), "rolling back" swaps to the same artefact. Recording the
+  # release identity per slot would let this refuse; it needs a deploy-time marker.
+  local target=""
+  if [ -n "${1:-}" ]; then
+    # The workflow passes the slot it was switching to; that slot never went live
+    # on this node, so the previous one is the other slot.
+    target="$(other_slot "$1")"
+  else
+    target="$(previous_slot)"
+  fi
+  [ -n "$target" ] || die "rollback: no previous slot recorded"
+  # A node that never ran the target slot (first deploy after joining the fleet)
+  # has nothing to go back to: keep whatever is live rather than point Caddy at a
+  # port with no service.
+  if [ ! -d "$APP_ROOT/$target" ]; then
+    log "rollback: slot $target was never deployed on $APP_NODE; leaving $(active_slot) live"
+    return 0
+  fi
+  health_check "$(slot_port "$target")" "$DOMAIN" || log "rollback target $target is not healthy; rolling back anyway"
+  cmd_switch "$target" --force
+  log "rolled back to $target"
 }
 
-cmd_smoke() { health_check "${1:-$(slot_port "$(cat "$ACTIVE_FILE" 2>/dev/null || echo blue)")}" "${2:-$DOMAIN}"; }
+# Smoke through :8080 — the path the ALB actually uses — and poll, because
+# `switch` restarts Caddy and the legacy listener takes a moment to bind.
+cmd_smoke() {
+  local port="${1:-8080}" host="${2:-$DOMAIN}" p code i
+  for p in $(python3 -c "import json,sys;print(' '.join(json.loads(sys.argv[1])))" "$HEALTH_PATHS"); do
+    code=000
+    for i in $(seq 1 10); do
+      code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 -H "Host: $host" "http://127.0.0.1:$port$p" || echo 000)"
+      [ "$code" = "200" ] && break
+      sleep 2
+    done
+    [ "$code" = "200" ] || die "smoke FAIL $host$p on :$port -> $code after 20s"
+  done
+  log "smoke OK $host on :$port (slot $(active_slot))"
+}
 
 verb="${1:?verb required}"; shift || true
 case "$verb" in
