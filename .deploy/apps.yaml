@@ -15,6 +15,20 @@ nodes:
     # deploy root for app releases/slots on this node
     srv_root: /srv/apps
     caddy_conf_dir: /etc/caddy/conf.d
+  # Standby app nodes. Private only — the ALB is the public entry. A handler run
+  # with DEPLOY_NODE=ecs-02 writes that node's own slots and Caddy fragment.
+  ecs-02:
+    host: ecs-02
+    private_ip: 10.20.22.137
+    runner: [self-hosted, linux, x64, apg-ecs-02]
+    srv_root: /srv/apps
+    caddy_conf_dir: /etc/caddy/conf.d
+  ecs-03:
+    host: ecs-03
+    private_ip: 10.20.23.30
+    runner: [self-hosted, linux, x64, apg-ecs-03]
+    srv_root: /srv/apps
+    caddy_conf_dir: /etc/caddy/conf.d
 
 apps:
   # ── Production website (the only box-deployed production app today) ──
@@ -55,6 +69,7 @@ apps:
   - name: fair-value
     repo: simonmak-ascent/fair-value
     node: ecs-01
+    nodes: [ecs-01, ecs-02, ecs-03]
     kind: next-website
     domain: fair-value.ascent-partners.com
     geo: true
