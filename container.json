@@ -3,7 +3,7 @@
     {
       "name": "fair-value",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:d3376340fb53fb99410d6cf309d23c5db810b0a0adf3d6930ca59ff6364b2bb6",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:da3d612695adc9d591942283b46814116f057d52cc68e3a361106918d29440ef",
       "port": 3101,
       "hosts": [
         "fair-value.ascent-partners.com"
@@ -21,7 +21,7 @@
       "dataClass": "RDS",
       "wave": 1,
       "owner": "simonmak-ascent",
-      "notes": "Next.js release copied from the node's active slot and run as node server.js, uid 1001 (deploy). Database credentials stay in /etc/fair-value/<slot>.env and are not baked in."
+      "notes": "Next.js release copied from the node's active slot and run as node server.js, uid 1001 (deploy). Database credentials stay in /etc/fair-value/<slot>.env and are not baked in. Lean rebuild 2026-10-27: one COPY --chown layer and no .next/cache, 502 MB -> 370 MB. Rolled out by digest through deploy-digest.yml."
     },
     {
       "name": "fair-value-mcp",
