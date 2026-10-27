@@ -1,0 +1,118 @@
+name: deploy-digest
+
+# Deploy one container on one node, by digest.
+#
+# The registry is private and a node must not hold a long-lived pull credential,
+# so the pull happens here — authenticated with the job's own short-lived
+# GITHUB_TOKEN, on a runner that lives on the node itself. The running container
+# is only replaced after the new image is on disk.
+#
+#   gh workflow run deploy-digest.yml -f container=startup-valuation \
+#     -f docker_name=sv-web -f digest=sha256:… -f runner=apg-ecs-01
+#
+# Port, uid and health path come from container.json, so the declaration stays
+# the single source of truth.
+
+on:
+  workflow_dispatch:
+    inputs:
+      container:
+        description: "Container name from container.json"
+        required: true
+        type: string
+      docker_name:
+        description: "Name of the container on the node, e.g. sv-web"
+        required: true
+        type: string
+      digest:
+        description: "Image digest, e.g. sha256:f3625924…"
+        required: true
+        type: string
+      runner:
+        description: "Runner label on the target node"
+        required: true
+        type: choice
+        options: [apg-ecs-01, apg-ecs-02, apg-ecs-03]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    # Block form: `${{ }}` inside a flow sequence is not valid YAML.
+    runs-on:
+      - self-hosted
+      - ${{ inputs.runner }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read the container declaration
+        id: spec
+        run: |
+          python3 - "${{ inputs.container }}" <<'PY'
+          import json, sys
+          name = sys.argv[1]
+          d = json.load(open("container.json"))
+          items = d.get("containers", [d])
+          spec = next((c for c in items if c.get("name") == name), None)
+          if spec is None:
+              raise SystemExit(f"no container named {name} in container.json")
+          out = {
+              "port": spec["port"],
+              "health_path": (spec.get("health") or {}).get("path", "/"),
+              "health_host": (spec.get("health") or {}).get("host", ""),
+              "envfile": (spec.get("run") or {}).get("envFile", ""),
+          }
+          with open(__import__("os").environ["GITHUB_OUTPUT"], "a") as f:
+              for k, v in out.items():
+                  f.write(f"{k}={v}\n")
+          PY
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+            | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Pull by digest
+        run: docker pull "ghcr.io/${{ github.repository }}@${{ inputs.digest }}"
+
+      - name: Replace the container
+        env:
+          NAME: ${{ inputs.docker_name }}
+          DIGEST: ${{ inputs.digest }}
+          PORT: ${{ steps.spec.outputs.port }}
+          ENVFILE: ${{ steps.spec.outputs.envfile }}
+        run: |
+          set -eu
+          ref="ghcr.io/${{ github.repository }}@$DIGEST"
+          docker rm -f "$NAME" >/dev/null 2>&1 || true
+          set -- --restart unless-stopped -e NODE_ENV=production -e PORT="$PORT" \
+                 -p "0.0.0.0:$PORT:$PORT"
+          [ -n "${ENVFILE:-}" ] && set -- "$@" --env-file "$ENVFILE"
+          docker run -d --name "$NAME" "$@" "$ref"
+          sleep 8
+          docker ps --filter "name=^/$NAME$" --format '{{.Status}} {{.Image}}'
+
+      - name: Verify health on the node
+        env:
+          PORT: ${{ steps.spec.outputs.port }}
+          PATH_: ${{ steps.spec.outputs.health_path }}
+          HOST_: ${{ steps.spec.outputs.health_host }}
+          NAME: ${{ inputs.docker_name }}
+        run: |
+          set -eu
+          for i in 1 2 3 4 5; do
+            code=$(curl -sS -m 5 -o /dev/null -w '%{http_code}' \
+                   -H "Host: ${HOST_:-localhost}" "http://127.0.0.1:$PORT$PATH_" || true)
+            echo "attempt $i: $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 5
+          done
+          echo "health did not come up; container logs:" >&2
+          docker logs --tail 40 "$NAME" >&2 || true
+          exit 1
+
+      - name: Log out
+        if: always()
+        run: docker logout ghcr.io || true
