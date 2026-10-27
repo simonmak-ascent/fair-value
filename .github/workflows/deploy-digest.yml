@@ -64,6 +64,8 @@ jobs:
               "health_host": (spec.get("health") or {}).get("host", ""),
               "envfile": (spec.get("run") or {}).get("envFile", ""),
           }
+          if spec.get("cmd"):
+              open(".deploy-cmd", "w").write("\n".join(spec["cmd"]) + "\n")
           with open(__import__("os").environ["GITHUB_OUTPUT"], "a") as f:
               for k, v in out.items():
                   f.write(f"{k}={v}\n")
@@ -103,7 +105,12 @@ jobs:
           set -- --restart unless-stopped -e NODE_ENV=production -e PORT="$PORT" \
                  -p "0.0.0.0:$PORT:$PORT"
           [ -n "${ENVFILE:-}" ] && set -- "$@" --env-file "$ENVFILE"
-          docker run -d --name "$NAME" "$@" "$ref"
+          if [ -s .deploy-cmd ]; then
+            mapfile -t CMDARGS < .deploy-cmd
+            docker run -d --name "$NAME" "$@" "$ref" "${CMDARGS[@]}"
+          else
+            docker run -d --name "$NAME" "$@" "$ref"
+          fi
           sleep 8
           docker ps --filter "name=^/$NAME$" --format '{{.Status}} {{.Image}}'
 

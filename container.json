@@ -45,7 +45,12 @@
       "dataClass": "RDS",
       "wave": 1,
       "owner": "simonmak-ascent",
-      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. The image recreates /usr/bin/python3.12 because the copied venv's console scripts point at it and python:3.12-slim keeps python under /usr/local/bin; without that link every entrypoint fails with a misleading 'not found'. TCP health: GET /mcp answers 405 by design."
+      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. The image recreates /usr/bin/python3.12 because the copied venv's console scripts point at it and python:3.12-slim keeps python under /usr/local/bin; without that link every entrypoint fails with a misleading 'not found'. TCP health: GET /mcp answers 405 by design.",
+      "cmd": [
+        "sh",
+        "-c",
+        "exec uvicorn mcp_server.asgi:app --host 0.0.0.0 --port 8011"
+      ]
     }
   ]
 }
