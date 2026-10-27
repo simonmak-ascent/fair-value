@@ -63,6 +63,7 @@ jobs:
               "health_path": (spec.get("health") or {}).get("path", "/"),
               "health_host": (spec.get("health") or {}).get("host", ""),
               "envfile": (spec.get("run") or {}).get("envFile", ""),
+              "health_proto": (spec.get("health") or {}).get("proto", "http"),
           }
           if spec.get("cmd"):
               open(".deploy-cmd", "w").write("\n".join(spec["cmd"]) + "\n")
@@ -114,7 +115,23 @@ jobs:
           sleep 8
           docker ps --filter "name=^/$NAME$" --format '{{.Status}} {{.Image}}'
 
+      - name: Verify the container is up (TCP services answer no HTTP path)
+        if: steps.spec.outputs.health_proto == 'tcp'
+        env:
+          NAME: ${{ inputs.docker_name }}
+        run: |
+          set -eu
+          for i in 1 2 3 4 5; do
+            state=$(docker inspect "$NAME" -f '{{.State.Status}}')
+            echo "attempt $i: $state"
+            [ "$state" = "running" ] && exit 0
+            sleep 5
+          done
+          docker logs --tail 40 "$NAME" >&2 || true
+          exit 1
+
       - name: Verify health on the node
+        if: steps.spec.outputs.health_proto != 'tcp'
         env:
           PORT: ${{ steps.spec.outputs.port }}
           PATH_: ${{ steps.spec.outputs.health_path }}
