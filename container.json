@@ -1,0 +1,46 @@
+{
+  "containers": [
+    {
+      "name": "fair-value",
+      "repo": "simonmak-ascent/fair-value",
+      "image": "ghcr.io/simonmak-ascent/fair-value-web:20261027T015143",
+      "port": 3101,
+      "hosts": ["fair-value.ascent-partners.com"],
+      "health": {
+        "path": "/",
+        "host": "fair-value.ascent-partners.com"
+      },
+      "run": {
+        "user": "1001:1001",
+        "network": "bridge",
+        "bind": "0.0.0.0",
+        "entrypoint": "exec"
+      },
+      "dataClass": "RDS",
+      "wave": 1,
+      "owner": "simonmak-ascent",
+      "notes": "Next.js release copied from the node's active slot and run as node server.js, uid 1001 (deploy). Database credentials stay in /etc/fair-value/<slot>.env and are not baked in."
+    },
+    {
+      "name": "fair-value-mcp",
+      "repo": "simonmak-ascent/fair-value",
+      "image": "ghcr.io/simonmak-ascent/fair-value-py:20261027T015629",
+      "port": 8011,
+      "hosts": ["fair-value.ascent-partners.com"],
+      "health": {
+        "proto": "tcp",
+        "path": "/"
+      },
+      "run": {
+        "user": "1001:1001",
+        "network": "bridge",
+        "bind": "0.0.0.0",
+        "entrypoint": "exec"
+      },
+      "dataClass": "RDS",
+      "wave": 1,
+      "owner": "simonmak-ascent",
+      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. The image recreates /usr/bin/python3.12 because the copied venv's console scripts point at it and python:3.12-slim keeps python under /usr/local/bin; without that link every entrypoint fails with a misleading 'not found'. TCP health: GET /mcp answers 405 by design."
+    }
+  ]
+}
