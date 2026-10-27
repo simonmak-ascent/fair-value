@@ -39,7 +39,8 @@
         "user": "1001:1001",
         "network": "bridge",
         "bind": "0.0.0.0",
-        "entrypoint": "exec"
+        "entrypoint": "exec",
+        "envFile": "/etc/fair-value/fv-mcp.env"
       },
       "dataClass": "RDS",
       "wave": 1,
