@@ -1,28 +1,28 @@
 name: deploy-digest
 
-# Deploy one container on one node, by digest.
+# Deploy one or more containers on one node, by digest, in a single job.
 #
-# The registry is private and a node must not hold a long-lived pull credential,
-# so the pull happens here — authenticated with the job's own short-lived
-# GITHUB_TOKEN, on a runner that lives on the node itself. The running container
-# is only replaced after the new image is on disk.
+# Why a list: three containers across three nodes used to mean nine queued jobs
+# behind three runners — measured queue wait 4m44s against a 20-35 s job. One job
+# per node fixes that: the image is pulled once, then each container is swapped
+# while the runner is already warm.
 #
-#   gh workflow run deploy-digest.yml -f container=startup-valuation \
-#     -f docker_name=sv-web -f digest=sha256:… -f runner=apg-ecs-01
+#   gh workflow run deploy-digest.yml -f containers=iv-api,iv-mcp \
+#     -f digest=sha256:… -f runner=apg-ecs-01
 #
-# Port, uid and health path come from container.json, so the declaration stays
-# the single source of truth.
+# Port, health, env file and command come from container.json through
+# scripts/container-spec.py, so the declaration stays the single source of truth.
 
 on:
   workflow_dispatch:
     inputs:
-      container:
-        description: "Container name from container.json"
+      containers:
+        description: "Container names from container.json, comma separated"
         required: true
         type: string
-      docker_name:
-        description: "Name of the container on the node, e.g. sv-web"
-        required: true
+      docker_names:
+        description: "Names on the node, comma separated in the same order (default: manifest names)"
+        required: false
         type: string
       digest:
         description: "Image digest, e.g. sha256:f3625924…"
@@ -38,117 +38,105 @@ permissions:
   contents: read
   packages: read
 
+# The same containers on the same node are never deployed twice at once; a second
+# dispatch waits instead of racing the first into `docker rm`.
+concurrency:
+  group: deploy-${{ inputs.runner }}-${{ inputs.containers }}
+  cancel-in-progress: false
+
 jobs:
   deploy:
-    # Block form: `${{ }}` inside a flow sequence is not valid YAML.
     runs-on:
       - self-hosted
       - ${{ inputs.runner }}
     steps:
       - uses: actions/checkout@v7
 
-      - name: Read the container declaration
-        id: spec
-        run: |
-          python3 - "${{ inputs.container }}" <<'PY'
-          import json, sys
-          name = sys.argv[1]
-          d = json.load(open("container.json"))
-          items = d.get("containers", [d])
-          spec = next((c for c in items if c.get("name") == name), None)
-          if spec is None:
-              raise SystemExit(f"no container named {name} in container.json")
-          out = {
-              "port": spec["port"],
-              "health_path": (spec.get("health") or {}).get("path", "/"),
-              "health_host": (spec.get("health") or {}).get("host", ""),
-              "envfile": (spec.get("run") or {}).get("envFile", ""),
-              "health_proto": (spec.get("health") or {}).get("proto", "http"),
-          }
-          if spec.get("cmd"):
-              open(".deploy-cmd", "w").write("\n".join(spec["cmd"]) + "\n")
-          with open(__import__("os").environ["GITHUB_OUTPUT"], "a") as f:
-              for k, v in out.items():
-                  f.write(f"{k}={v}\n")
-          PY
-
       - name: Log in to GHCR
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" \
             | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Pull by digest
-        run: docker pull "ghcr.io/${{ github.repository }}@${{ inputs.digest }}"
-
-      - name: Pre-flight — image and env file must be usable first
+      - name: Pull and deploy each container
         env:
+          CONTAINERS: ${{ inputs.containers }}
+          DOCKER_NAMES: ${{ inputs.docker_names }}
           DIGEST: ${{ inputs.digest }}
-          ENVFILE: ${{ steps.spec.outputs.envfile }}
         run: |
           set -eu
           ref="ghcr.io/${{ github.repository }}@$DIGEST"
-          docker image inspect "$ref" >/dev/null
-          if [ -n "${ENVFILE:-}" ] && [ ! -r "$ENVFILE" ]; then
-            echo "env file $ENVFILE is not readable by $(id -un) — fix its ownership before deploying" >&2
-            exit 1
-          fi
 
-      - name: Replace the container
-        env:
-          NAME: ${{ inputs.docker_name }}
-          DIGEST: ${{ inputs.digest }}
-          PORT: ${{ steps.spec.outputs.port }}
-          ENVFILE: ${{ steps.spec.outputs.envfile }}
-        run: |
-          set -eu
-          ref="ghcr.io/${{ github.repository }}@$DIGEST"
-          docker rm -f "$NAME" >/dev/null 2>&1 || true
-          set -- --restart unless-stopped -e NODE_ENV=production -e PORT="$PORT" \
-                 -p "0.0.0.0:$PORT:$PORT"
-          [ -n "${ENVFILE:-}" ] && set -- "$@" --env-file "$ENVFILE"
-          if [ -s .deploy-cmd ]; then
-            mapfile -t CMDARGS < .deploy-cmd
-            docker run -d --name "$NAME" "$@" "$ref" "${CMDARGS[@]}"
-          else
-            docker run -d --name "$NAME" "$@" "$ref"
-          fi
-          sleep 8
-          docker ps --filter "name=^/$NAME$" --format '{{.Status}} {{.Image}}'
-
-      - name: Verify the container is up (TCP services answer no HTTP path)
-        if: steps.spec.outputs.health_proto == 'tcp'
-        env:
-          NAME: ${{ inputs.docker_name }}
-        run: |
-          set -eu
-          for i in 1 2 3 4 5; do
-            state=$(docker inspect "$NAME" -f '{{.State.Status}}')
-            echo "attempt $i: $state"
-            [ "$state" = "running" ] && exit 0
-            sleep 5
+          # one pull for the image, not one per container: they share it
+          attempt=1
+          while ! docker pull "$ref"; do
+            echo "pull attempt $attempt failed; retrying in 10s" >&2
+            attempt=$((attempt + 1))
+            [ "$attempt" -gt 3 ] && exit 1
+            sleep 10
           done
-          docker logs --tail 40 "$NAME" >&2 || true
-          exit 1
 
-      - name: Verify health on the node
-        if: steps.spec.outputs.health_proto != 'tcp'
-        env:
-          PORT: ${{ steps.spec.outputs.port }}
-          PATH_: ${{ steps.spec.outputs.health_path }}
-          HOST_: ${{ steps.spec.outputs.health_host }}
-          NAME: ${{ inputs.docker_name }}
-        run: |
-          set -eu
-          for i in 1 2 3 4 5; do
-            code=$(curl -sS -m 5 -o /dev/null -w '%{http_code}' \
-                   -H "Host: ${HOST_:-localhost}" "http://127.0.0.1:$PORT$PATH_" || true)
-            echo "attempt $i: $code"
-            [ "$code" = "200" ] && exit 0
-            sleep 5
+          names="${DOCKER_NAMES:-$CONTAINERS}"
+          IFS=',' read -r -a mans <<< "$CONTAINERS"
+          IFS=',' read -r -a dns <<< "$names"
+
+          for i in "${!mans[@]}"; do
+            man="${mans[$i]}"
+            name="${dns[$i]:-${mans[$i]}}"
+
+            spec_out=$(python3 scripts/container-spec.py "$man") || {
+              echo "container '$man' is not in container.json — check the containers input" >&2
+              exit 1
+            }
+            eval "$spec_out"
+            mapfile -t CMD < <(python3 scripts/container-spec.py "$man" --cmd)
+
+            # pre-flight: nothing is removed until these hold
+            docker image inspect "$ref" >/dev/null
+            if [ -n "${ENVFILE:-}" ] && [ ! -r "$ENVFILE" ]; then
+              echo "env file $ENVFILE is not readable by $(id -un)" >&2
+              exit 1
+            fi
+
+            opts=(--restart unless-stopped -e NODE_ENV=production -e "PORT=$PORT")
+            [ -n "${ENVFILE:-}" ] && opts+=(--env-file "$ENVFILE")
+
+            # probe on a spare port: a bad command must not take the live one down
+            docker rm -f "$name.probe" >/dev/null 2>&1 || true
+            docker run -d --name "$name.probe" "${opts[@]}" \
+              -p "127.0.0.1:$((PORT + 10000)):$PORT" \
+              "$ref" ${CMD[@]+"${CMD[@]}"} >/dev/null
+
+            ok=0
+            for _ in 1 2 3 4 5 6 7 8; do
+              if [ "$PROTO" = tcp ]; then
+                [ "$(docker inspect "$name.probe" -f '{{.State.Status}}')" = running ] && { ok=1; break; }
+              else
+                code=$(curl -sS -m 3 -o /dev/null -w '%{http_code}' \
+                       -H "Host: ${HEALTH_HOST:-localhost}" \
+                       "http://127.0.0.1:$((PORT + 10000))$HEALTH_PATH" || true)
+                [ "$code" = 200 ] && { ok=1; break; }
+              fi
+              sleep 1
+            done
+
+            if [ "$ok" != 1 ]; then
+              echo "probe for $name did not come up; the live container is untouched" >&2
+              docker logs --tail 30 "$name.probe" >&2 || true
+              docker rm -f "$name.probe" >/dev/null 2>&1 || true
+              exit 1
+            fi
+            docker rm -f "$name.probe" >/dev/null 2>&1
+
+            docker rm -f "$name" >/dev/null 2>&1 || true
+            docker run -d --name "$name" "${opts[@]}" -p "0.0.0.0:$PORT:$PORT" \
+              "$ref" ${CMD[@]+"${CMD[@]}"} >/dev/null
+
+            for _ in 1 2 3 4 5; do
+              [ "$(docker inspect "$name" -f '{{.State.Status}}')" = running ] && break
+              sleep 1
+            done
+            echo "$name: $(docker inspect "$name" -f '{{.State.Status}}') $(docker inspect "$name" -f '{{.Config.Image}}' | sed 's|.*@||' | cut -c1-19)"
           done
-          echo "health did not come up; container logs:" >&2
-          docker logs --tail 40 "$NAME" >&2 || true
-          exit 1
 
       - name: Log out
         if: always()
