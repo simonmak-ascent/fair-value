@@ -77,6 +77,19 @@ jobs:
       - name: Pull by digest
         run: docker pull "ghcr.io/${{ github.repository }}@${{ inputs.digest }}"
 
+      - name: Pre-flight — image and env file must be usable first
+        env:
+          DIGEST: ${{ inputs.digest }}
+          ENVFILE: ${{ steps.spec.outputs.envfile }}
+        run: |
+          set -eu
+          ref="ghcr.io/${{ github.repository }}@$DIGEST"
+          docker image inspect "$ref" >/dev/null
+          if [ -n "${ENVFILE:-}" ] && [ ! -r "$ENVFILE" ]; then
+            echo "env file $ENVFILE is not readable by $(id -un) — fix its ownership before deploying" >&2
+            exit 1
+          fi
+
       - name: Replace the container
         env:
           NAME: ${{ inputs.docker_name }}
