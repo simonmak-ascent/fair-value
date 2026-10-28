@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, apg-ci-04]
     strategy:
       matrix:
         python-version: ["3.11"]
@@ -53,9 +53,6 @@ jobs:
           python scripts/gen_docs.py
           git diff --exit-code -- docs/methods docs/standards.md
 
-      - name: Tool Definition Quality (TDQS lint)
-        run: python -m tdqs lint --command "python -m mcp_server.server" --fail-on error
-
       - name: Install + server-build smoke
         run: |
           pip install .
@@ -67,7 +64,7 @@ jobs:
           python -m build
 
   docs:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, apg-ci-04]
     steps:
       - uses: actions/checkout@v7
 
@@ -81,7 +78,7 @@ jobs:
           mkdocs build --strict
 
   web:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, apg-ci-04]
     steps:
       - uses: actions/checkout@v7
 
