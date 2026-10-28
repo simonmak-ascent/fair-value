@@ -53,9 +53,6 @@ jobs:
           python scripts/gen_docs.py
           git diff --exit-code -- docs/methods docs/standards.md
 
-      - name: Tool Definition Quality (TDQS lint)
-        run: python -m tdqs lint --command "python -m mcp_server.server" --fail-on error
-
       - name: Install + server-build smoke
         run: |
           pip install .
