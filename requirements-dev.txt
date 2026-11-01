@@ -3,5 +3,5 @@ pytest>=9.1.1
 pytest-cov>=7.1.0
 fastmcp>=4.0.10
 ruff>=0.16.10
-mypy>=2.4.0
+mypy>=2.4.1
 tdqs>=0.1.0
