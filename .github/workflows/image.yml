@@ -1,0 +1,87 @@
+name: image
+
+# Build and publish the container image for a commit, by digest.
+#
+#   gh workflow run image.yml -f sha=<full sha>
+#
+# Runs on apg-ecs-01 because that is the self-hosted node whose runner user is in the docker group
+# (the CI node, ecs-04, deliberately is not). Prints the digest; pin that digest in container.json by
+# pull request, then dispatch deploy-digest.yml with it.
+#
+# Restored 2026-11-03: `chore(ci): prune to build, test and release (#45)` removed the only image build
+# this repository had, which is why fair-value could merge a security fix and have no way to ship it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit to build and publish — must have green test and web checks"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: image-${{ inputs.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: [self-hosted, apg-ecs-01]
+    steps:
+      - name: Refuse to publish a build whose commit is not green
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ inputs.sha }}
+        run: |
+          set -eu
+          for ctx in "test (3.11)" "web"; do
+            state="$(curl -fsSL \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${{ github.repository }}/commits/$SHA/check-runs?per_page=100" \
+              | CTX="$ctx" python3 -c 'import json,os,sys; rs=[r for r in json.load(sys.stdin)["check_runs"] if r["name"]==os.environ["CTX"]]; rs.sort(key=lambda r: r.get("completed_at") or ""); print(rs[-1]["conclusion"] if rs else "missing")')"
+            echo "$ctx: $state"
+            if [ "$state" != "success" ]; then
+              echo "::error::$ctx is '$state' on $SHA — publish only a commit whose gate is green"
+              exit 1
+            fi
+          done
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+            | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push
+        id: push
+        run: |
+          set -eu
+          img="ghcr.io/${{ github.repository }}:${{ inputs.sha }}"
+          docker build -q -t "$img" .
+          docker push -q "$img"
+          digest="$(docker inspect --format '{{index .RepoDigests 0}}' "$img" | sed 's/.*@//')"
+          [ -n "$digest" ]
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Record the digest
+        run: |
+          {
+            echo "### published"
+            echo ""
+            echo '```'
+            echo "ghcr.io/${{ github.repository }}@${{ steps.push.outputs.digest }}"
+            echo '```'
+            echo ""
+            echo "Pin it in \`container.json\`, then dispatch \`deploy-digest.yml\` with this digest."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Log out
+        if: always()
+        run: docker logout ghcr.io || true
