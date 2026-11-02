@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "default_branch": "main",
+  "merge": "pr-required",
+  "verify": [
+    "pnpm typecheck",
+    "pnpm build"
+  ],
+  "deploy": {
+    "kind": "workflow",
+    "workflow": "release.yml"
+  },
+  "e2e": [
+    {
+      "probe": "https://fair-value.ascent-partners.com/",
+      "expect": 200
+    }
+  ]
+}
