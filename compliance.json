@@ -3,16 +3,26 @@
   "default_branch": "main",
   "merge": "pr-required",
   "verify": [
-    "pnpm typecheck",
-    "pnpm build"
+    "python -m pytest -q"
   ],
   "deploy": {
-    "kind": "workflow",
-    "workflow": "release.yml"
+    "kind": "container",
+    "workflow": "deploy-digest.yml",
+    "targets": ["ecs-01", "ecs-02", "ecs-03"],
+    "converge": "container-converge.timer",
+    "converge_from": "apg-infra"
+  },
+  "publish": {
+    "registry": "mcp-registry",
+    "package": "fair-value"
   },
   "e2e": [
     {
       "probe": "https://fair-value.ascent-partners.com/",
+      "expect": 200
+    },
+    {
+      "probe": "https://fair-value.ascent-partners.com/v1/health",
       "expect": 200
     }
   ]

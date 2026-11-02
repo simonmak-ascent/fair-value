@@ -1,0 +1,50 @@
+name: deploy-digest
+
+# Deploy a pinned image digest to the fleet through the estate's one mechanism.
+#
+#   gh workflow run deploy-digest.yml -f digest=sha256:…
+#
+# This file holds no deployment logic. It calls the canonical workflow in apg-infra, pinned to a full
+# commit SHA — a tag can be moved, and the called workflow runs with a token that can replace
+# containers on three production nodes.
+#
+# The digest must be the one container.json pins: container-cd.yml refuses anything else, so the order
+# is always build (image.yml) → pin (pull request) → deploy (this).
+
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: "Image digest, e.g. sha256:… — must be the one container.json pins"
+        required: true
+        type: string
+      containers:
+        description: "Container names from container.json, comma separated"
+        required: false
+        default: "fair-value-mcp"
+        type: string
+      docker_names:
+        description: "Names on the node, in the same order"
+        required: false
+        default: "fv-mcp"
+        type: string
+      dry_run:
+        description: "Resolve and print the run command without changing anything"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  cd:
+    uses: simonmak-ascent/apg-infra/.github/workflows/container-cd.yml@d5baf8c196eb5f98a9db93383c57133e0a73dde6
+    with:
+      containers: ${{ inputs.containers }}
+      digest: ${{ inputs.digest }}
+      docker_names: ${{ inputs.docker_names }}
+      runner: apg-ecs-01
+      peers: 10.20.22.137,10.20.23.30
+      dry_run: ${{ inputs.dry_run }}
