@@ -108,20 +108,29 @@ wait_ready() { # <container-name> <host-visible-port> <seconds>
   return 1
 }
 
-owns_port() { # <port> — the listener must live in this container's cgroup
-  local port="$1" pid cg short
-  pid=$(ss -ltnpH "sport = :${port}" 2>/dev/null | grep -oE 'pid=[0-9]+' | head -1 | cut -d= -f2)
-  [ -n "$pid" ] || return 1
-  short=$(docker inspect -f '{{.Id}}' "$NAME" 2>/dev/null | cut -c1-12)
-  [ -n "$short" ] || return 1
-  cg=$(cat "/proc/$pid/cgroup" 2>/dev/null | head -1)
-  printf '%s' "$cg" | grep -q "$short"
+owns_port() { # <port> — the published port belongs to this container
+  local port="$1" running mapping
+  # For a bridge-network container the host-side listener is `docker-proxy`, which lives in
+  # docker.service's cgroup — so the systemd-era cgroup test used for #490 rejects a perfectly good
+  # swap. The authoritative check would be `nsenter -t <pid> -n ss`, but that needs CAP_SYS_ADMIN and
+  # the deploy workflow runs as the runner user, not root.
+  #
+  # What remains is still meaningful, and Docker enforces it: a container only starts if the published
+  # port is free, so "running + the mapping exists" cannot be a leftover process answering instead.
+  # A conflict makes `docker run` fail, which start() turns into a rollback.
+  running=$(docker inspect -f '{{.State.Running}}' "$NAME" 2>/dev/null)
+  [ "$running" = "true" ] || return 1
+  mapping=$(docker port "$NAME" "$port" 2>/dev/null)
+  [ -n "$mapping" ] || return 1
+  return 0
 }
 
 start() { # <image-ref> <published-port>
   docker rm -f "$NAME" >/dev/null 2>&1 || true
-  docker run -d --name "$NAME" "${run_opts[@]}" -p "$(publish_spec "$2")" "$1" \
-    ${CMD[@]+"${CMD[@]}"} >/dev/null
+  if ! docker run -d --name "$NAME" "${run_opts[@]}" -p "$(publish_spec "$2")" "$1" \
+    ${CMD[@]+"${CMD[@]}"} >/dev/null; then
+    return 1
+  fi
 }
 
 record() { # <state> <previous>
@@ -169,7 +178,12 @@ deploy_local() {
   if [ -n "$previous_id" ]; then printf '%s\n' "$previous_id" > "$STATE_DIR/$NAME.previous"; fi
 
   # 3. swap, then prove the swap is good
-  start "$REF" "$PORT"
+  if ! start "$REF" "$PORT"; then
+    log "$CONTAINER could not start on :$PORT on $HOST (port already in use?)"
+    record failed "${previous:-none}"
+    if [ -n "$previous_id" ]; then start "$previous_id" "$PORT" || log "WARNING: the restore also failed"; fi
+    die "$CONTAINER did not start on $HOST"
+  fi
   if ! wait_ready "$NAME" "$PORT" "$HEALTH_TIMEOUT"; then
     log "$CONTAINER failed its health gate on $HOST"
     docker logs --tail 40 "$NAME" >&2 || true
