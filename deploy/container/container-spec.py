@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import shlex
 import sys
+from typing import NoReturn
 
 # Fields the container contract requires, with the value used when the manifest omits them.
 # A default here is a *declared* default, not a silent one: `check.sh` fails a manifest that
@@ -29,7 +30,7 @@ DEFAULTS = {
 }
 
 
-def fail(msg: str, code: int = 1) -> "NoReturn":  # type: ignore[name-defined]
+def fail(msg: str, code: int = 1) -> NoReturn:
     print(f"container-spec: {msg}", file=sys.stderr)
     raise SystemExit(code)
 
