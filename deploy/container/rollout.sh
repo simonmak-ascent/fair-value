@@ -155,7 +155,16 @@ PY
 
 deploy_local() {
   local previous previous_id
-  docker image inspect "$REF" >/dev/null 2>&1 || die "$REF is not on $HOST — pull it first"
+  # `docker save | ssh | docker load` does not preserve the registry reference: the peer holds the
+  # image by ID only. Falling back to the digest keeps one script valid on both sides of the copy.
+  if ! docker image inspect "$REF" >/dev/null 2>&1; then
+    if docker image inspect "sha256:${DIGEST#sha256:}" >/dev/null 2>&1; then
+      log "$REF arrived by copy as image id ${DIGEST:0:19}"
+      REF="sha256:${DIGEST#sha256:}"
+    else
+      die "$REF is not on $HOST — pull it or copy it first"
+    fi
+  fi
 
   if [ -n "${ENVFILE:-}" ] && [ ! -r "$ENVFILE" ]; then
     die "env file $ENVFILE is not readable by $(id -un) — contract requires root:<runner-group> 640"
