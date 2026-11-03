@@ -234,6 +234,9 @@ deploy_local() {
   fi
 
   cp -f "$MANIFEST" "$STATE_DIR/$CONTAINER.manifest.json" 2>/dev/null || true
+  # The node's own record of intent. The reconciler prefers it over the registry pointer, so a node
+  # that deployed keeps converging even if it cannot reach the registry.
+  printf '%s\n' "${DIGEST#sha256:}" > "$STATE_DIR/$CONTAINER.desired" 2>/dev/null || true
   record healthy "${previous:-none}"
   log "$HOST: $NAME runs ${DIGEST:0:19} on :$PORT"
 }
