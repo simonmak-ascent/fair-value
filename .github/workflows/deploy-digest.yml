@@ -1,15 +1,16 @@
 name: deploy-digest
 
-# Deploy a pinned image digest to the fleet through the estate's one mechanism.
+# Deploy a pinned image digest to the fleet.
 #
 #   gh workflow run deploy-digest.yml -f digest=sha256:…
 #
-# This file holds no deployment logic. It calls the canonical workflow in apg-infra, pinned to a full
-# commit SHA — a tag can be moved, and the called workflow runs with a token that can replace
-# containers on three production nodes.
+# The deployment logic is not in this file. It is `deploy/container/rollout.sh`, vendored from
+# apg-infra at the commit in `deploy/container/VERSION` — GitHub refused the shared reusable-workflow
+# form for these user-owned private repositories even with `access_level: user`, so the standard is
+# carried as an exact copy and gated by checksum (`apg-infra/deploy/container/check.sh`).
 #
-# The digest must be the one container.json pins: container-cd.yml refuses anything else, so the order
-# is always build (image.yml) → pin (pull request) → deploy (this).
+# What this file guarantees on its own: the digest must be the one container.json pins, so nothing is
+# deployed that has not been through a pull request.
 
 on:
   workflow_dispatch:
@@ -28,6 +29,11 @@ on:
         required: false
         default: "fv-mcp"
         type: string
+      peers:
+        description: "Peer addresses to receive the image over the VPC"
+        required: false
+        default: "10.20.22.137,10.20.23.30"
+        type: string
       dry_run:
         description: "Resolve and print the run command without changing anything"
         required: false
@@ -38,13 +44,74 @@ permissions:
   contents: read
   packages: read
 
+concurrency:
+  group: deploy-digest-${{ inputs.containers }}
+  cancel-in-progress: false
+
 jobs:
-  cd:
-    uses: simonmak-ascent/apg-infra/.github/workflows/container-cd.yml@d5baf8c196eb5f98a9db93383c57133e0a73dde6
-    with:
-      containers: ${{ inputs.containers }}
-      digest: ${{ inputs.digest }}
-      docker_names: ${{ inputs.docker_names }}
-      runner: apg-ecs-01
-      peers: 10.20.22.137,10.20.23.30
-      dry_run: ${{ inputs.dry_run }}
+  deploy:
+    runs-on: [self-hosted, apg-ecs-01]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: The digest must be the one this repository declares
+        env:
+          DIGEST: ${{ inputs.digest }}
+          CONTAINERS: ${{ inputs.containers }}
+        run: |
+          set -eu
+          python3 - "$DIGEST" "$CONTAINERS" <<'PY'
+          import json, sys
+          digest, names = sys.argv[1].removeprefix("sha256:"), [n.strip() for n in sys.argv[2].split(",") if n.strip()]
+          manifest = json.load(open("container.json"))
+          items = {c["name"]: c for c in (manifest.get("containers") or [manifest])}
+          bad = 0
+          for name in names:
+              spec = items.get(name)
+              if spec is None:
+                  print(f"::error::'{name}' is not in container.json (have: {', '.join(items)})")
+                  bad += 1
+                  continue
+              pinned = (spec.get("image") or "").split("@")[-1].removeprefix("sha256:")
+              if pinned != digest:
+                  print(f"::error::{name} pins {pinned[:19] or '(nothing)'} but you asked for {digest[:19]} — open a pull request that pins it, so the gate runs first")
+                  bad += 1
+          raise SystemExit(1 if bad else 0)
+          PY
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+            | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Pull once, then roll out to every container and peer
+        env:
+          CONTAINERS: ${{ inputs.containers }}
+          DOCKER_NAMES: ${{ inputs.docker_names }}
+          DIGEST: ${{ inputs.digest }}
+          PEERS: ${{ inputs.peers }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -eu
+          ref="ghcr.io/${{ github.repository }}@${DIGEST}"
+          attempt=1
+          while ! docker pull "$ref"; do
+            echo "pull attempt $attempt failed; retrying in 10s" >&2
+            attempt=$((attempt + 1))
+            [ "$attempt" -gt 3 ] && exit 1
+            sleep 10
+          done
+
+          IFS=',' read -r -a mans <<< "$CONTAINERS"
+          IFS=',' read -r -a dns <<< "${DOCKER_NAMES:-$CONTAINERS}"
+          for i in "${!mans[@]}"; do
+            args=(--container "${mans[$i]}" --digest "$DIGEST")
+            [ -n "${dns[$i]:-}" ] && args+=(--docker-name "${dns[$i]}")
+            [ -n "$PEERS" ] && args+=(--peers "$PEERS")
+            [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+            bash deploy/container/rollout.sh "${args[@]}"
+          done
+
+      - name: Log out
+        if: always()
+        run: docker logout ghcr.io || true
