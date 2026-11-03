@@ -34,7 +34,6 @@ on:
         required: false
         type: boolean
         default: true
-        type: string
       dry_run:
         description: "Resolve and print the run command without changing anything"
         required: false
