@@ -23,7 +23,7 @@
 #
 set -Eeuo pipefail
 
-CONTAINER=""; DIGEST=""; DOCKER_NAME=""; PEERS=""; LOCAL_ONLY=0
+CONTAINER=""; DIGEST=""; DOCKER_NAME=""; PEERS=""; LOCAL_ONLY=0; PUBLISH_POINTER=0
 MANIFEST="container.json"; DRY_RUN=0
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SELF="$HERE/$(basename "${BASH_SOURCE[0]}")"
@@ -39,6 +39,7 @@ while [ $# -gt 0 ]; do
     --peers)       PEERS=${2:?}; shift 2 ;;
     --manifest)    MANIFEST=${2:?}; shift 2 ;;
     --local-only)  LOCAL_ONLY=1; shift ;;
+    --publish-pointer) PUBLISH_POINTER=1; shift ;;
     --dry-run)     DRY_RUN=1; shift ;;
     -h|--help)     sed -n '2,22p' "$SELF"; exit 0 ;;
     *) echo "rollout: unknown argument: $1" >&2; exit 2 ;;
@@ -78,6 +79,22 @@ run_opts=(
 [ -n "${RUN_USER:-}" ] && run_opts+=(--user "$RUN_USER")
 
 publish_spec() { printf '%s:%s:%s' "${BIND:-0.0.0.0}" "$1" "$PORT"; }
+
+# A read-only credential the node holds so it can pull without being pushed to. Never in a workflow:
+# the value lives in /etc/container-deploy/ghcr.env, 0640 root:docker, on nodes that need it.
+GHCR_ENV="${GHCR_ENV:-/etc/container-deploy/ghcr.env}"
+ghcr_login() {
+  [ -r "$GHCR_ENV" ] || return 0
+  # shellcheck disable=SC1090
+  set -a; . "$GHCR_ENV"; set +a
+  [ -n "${GHCR_USER:-}" ] && [ -n "${GHCR_TOKEN:-}" ] || return 0
+  printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin >/dev/null 2>&1 || true
+}
+
+pull_image() { # <ref>
+  ghcr_login
+  docker pull "$1" >/dev/null
+}
 
 log "spec $CONTAINER -> name=$NAME port=$PORT proto=$PROTO user=${RUN_USER:-image-default}"
 
@@ -162,7 +179,10 @@ deploy_local() {
       log "$REF arrived by copy as image id ${DIGEST:0:19}"
       REF="sha256:${DIGEST#sha256:}"
     else
-      die "$REF is not on $HOST — pull it or copy it first"
+      # Pull instead of refusing. This is what lets a node converge on its own: the deploy does not
+      # need SSH to its peers, and a peer needs no copy pushed to it. The credential is read-only and
+      # lives on the node (/etc/container-deploy/ghcr.env), never in a workflow.
+      pull_image "$REF" || die "$REF is not on $HOST and could not be pulled"
     fi
   fi
 
@@ -213,30 +233,28 @@ deploy_local() {
     die "$CONTAINER failed the ownership check on $HOST"
   fi
 
+  cp -f "$MANIFEST" "$STATE_DIR/$CONTAINER.manifest.json" 2>/dev/null || true
+  # The node's own record of intent. The reconciler prefers it over the registry pointer, so a node
+  # that deployed keeps converging even if it cannot reach the registry.
+  printf '%s\n' "${DIGEST#sha256:}" > "$STATE_DIR/$CONTAINER.desired" 2>/dev/null || true
   record healthy "${previous:-none}"
   log "$HOST: $NAME runs ${DIGEST:0:19} on :$PORT"
 }
 
 deploy_local
 
-# --- propagate to peers ------------------------------------------------------
-
-if [ "$LOCAL_ONLY" = 0 ] && [ -n "$PEERS" ]; then
-  IFS=',' read -r -a peer_list <<< "$PEERS"
-  for peer in "${peer_list[@]}"; do
-    [ -n "$peer" ] || continue
-    [ "$peer" = "$HOST" ] && continue
-    log "copying the image to $peer over the VPC"
-    docker save "$REF" | ssh -o BatchMode=yes -o ConnectTimeout=15 "$peer" 'docker load' >/dev/null \
-      || die "cannot deliver the image to $peer"
-    log "applying the same rollout on $peer"
-    ssh -o BatchMode=yes -o ConnectTimeout=15 "$peer" \
-      "MANIFEST=$(printf '%q' "$MANIFEST")" \
-      "HEALTH_TIMEOUT=$(printf '%q' "$HEALTH_TIMEOUT")" \
-      "bash -s -- --container $(printf '%q' "$CONTAINER") --digest $(printf '%q' "$DIGEST")${DOCKER_NAME:+ --docker-name $(printf '%q' "$DOCKER_NAME")} --local-only" \
-      < "$SELF" \
-      || die "$peer failed its gate; it restored its previous image"
-  done
+# --- publish the desired pointer ---------------------------------------------
+#
+# Peers do not receive the image over SSH: the deploy runner is not root and the peers authorise only
+# root's key. Instead the deploy moves a pointer tag, and each node's reconciler resolves it, pulls the
+# digest it names, and records what it ran. The tag is intent, never a runtime identity — the digest is.
+if [ "$PUBLISH_POINTER" = 1 ]; then
+  ptr="ghcr.io/${APP_REPO}:desired"
+  if docker tag "$REF" "$ptr" && docker push -q "$ptr" >/dev/null 2>&1; then
+    log "pointer $ptr -> ${DIGEST:0:19}"
+  else
+    die "could not publish the desired pointer $ptr"
+  fi
 fi
 
 log "done: $CONTAINER ${DIGEST:0:19}"

@@ -29,10 +29,11 @@ on:
         required: false
         default: "fv-mcp"
         type: string
-      peers:
-        description: "Peer addresses to receive the image over the VPC"
+      publish_pointer:
+        description: "Move the :desired tag so every node converges onto this digest"
         required: false
-        default: "10.20.22.137,10.20.23.30"
+        type: boolean
+        default: true
         type: string
       dry_run:
         description: "Resolve and print the run command without changing anything"
@@ -42,7 +43,7 @@ on:
 
 permissions:
   contents: read
-  packages: read
+  packages: write   # moving the :desired pointer is a tag push
 
 concurrency:
   group: deploy-digest-${{ inputs.containers }}
@@ -89,7 +90,7 @@ jobs:
           CONTAINERS: ${{ inputs.containers }}
           DOCKER_NAMES: ${{ inputs.docker_names }}
           DIGEST: ${{ inputs.digest }}
-          PEERS: ${{ inputs.peers }}
+          PUBLISH_POINTER: ${{ inputs.publish_pointer }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |
           set -eu
@@ -107,7 +108,7 @@ jobs:
           for i in "${!mans[@]}"; do
             args=(--container "${mans[$i]}" --digest "$DIGEST")
             [ -n "${dns[$i]:-}" ] && args+=(--docker-name "${dns[$i]}")
-            [ -n "$PEERS" ] && args+=(--peers "$PEERS")
+            [ "$PUBLISH_POINTER" = "true" ] && args+=(--publish-pointer)
             [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
             bash deploy/container/rollout.sh "${args[@]}"
           done
