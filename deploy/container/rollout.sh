@@ -65,7 +65,7 @@ eval "$spec_out"
 [ -n "${PORT:-}" ] || die "'$CONTAINER' has no port in $MANIFEST"
 [ -n "${APP_REPO:-}" ] || die "'$CONTAINER' has no repo in $MANIFEST"
 REF="ghcr.io/${APP_REPO}@${DIGEST}"
-NAME="${DOCKER_NAME:-$CONTAINER}"
+NAME="${DOCKER_NAME:-${SPEC_DOCKER_NAME:-$CONTAINER}}"
 
 mapfile -t CMD < <(python3 "$SPEC" "$CONTAINER" --cmd --manifest "$MANIFEST")
 
@@ -151,7 +151,7 @@ start() { # <image-ref> <published-port>
 }
 
 record() { # <state> <previous>
-  python3 - "$STATE_DIR/$NAME.json" "$CONTAINER" "$NAME" "$REF" "$PORT" "$1" "$2" <<'PY'
+  python3 - "$STATE_DIR/$CONTAINER.json" "$CONTAINER" "$NAME" "$REF" "$PORT" "$1" "$2" <<'PY'
 import datetime, json, socket, sys
 path, container, name, image, port, state, previous = sys.argv[1:8]
 doc = {
@@ -204,7 +204,7 @@ deploy_local() {
   # 2. remember what to go back to
   previous="$(docker inspect -f '{{.Config.Image}}' "$NAME" 2>/dev/null || true)"
   previous_id="$(docker inspect -f '{{.Image}}' "$NAME" 2>/dev/null || true)"
-  if [ -n "$previous_id" ]; then printf '%s\n' "$previous_id" > "$STATE_DIR/$NAME.previous"; fi
+  if [ -n "$previous_id" ]; then printf '%s\n' "$previous_id" > "$STATE_DIR/$CONTAINER.previous"; fi
 
   # 3. swap, then prove the swap is good
   if ! start "$REF" "$PORT"; then

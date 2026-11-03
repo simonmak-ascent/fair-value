@@ -99,6 +99,7 @@ def main() -> int:
     print(f"ENTRYPOINT={q(run.get('entrypoint', DEFAULTS['entrypoint']))}")
     print(f"APP_REPO={q(spec.get('repo', ''))}")
     print(f"APP_NAME={q(spec.get('name', ''))}")
+    print(f"SPEC_DOCKER_NAME={q(spec.get('docker_name') or spec.get('name', ''))}")
     return 0
 
 

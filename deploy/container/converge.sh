@@ -77,13 +77,18 @@ if [ -z "$desired" ]; then
   exit 0
 fi
 
-name="$(python3 - "$CONTAINER" "$record" "$CONTAINER" <<'PY'
-import json, os, sys
-container, record_path, fallback = sys.argv[1:4]
-try:
-    print(json.load(open(record_path)).get("docker_name") or fallback)
-except Exception:
-    print(fallback)
+# The runtime name is declared, not inferred: container.json carries `docker_name` when it differs
+# from the manifest name, and every state file is keyed by the manifest name so the two cannot drift.
+name="$(python3 - "$CONTAINER" "$manifest" <<'PY'
+import json, sys
+container, path = sys.argv[1], sys.argv[2]
+m = json.load(open(path))
+for c in (m.get("containers") or [m]):
+    if c.get("name") == container:
+        print(c.get("docker_name") or container)
+        break
+else:
+    print(container)
 PY
 )"
 

@@ -19,7 +19,7 @@ ok()  { printf '  ok    %s\n' "$*"; }
 echo "== $REPO"
 
 python3 - "$REPO" <<'PY' || fail=$((fail + 1))
-import json, sys
+import json, re, sys
 
 repo = sys.argv[1]
 problems = []
@@ -48,6 +48,9 @@ for c in items:
         problems.append(f"{name}: run.network must be bridge")
     if not c.get("hosts"):
         problems.append(f"{name}: no hosts — nothing can publish it")
+    dn = c.get("docker_name")
+    if dn is not None and (not isinstance(dn, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_.-]*", dn)):
+        problems.append(f"{name}: docker_name '{dn}' is not a valid container name")
 
 for p in problems:
     print(f"  FAIL  {p}")
@@ -59,7 +62,7 @@ if [ ! -f "$COMPLIANCE" ]; then
   bad "compliance.json is missing — the deploy path is undeclared"
 else
   python3 - "$REPO" <<'PY' || fail=$((fail + 1))
-import json, os, sys
+import json, os, re, sys
 
 repo = sys.argv[1]
 c = json.load(open(f"{repo}/compliance.json"))
