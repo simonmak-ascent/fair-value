@@ -3,7 +3,7 @@
     {
       "name": "fair-value",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:da3d612695adc9d591942283b46814116f057d52cc68e3a361106918d29440ef",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:a3921f116f3bfe2df3ecc15c1974940bff8a4b234420c5469ac6f5140671ab56",
       "port": 3101,
       "hosts": [
         "fair-value.ascent-partners.com"
