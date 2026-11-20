@@ -15,7 +15,9 @@ interface RunResult {
   solution_type?: string;
   statistics?: { distribution?: string; sigma?: number; percentiles?: Record<string, number>; seed?: number | null };
   citations?: { ivs?: string[]; ifrs?: string[] };
-  error?: string;
+  // The server always answers with an envelope whose `error` is an object; the string member is
+  // this component's own fetch failure, where there is no response to read a code from.
+  error?: { code?: string; message?: string } | string;
   [key: string]: unknown;
 }
 

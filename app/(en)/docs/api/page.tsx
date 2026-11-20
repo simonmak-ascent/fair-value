@@ -95,8 +95,10 @@ export default function ApiPage() {
 
       <Prose>
         <p>
-          Errors return <code>400</code> (invalid method/body) or <code>404</code> (unknown tool) with a{" "}
-          <code>{'{"status":"error","error":…}'}</code> body. Try any method in the{" "}
+          Errors return <code>400</code> for any non-ok result — invalid method or body, an unsupported
+          computation, an unimplemented method — and <code>404</code> for an unknown tool, always with the
+          JSON envelope with <code>error</code> an object: <code>{'{"status":"error","error":{"code":…,"message":…}}'}</code>,
+          so branch on <code>error.code</code>. Try any method in the{" "}
           <Link href="/docs/playground">playground</Link>.
         </p>
       </Prose>
