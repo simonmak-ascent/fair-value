@@ -7,3 +7,22 @@ dist
 site
 __pycache__
 *.pyc
+
+# Build artefacts and local installs: `COPY . .` in Dockerfile.web must not carry a developer's
+# node_modules or a stale .next into the image.
+node_modules
+.next
+.pytest_cache
+.playwright-mcp
+.difflens
+
+# Secrets and local-only artefacts. `.gitignore` declares both classes never-commit, but a
+# `.dockerignore` does not inherit that: `Dockerfile` copies the whole tree into the image it
+# publishes, and `Dockerfile.web`'s `COPY . .` feeds `next build`, which inlines `NEXT_PUBLIC_*`
+# from `.env.production` — so an ignored file left in the working tree changes the build.
+.env
+.env.*
+AGENTS.md
+constitution.md
+TASKS.md
+specs

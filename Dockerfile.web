@@ -1,0 +1,56 @@
+# The frontage image.
+#
+# `Dockerfile` builds the MCP service; this one builds the Next.js standalone frontage that serves
+# `/`. Publish it with `gh workflow run image.yml -f sha=<sha> -f dockerfile=Dockerfile.web`.
+#
+# Two stages because the runner must not carry the toolchain. `node:22-slim` matches `.nvmrc` and
+# `engines.node` (CI's `web` job runs Node 20, which is a known inconsistency; the image follows the
+# pin, not the job). The standalone output already contains its traced dependencies, so the runner
+# needs no `node_modules`.
+
+FROM node:22-slim AS builder
+
+WORKDIR /app
+
+# `prebuild` runs `scripts/gen_web_data.py`, which imports the method registry to write
+# `data/catalog.json`. It is offline, but it is Python — without python3 the build dies at the first
+# lifecycle hook, before any TypeScript is compiled.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+RUN pnpm build
+
+FROM node:22-slim AS runner
+
+WORKDIR /app
+
+# `HOSTNAME` must be 0.0.0.0: rollout.sh publishes the container port, and Docker DNATs that to the
+# container's eth0 address, so a loopback bind is simply unreachable (connection refused — not the
+# 500 that the estate's next-intl apps produce, which is a different mechanism this app does not
+# have: there is no middleware here). `PORT` matches container.json's 3101 and is overridden by the
+# manifest's `-e PORT`, so it is a default rather than a second source of truth.
+ENV NODE_ENV=production \
+    PORT=3101 \
+    HOSTNAME=0.0.0.0
+
+# Standalone traces the server and its dependencies but not `public` or `.next/static`; both are
+# copied alongside it, and `.next/cache` is created and owned by the runtime user so a prerender
+# write does not fail on a read-only-ish tree.
+COPY --from=builder --chown=1001:1001 /app/.next/standalone ./
+COPY --from=builder --chown=1001:1001 /app/.next/static ./.next/static
+COPY --from=builder --chown=1001:1001 /app/public ./public
+RUN mkdir -p .next/cache && chown -R 1001:1001 .next
+
+# container.json declares run.user 1001:1001 and the contract forbids root.
+USER 1001:1001
+
+EXPOSE 3101
+
+CMD ["node", "server.js"]
