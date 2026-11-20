@@ -3,7 +3,7 @@
     {
       "name": "fair-value",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:da3d612695adc9d591942283b46814116f057d52cc68e3a361106918d29440ef",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:a3921f116f3bfe2df3ecc15c1974940bff8a4b234420c5469ac6f5140671ab56",
       "port": 3101,
       "hosts": [
         "fair-value.ascent-partners.com"
@@ -21,12 +21,13 @@
       "dataClass": "RDS",
       "wave": 1,
       "owner": "simonmak-ascent",
-      "notes": "Next.js release copied from the node's active slot and run as node server.js, uid 1001 (deploy). Database credentials stay in /etc/fair-value/<slot>.env and are not baked in. Lean rebuild 2026-10-27: one COPY --chown layer and no .next/cache, 502 MB -> 370 MB. Rolled out by digest through deploy-digest.yml."
+      "notes": "Next.js release copied from the node's active slot and run as node server.js, uid 1001 (deploy). Database credentials stay in /etc/fair-value/<slot>.env and are not baked in. Lean rebuild 2026-10-27: one COPY --chown layer and no .next/cache, 502 MB -> 370 MB. Rolled out by digest through deploy-digest.yml.",
+      "docker_name": "fv-web"
     },
     {
       "name": "fair-value-mcp",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:ad1f87ef128cc3f98b4240bdf9171ea6f771a0d9df03ea38d1b26830bd17f80b",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:9ffb8ca4e5f88a9f7b4db7b35bbd446533f5b23489cf5862a8b720491a782d93",
       "port": 8011,
       "hosts": [
         "fair-value.ascent-partners.com"
@@ -45,12 +46,13 @@
       "dataClass": "RDS",
       "wave": 1,
       "owner": "simonmak-ascent",
-      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. The image recreates /usr/bin/python3.12 because the copied venv's console scripts point at it and python:3.12-slim keeps python under /usr/local/bin; without that link every entrypoint fails with a misleading 'not found'. TCP health: GET /mcp answers 405 by design.",
+      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. Base image python:3.11-slim, so python lives at /usr/local/bin/python3.11 — which is the shebang the console scripts carry — and there is no /usr/bin/python at all. Checked inside the running container on 2026-11-20, which is how the previous note's '/usr/bin/python3.12 symlink' claim was shown to describe a build that never existed. TCP health: GET /mcp answers 405 by design.",
       "cmd": [
         "sh",
         "-c",
         "exec uvicorn mcp_server.asgi:app --host 0.0.0.0 --port 8011"
-      ]
+      ],
+      "docker_name": "fv-mcp"
     }
   ]
 }

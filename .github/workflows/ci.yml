@@ -16,6 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # deploy-digest.yml runs deploy/container/rollout.sh from this checkout, so a vendored copy that
+      # has drifted from apg-infra is not inert — it is the script that performs the next deploy. It
+      # was two minors stale on 2026-11-20 while nothing noticed; this makes the bytes a gate.
+      - name: Vendored deploy tooling matches its pinned checksums
+        run: cd deploy/container && sha256sum -c SHA256SUMS
+
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
@@ -87,11 +93,33 @@ jobs:
           python-version: "3.11"
 
       - uses: pnpm/action-setup@v6
+        with:
+          # The action's default `dest` is a fixed `~/setup-pnpm`, and apg-ci-04 runs several
+          # repositories' jobs under one user account. Two concurrent jobs raced on that path and
+          # this job died in 15s with `ENOTEMPTY: directory not empty, rmdir '/home/gha/setup-pnpm'`
+          # (2026-11-20), on a change that touched nothing in the frontend. A dest keyed by
+          # repository removes the shared path. Set it wherever this action is used, or the default
+          # comes back.
+          #
+          # Keyed per repository+job, NOT per run. The action exports PNPM_HOME=<dest>/node_modules/.bin
+          # and pnpm keeps its store at $PNPM_HOME/store, so `dest` is also the directory
+          # actions/setup-node caches — it caches `pnpm store path`. A per-run dest would move the store
+          # every run while the cache key stays `node-cache-<os>-<arch>-pnpm-<lockfile hash>`, so each
+          # run would report a restore that unpacks into the previous run's path and then skip saving:
+          # the dependency cache would silently stop working. This path must be stable across runs and
+          # unique across repositories; `github.repository_id` gives the second without losing the first.
+          dest: ~/setup-pnpm-${{ github.repository_id }}-${{ github.job }}
 
       - uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: pnpm
+
+      # `cache: pnpm` above caches whatever this prints, and its key does not include the path, so
+      # the cached directory only works while `dest` above stays stable. Printing it makes that
+      # invariant observed on every run instead of inferred from the action sources.
+      - name: Show the pnpm store path
+        run: pnpm store path
 
       - name: Install
         run: pnpm install --frozen-lockfile
