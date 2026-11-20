@@ -36,13 +36,13 @@ docs = ["mkdocs"]
 observability = ["sentry-sdk>=2.71.0"]
 # Sibling MCP whose tool surface is delegated to (A-005). Only
 # startup-valuation is installable alongside this package (namespaced modules).
-# intangible-valuation ships a top-level ``mcp_server`` package that collides
+# intangible-valuation ships a top-level ``mcp`` package that collides
 # with ours, so it is loaded from source instead (env INTANGIBLE_VALUATION_SRC).
 superset = ["startup-valuation>=2.1.2"]
 
 [project.scripts]
 # Console command for the MCP server.
-fair-value-mcp = "mcp_server.server:main"
+fair-value-mcp = "src.mcp.server:main"
 
 [project.urls]
 Repository = "https://github.com/simonmak-ascent/fair-value"
@@ -51,12 +51,12 @@ Repository = "https://github.com/simonmak-ascent/fair-value"
 py-modules = ["valuation_engine"]
 
 [tool.setuptools.packages.find]
-include = ["src*", "mcp_server*"]
+include = ["src*"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py38"
-exclude = ["build", "dist", ".venv", ".deploy"]
+exclude = ["build", "dist", ".venv"]
 
 [tool.ruff.lint]
 # Pragmatic correctness-focused set for a legacy scientific codebase.
@@ -70,5 +70,13 @@ ignore_missing_imports = true
 warn_unused_ignores = false
 # Analyse imported legacy modules, but only report errors for the modules we own.
 follow_imports = "silent"
-files = ["mcp_server", "valuation_engine.py", "src/output"]
+files = ["src/mcp", "valuation_engine.py", "src/output"]
 
+[tool.pytest.ini_options]
+# Folded here from a root `pytest.ini` on 2026-11-20: one config file per tool, and pytest reads
+# `[tool.pytest.ini_options]` from `pyproject.toml` when no ini file is present.
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

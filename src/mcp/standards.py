@@ -1,7 +1,7 @@
 """Dual-standard taxonomy: IVS 2025 × IFRS/IAS method mappings (A-001).
 
 Import-light by design (stdlib only — no ``fastmcp``, no ``pydantic``, no
-network), because :mod:`mcp_server.method_spec` attaches the taxonomy at import.
+network), because :mod:`src.mcp.method_spec` attaches the taxonomy at import.
 The machine file ``standards/taxonomy.json`` is the single source of truth for
 *standards alignment*; the method registry remains the source of truth for
 *methods*. They are joined by ``method_id``.
@@ -23,7 +23,31 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 APPROACHES: Tuple[str, ...] = ("market", "income", "cost")
 SOLUTION_TYPES: Tuple[str, ...] = ("closed_form", "numeric", "simulation")
 
-DEFAULT_TAXONOMY_PATH = Path(__file__).resolve().parent.parent / "standards" / "taxonomy.json"
+
+def _find_taxonomy() -> Path:
+    """Locate `standards/taxonomy.json` by walking up, not by counting parents.
+
+    It used to be `Path(__file__).parent.parent / "standards"`, which was correct only while the
+    package sat at the repository root. Moving it to `src/mcp/` added a level and every standards
+    lookup started failing with FileNotFoundError — a depth that is not written down anywhere is a
+    depth that breaks silently.
+    """
+    here = Path(__file__).resolve()
+    parents = list(here.parents)[:6]
+    # A checkout has `pyproject.toml` beside `standards/`; prefer that, so a taxonomy belonging to
+    # some unrelated repository further up the tree can never be adopted by accident.
+    for parent in parents:
+        candidate = parent / "standards" / "taxonomy.json"
+        if candidate.is_file() and (parent / "pyproject.toml").is_file():
+            return candidate
+    for parent in parents:  # installed layouts: the data dir may sit beside the package
+        candidate = parent / "standards" / "taxonomy.json"
+        if candidate.is_file():
+            return candidate
+    return here.parent.parent / "standards" / "taxonomy.json"
+
+
+DEFAULT_TAXONOMY_PATH = _find_taxonomy()
 _STANDARDS_ROOT = DEFAULT_TAXONOMY_PATH.parent
 DEFAULT_PROVENANCE_PATH = _STANDARDS_ROOT / "provenance.json"
 

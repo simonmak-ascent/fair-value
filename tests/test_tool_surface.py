@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server import tool_surface as ts
+from src.mcp import tool_surface as ts
 
 
 def test_surface_has_at_least_six_tools():

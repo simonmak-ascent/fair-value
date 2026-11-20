@@ -1,6 +1,6 @@
 """FastMCP server rendering the tool surface (A-004).
 
-Builds a FastMCP server from :mod:`mcp_server.tool_surface` (the single source
+Builds a FastMCP server from :mod:`src.mcp.tool_surface` (the single source
 of truth), adapts flat MCP arguments to the engine's ``(ticker, params)``
 signature, and returns the shared A-006 result envelope.
 

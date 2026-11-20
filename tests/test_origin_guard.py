@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import json
 
-from mcp_server.asgi import MCP_PATH, _origin_guard
+from src.mcp.asgi import MCP_PATH, _origin_guard
 
 
 def _run(app, headers, path: str = MCP_PATH):
@@ -90,7 +90,7 @@ def test_alias_paths_are_guarded_too():
     Composed the other way round — guard outside, rewrite inside — the guard tests the *raw* path,
     which never starts with `/mcp`, so every alias reaches the protocol unguarded.
     """
-    from mcp_server.asgi import wrap_mcp_middleware
+    from src.mcp.asgi import wrap_mcp_middleware
 
     for alias in ("/", "/api/index", "/api/index.py", "/api/index/"):
         status, _ = _run(

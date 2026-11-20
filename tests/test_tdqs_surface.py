@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server import tool_surface as ts  # noqa: E402
+from src.mcp import tool_surface as ts  # noqa: E402
 
 
 def test_surface_validation_clean():

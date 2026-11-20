@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server import observability as obs  # noqa: E402
+from src.mcp import observability as obs  # noqa: E402
 
 
 def test_sentry_is_off_without_dsn(monkeypatch):

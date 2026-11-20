@@ -6,8 +6,8 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-from mcp_server import docs  # noqa: E402
-from mcp_server.engine import dispatch  # noqa: E402
+from src.mcp import docs  # noqa: E402
+from src.mcp.engine import dispatch  # noqa: E402
 
 
 def test_tool_help_shape():

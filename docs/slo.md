@@ -2,7 +2,7 @@
 
 ## SLOs
 
-Declared in `mcp_server/observability.py` and evaluated by
+Declared in `src/mcp/observability.py` and evaluated by
 `evaluate_slo(name, observed_value)`.
 
 | SLO | Target | Comparison | Window |

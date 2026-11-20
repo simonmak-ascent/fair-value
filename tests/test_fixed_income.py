@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 
-from mcp_server.engine import dispatch
+from src.mcp.engine import dispatch
 from src.derivatives import fixed_income as fi
 from src.derivatives.term_structure import discount_factor as fi_discount_factor
 

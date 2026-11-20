@@ -49,9 +49,9 @@ def test_version_locked_to_pyproject():
 
 
 def test_package_version_locked_to_manifest():
-    import mcp_server
+    from src import mcp
 
-    assert mcp_server.__version__ == _manifest()["version"] == _version()
+    assert mcp.__version__ == _manifest()["version"] == _version()
 
 
 def test_package_is_pypi_uvx():

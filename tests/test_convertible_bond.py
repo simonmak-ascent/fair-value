@@ -75,7 +75,7 @@ def test_higher_volatility_increases_value():
 
 
 def test_dispatch_returns_envelope():
-    from mcp_server.engine import dispatch
+    from src.mcp.engine import dispatch
 
     res = dispatch(
         "calculate_convertible_bond",
@@ -123,7 +123,7 @@ def test_lsmc_matches_lattice():
 
 
 def test_lsmc_dispatch_ok():
-    from mcp_server.engine import dispatch
+    from src.mcp.engine import dispatch
 
     res = dispatch(
         "calculate_convertible_bond",

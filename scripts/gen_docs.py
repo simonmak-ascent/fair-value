@@ -16,8 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from mcp_server import docs as docs_mod  # noqa: E402
-from mcp_server import method_spec as ms  # noqa: E402
+from src.mcp import docs as docs_mod  # noqa: E402
+from src.mcp import method_spec as ms  # noqa: E402
 
 OUT = ROOT / "docs" / "methods"
 

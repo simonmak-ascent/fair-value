@@ -2,7 +2,7 @@
 
 The same valuation core that backs the MCP tools is exposed as a versioned REST
 API at `/v1`, served alongside the MCP endpoint (at `/mcp`) by the ASGI app
-(`mcp_server.asgi:app`). No method logic is duplicated: every call goes through
+(`src.mcp.asgi:app`). No method logic is duplicated: every call goes through
 the shared engine and returns the same envelope (centre value + `statistics` +
 `solution_type` + `citations`).
 
@@ -60,5 +60,5 @@ Codes on this surface: `INVALID_ARGUMENT`, `COMPUTATION_ERROR`, `UNKNOWN_TOOL`,
 ## Running locally
 
 ```bash
-uvicorn mcp_server.asgi:app --host 0.0.0.0 --port 8000
+uvicorn src.mcp.asgi:app --host 0.0.0.0 --port 8000
 ```

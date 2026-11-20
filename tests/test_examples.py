@@ -5,7 +5,7 @@ from pathlib import Path
 
 _ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(_ROOT))
-sys.path.insert(0, str(_ROOT / "examples"))
+sys.path.insert(0, str(_ROOT / "docs" / "examples"))
 
 import hk_examples  # noqa: E402
 

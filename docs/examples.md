@@ -1,11 +1,11 @@
 # Examples
 
-Worked Hong Kong market examples live in `examples/hk_examples.py` and run
+Worked Hong Kong market examples live in `docs/examples/hk_examples.py` and run
 offline against the engine (Monte-Carlo methods are seeded, so output is
 deterministic):
 
 ```bash
-python examples/hk_examples.py
+python docs/examples/hk_examples.py
 ```
 
 | Scenario | Method | Value (illustrative) |

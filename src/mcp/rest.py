@@ -2,7 +2,7 @@
 
 The same registry/engine that backs the MCP tools is exposed as a versioned REST
 surface so non-MCP consumers can embed valuation calculations. Served alongside
-the MCP endpoint by the ASGI app (``mcp_server.asgi``).
+the MCP endpoint by the ASGI app (``mcp.asgi``).
 
 Routes (all JSON):
     GET  /v1/health

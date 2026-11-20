@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from mcp_server import method_spec
-from mcp_server.method_spec import MethodSpec
-from mcp_server.standards import (
+from src.mcp import method_spec
+from src.mcp.method_spec import MethodSpec
+from src.mcp.standards import (
     TaxonomyError,
     attach_standards,
     audit_citations,

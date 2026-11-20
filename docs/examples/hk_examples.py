@@ -1,6 +1,6 @@
 """Worked Hong Kong market examples for the fair-value MCP engine.
 
-Run from the repo root:  python examples/hk_examples.py
+Run from the repo root:  python docs/examples/hk_examples.py
 
 All three examples are offline and deterministic (Monte-Carlo engines are
 seeded), so they are safe to run in CI or locally.
@@ -13,9 +13,13 @@ import os
 import sys
 from typing import Any, Dict
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# `docs/examples/` is two levels below the root that holds `src/`; this file moved there from
+# `examples/`, which was one level below it, and the bootstrap was not re-counted.
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 
-from mcp_server.engine import dispatch  # noqa: E402
+from src.mcp.engine import dispatch  # noqa: E402
 
 
 def hk_convertible_bond() -> Dict[str, Any]:

@@ -12,7 +12,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from mcp_server.method_spec import methods_resource
+from src.mcp.method_spec import methods_resource
 
 BASELINE = Path(__file__).resolve().parent.parent / "standards" / "methods-resource-baseline.json"
 
