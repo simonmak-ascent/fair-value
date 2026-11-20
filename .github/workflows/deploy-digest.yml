@@ -54,6 +54,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # This dispatch can be run from any ref, but the script it is about to execute is the vendored
+      # copy in that checkout. ci.yml verifies the checksums on main only, so verify them here, before
+      # the first line of rollout.sh runs, on whatever ref was dispatched.
+      - name: The vendored rollout is the one that was reviewed
+        run: cd deploy/container && sha256sum -c SHA256SUMS
+
       - name: The digest must be the one this repository declares
         env:
           DIGEST: ${{ inputs.digest }}

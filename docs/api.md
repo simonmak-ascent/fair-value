@@ -45,8 +45,17 @@ The calculate response is the standard envelope:
 }
 ```
 
-Errors return `400` (invalid method/body) or `404` (unknown tool) with a JSON
-`{"status":"error","error":...}` body.
+Errors return `400` for **any** non-ok result — invalid method or body, a computation that cannot
+produce a number, or a method that is not implemented — and `404` for an unknown tool, always with
+a JSON envelope whose `error` is an object:
+
+```json
+{"status":"error","method":"calculate_dcf","ticker":null,
+ "error":{"code":"INVALID_ARGUMENT","message":"..."},"disclaimer":"..."}
+```
+
+Codes on this surface: `INVALID_ARGUMENT`, `COMPUTATION_ERROR`, `UNKNOWN_TOOL`,
+`NOT_IMPLEMENTED`. Branch on `error.code`, never on the message.
 
 ## Running locally
 

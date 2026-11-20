@@ -8,7 +8,9 @@ handlers never raise to the caller.
 
 from __future__ import annotations
 
-from typing import Any, Dict
+import math
+import numbers
+from typing import Any, Dict, Optional
 
 from src.output.result import error as _error
 from src.output.result import ok as _ok
@@ -16,6 +18,32 @@ from src.output.result import ok as _ok
 from . import aliases as al
 from . import method_spec as ms
 from .handlers import HANDLERS
+
+
+def _non_finite(value: Any, path: str = "value") -> Optional[str]:
+    """The first infinite or NaN number inside a result, as ``path``, or ``None``.
+
+    numpy reports overflow in a lattice or an exponent as a warning and hands back ``inf``/``nan``,
+    so nothing raises and the number travels into the envelope as a successful valuation. Measured
+    on the live deployment 2026-11-20: ``calculate_option`` / ``binomial_american`` with a large
+    ``volatility`` produced ``value=nan``, which the REST layer's strict JSON encoder rejected with
+    an HTTP 500 and no envelope. A result that cannot be represented is a computation failure.
+    """
+    # No bool special case: `float(True)` is 1.0 and always finite, so a bool can never trip this
+    # walk. A branch for it was unfalsifiable — no test could fail if it were deleted.
+    if isinstance(value, numbers.Real):
+        return None if math.isfinite(float(value)) else f"{path} = {float(value)}"
+    if isinstance(value, dict):
+        for key, item in value.items():
+            found = _non_finite(item, f"{path}.{key}")
+            if found:
+                return found
+    elif isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            found = _non_finite(item, f"{path}[{index}]")
+            if found:
+                return found
+    return None
 
 
 def is_implemented(tool: str, method: str) -> bool:
@@ -60,6 +88,12 @@ def dispatch(tool: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
 
     try:
         value = handler(**args)
+        non_finite = _non_finite(value)
+        if non_finite:
+            # Raised inside the try so it becomes the same typed envelope as any other handler
+            # failure. Checking after the call is deliberate: the overflow is a numpy warning, so
+            # the handler returns normally and only the result reveals it.
+            raise ValueError(f"non-finite result ({non_finite}); check the input ranges")
     except TypeError as exc:
         return _error(
             "INVALID_ARGUMENT", f"{canonical_tool}.{canonical_method}: {exc}", method=canonical_tool

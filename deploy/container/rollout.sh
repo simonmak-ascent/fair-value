@@ -5,7 +5,7 @@
 #   rollout.sh --container fair-value-mcp --digest sha256:… [options]
 #
 #     --docker-name NAME   name on the node when it differs from the manifest name
-#     --peers IP,IP        propagate over the VPC and apply the same gate on each peer
+#     --peers IP,IP        accepted for compatibility; ignored — peers converge from the pointer tag
 #     --local-only         do not propagate (used by this script when it runs on a peer)
 #     --manifest PATH      container.json (default: ./container.json)
 #     --dry-run            resolve and print the run command, change nothing
@@ -19,7 +19,8 @@
 #   * the new container is probed on PORT+10000 before the live one is touched;
 #   * the live port must be owned by the container we started, checked through its cgroup;
 #   * a node that fails its gate is restored to the image it was running, and the rollout fails;
-#   * peers receive the image over the VPC, not through the registry (NAT 5 Mbps, VPC 250 MB/s).
+#   * a peer converges by itself: the deploy moves ghcr.io/<repo>:desired-<container> and every
+#     node's reconciler pulls the digest it names (no SSH, no copy, no peer credential).
 #
 set -Eeuo pipefail
 
@@ -41,20 +42,31 @@ while [ $# -gt 0 ]; do
     --local-only)  LOCAL_ONLY=1; shift ;;
     --publish-pointer) PUBLISH_POINTER=1; shift ;;
     --dry-run)     DRY_RUN=1; shift ;;
-    -h|--help)     sed -n '2,22p' "$SELF"; exit 0 ;;
+    -h|--help)     sed -n '2,24p' "$SELF"; exit 0 ;;
     *) echo "rollout: unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
 [ -n "$CONTAINER" ] && [ -n "$DIGEST" ] || {
-  echo "usage: rollout.sh --container <name> --digest <sha256:…> [--docker-name N] [--peers ip,ip] [--local-only] [--dry-run]" >&2
+  echo "usage: rollout.sh --container <name> --digest <sha256:…> [--docker-name N] [--local-only] [--dry-run]" >&2
   exit 2
 }
+
+# Normalise to the full `sha256:<hex>` form. A reconciler hands over the bare hex it read from a
+# pointer, and `ghcr.io/<repo>@<hex>` is not a valid reference — the digest grammar requires
+# `algorithm:` — so `$REF` below would be rejected by `docker pull`. It also keeps IMAGE_DIGEST and
+# the `image` field in <container>.json identical whichever node wrote them.
+DIGEST="sha256:${DIGEST#sha256:}"
 
 log() { printf '[rollout] %s\n' "$*" >&2; }
 die() { printf '[rollout] ERROR %s\n' "$*" >&2; exit 1; }
 
 HOST="$(hostname -s)"
+
+# `--peers` is still parsed so an old caller does not fail, but nothing propagates over SSH: the
+# deploy runner is not root and peers authorise only root's key. Saying so is better than failing
+# open on an option whose header used to promise a copy.
+[ -n "$PEERS" ] && log "--peers $PEERS ignored: peers converge from ghcr.io/<repo>:desired-<container>"
 
 # --- resolve the declaration -------------------------------------------------
 
@@ -64,6 +76,8 @@ eval "$spec_out"
 
 [ -n "${PORT:-}" ] || die "'$CONTAINER' has no port in $MANIFEST"
 [ -n "${APP_REPO:-}" ] || die "'$CONTAINER' has no repo in $MANIFEST"
+# One committed manifest declares the registry prefix in `repo`; the contract says owner/name.
+APP_REPO="${APP_REPO#ghcr.io/}"
 REF="ghcr.io/${APP_REPO}@${DIGEST}"
 NAME="${DOCKER_NAME:-${SPEC_DOCKER_NAME:-$CONTAINER}}"
 
@@ -74,6 +88,10 @@ run_opts=(
   --network "${NETWORK:-bridge}"
   -e NODE_ENV=production
   -e "PORT=$PORT"
+  # The image names itself. An application can then report which build is serving, which is the only
+  # way an observer — an operator, or the deployed suite — can tell a converged fleet from one where a
+  # peer still serves the previous digest. Without it every node reports the same application version.
+  -e "IMAGE_DIGEST=$DIGEST"
 )
 [ -n "${ENVFILE:-}" ] && run_opts+=(--env-file "$ENVFILE")
 [ -n "${RUN_USER:-}" ] && run_opts+=(--user "$RUN_USER")
@@ -170,6 +188,11 @@ with open(path, "w") as fh:
 PY
 }
 
+# A digest this node refused is recorded so the reconciler stops re-attempting it every tick: the
+# probe passed and the production gate did not, so the next tick would restart the live container
+# only to roll it back again. The pointer still names it; the next real deploy changes the intent.
+mark_rejected() { printf '%s\n' "${DIGEST#sha256:}" > "$STATE_DIR/$CONTAINER.rejected" 2>/dev/null || true; }
+
 deploy_local() {
   local previous previous_id
   # `docker save | ssh | docker load` does not preserve the registry reference: the peer holds the
@@ -209,6 +232,7 @@ deploy_local() {
   # 3. swap, then prove the swap is good
   if ! start "$REF" "$PORT"; then
     log "$CONTAINER could not start on :$PORT on $HOST (port already in use?)"
+    mark_rejected
     record failed "${previous:-none}"
     if [ -n "$previous_id" ]; then start "$previous_id" "$PORT" || log "WARNING: the restore also failed"; fi
     die "$CONTAINER did not start on $HOST"
@@ -216,6 +240,7 @@ deploy_local() {
   if ! wait_ready "$NAME" "$PORT" "$HEALTH_TIMEOUT"; then
     log "$CONTAINER failed its health gate on $HOST"
     docker logs --tail 40 "$NAME" >&2 || true
+    mark_rejected
     record failed "${previous:-none}"
     if [ -n "$previous_id" ]; then
       log "restoring ${previous_id:0:19} on $HOST"
@@ -228,15 +253,18 @@ deploy_local() {
   # 4. the port must belong to the container we started
   if ! owns_port "$PORT"; then
     log "$CONTAINER answers but does not own :$PORT on $HOST — another process holds it"
+    mark_rejected
     record ownership-failed "${previous:-none}"
     if [ -n "$previous_id" ]; then start "$previous_id" "$PORT"; fi
     die "$CONTAINER failed the ownership check on $HOST"
   fi
 
   cp -f "$MANIFEST" "$STATE_DIR/$CONTAINER.manifest.json" 2>/dev/null || true
-  # The node's own record of intent. The reconciler prefers it over the registry pointer, so a node
-  # that deployed keeps converging even if it cannot reach the registry.
+  # The node's own record of intent, and the last resort: converge.sh prefers the per-container
+  # pointer, then the legacy pointer, and reads this only when neither resolves — so a node still
+  # converges while the registry is unreachable, and the record never overrides newer intent.
   printf '%s\n' "${DIGEST#sha256:}" > "$STATE_DIR/$CONTAINER.desired" 2>/dev/null || true
+  rm -f "$STATE_DIR/$CONTAINER.rejected" 2>/dev/null || true
   record healthy "${previous:-none}"
   log "$HOST: $NAME runs ${DIGEST:0:19} on :$PORT"
 }
@@ -248,12 +276,58 @@ deploy_local
 # Peers do not receive the image over SSH: the deploy runner is not root and the peers authorise only
 # root's key. Instead the deploy moves a pointer tag, and each node's reconciler resolves it, pulls the
 # digest it names, and records what it ran. The tag is intent, never a runtime identity — the digest is.
+# Publish a tag, retrying a transient registry failure, and print docker's own error when the last
+# attempt fails. The runner's pull already retries three times for the same reason
+# (.github/workflows/container-cd.yml, the deploy step's `while ! docker pull` loop); the push did
+# not, so a single 5xx from GHCR failed the deploy with "could not publish the desired pointer" and
+# no cause — measured 2026-11-19, where the same job succeeded on a re-run minutes later.
+publish_tag() { # <tag> <what it is, for the message>
+  local tag="$1" what="$2" attempt=1 out
+  while :; do
+    if out="$(docker push "$tag" 2>&1)"; then return 0; fi
+    if [ "$attempt" -ge 3 ]; then
+      printf '%s\n' "$out" | tail -5 >&2
+      log "$what $tag failed after $attempt attempts"
+      return 1
+    fi
+    log "publish $what $tag failed (attempt $attempt); retrying in 10s"
+    attempt=$((attempt + 1))
+    sleep 10
+  done
+}
+
 if [ "$PUBLISH_POINTER" = 1 ]; then
-  ptr="ghcr.io/${APP_REPO}:desired"
-  if docker tag "$REF" "$ptr" && docker push -q "$ptr" >/dev/null 2>&1; then
-    log "pointer $ptr -> ${DIGEST:0:19}"
+  # One tag per container. A single repo-wide tag cannot name three different digests, and when it
+  # named the web image a reconciler reading it for the API role would pull the wrong image — which is
+  # why the old design had to prefer each node's local record, and why a peer therefore never moved.
+  ptr="ghcr.io/${APP_REPO}:desired-${CONTAINER}"
+  docker tag "$REF" "$ptr" || die "could not tag $REF as $ptr"
+  publish_tag "$ptr" "the desired pointer" || die "could not publish the desired pointer $ptr"
+  log "pointer $ptr -> ${DIGEST:0:19}"
+
+  # The legacy repo-wide tag, kept only while it is unambiguous: every container this manifest
+  # declares from the same repository must pin the same digest. A reconciler from before the
+  # per-container tag ignores the new one and falls back to this, so it must not learn to lie.
+  uniform="$(python3 - "$MANIFEST" "$APP_REPO" "$DIGEST" <<'PY' || echo 0
+import json, sys
+path, repo = sys.argv[1], sys.argv[2]
+m = json.load(open(path))
+pins = {(c.get("image") or "").split("@")[-1] for c in (m.get("containers") or [m]) if c.get("repo") == repo}
+declared = "sha256:" + sys.argv[3].removeprefix("sha256:")
+print("1" if pins == {declared} else "0")
+PY
+)"
+  if [ "$uniform" = "1" ]; then
+    legacy="ghcr.io/${APP_REPO}:desired"
+    if ! docker tag "$REF" "$legacy"; then
+      log "WARNING: could not tag the legacy pointer $legacy (per-container pointer is authoritative)"
+    elif ! publish_tag "$legacy" "the legacy pointer"; then
+      log "WARNING: could not publish the legacy pointer $legacy (per-container pointer is authoritative)"
+    else
+      log "legacy pointer $legacy -> ${DIGEST:0:19}"
+    fi
   else
-    die "could not publish the desired pointer $ptr"
+    log "not publishing $APP_REPO:desired — the manifest declares more than one digest in that repository"
   fi
 fi
 

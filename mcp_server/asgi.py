@@ -122,9 +122,21 @@ def create_app() -> Any:
     return Starlette(routes=routes, lifespan=mcp_app.router.lifespan_context)
 
 
+def wrap_mcp_middleware(inner: Any) -> Any:
+    """The middleware stack the module exposes, in the order it runs.
+
+    Factored out so the composition itself is testable: the ordering below is what decides whether an
+    aliased path is guarded, and that is not something a test of either middleware alone can see.
+
+    Rewrite first, then guard. The guard decides by path prefix, and ``/``, ``/api/index*`` only
+    become ``/mcp`` after the rewrite — so guarding before it let every alias through unchecked.
+    """
+    return _normalize_mcp_path(_origin_guard(inner))
+
+
 app: Any = None
 
 try:  # optional: requires the ``[mcp]`` extra
-    app = _origin_guard(_normalize_mcp_path(create_app()))
+    app = wrap_mcp_middleware(create_app())
 except Exception:  # pragma: no cover - hosts import this only when deps exist
     app = None

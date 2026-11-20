@@ -3,7 +3,7 @@
     {
       "name": "fair-value",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:da3d612695adc9d591942283b46814116f057d52cc68e3a361106918d29440ef",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:a3921f116f3bfe2df3ecc15c1974940bff8a4b234420c5469ac6f5140671ab56",
       "port": 3101,
       "hosts": [
         "fair-value.ascent-partners.com"
@@ -27,7 +27,7 @@
     {
       "name": "fair-value-mcp",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:1bee140e3620fb542260448a90d61d9f221ae14756d8a6a2ebfafea453a92f2f",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:9ffb8ca4e5f88a9f7b4db7b35bbd446533f5b23489cf5862a8b720491a782d93",
       "port": 8011,
       "hosts": [
         "fair-value.ascent-partners.com"
@@ -46,7 +46,7 @@
       "dataClass": "RDS",
       "wave": 1,
       "owner": "simonmak-ascent",
-      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. The image recreates /usr/bin/python3.12 because the copied venv's console scripts point at it and python:3.12-slim keeps python under /usr/local/bin; without that link every entrypoint fails with a misleading 'not found'. TCP health: GET /mcp answers 405 by design.",
+      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. Base image python:3.11-slim, so python lives at /usr/local/bin/python3.11 — which is the shebang the console scripts carry — and there is no /usr/bin/python at all. Checked inside the running container on 2026-11-20, which is how the previous note's '/usr/bin/python3.12 symlink' claim was shown to describe a build that never existed. TCP health: GET /mcp answers 405 by design.",
       "cmd": [
         "sh",
         "-c",
