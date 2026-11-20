@@ -27,7 +27,7 @@
     {
       "name": "fair-value-mcp",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:1bee140e3620fb542260448a90d61d9f221ae14756d8a6a2ebfafea453a92f2f",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:ae1797ec4a9338d3a2899e5d52005b2035b003f88d6df72eab243552b4cad586",
       "port": 8011,
       "hosts": [
         "fair-value.ascent-partners.com"
