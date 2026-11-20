@@ -14,21 +14,21 @@ import json
 from mcp_server.asgi import MCP_PATH, _origin_guard
 
 
-def _run(app, headers):
+def _run(app, headers, path: str = MCP_PATH):
     """Drive the middleware once, synchronously.
 
     The suite has no async plugin configured, and adding a dependency to test one middleware is not
     a trade worth making — so the coroutine is driven directly.
     """
-    return asyncio.run(_call(app, headers))
+    return asyncio.run(_call(app, headers, path))
 
 
-async def _call(app, headers: list[tuple[bytes, bytes]]):
+async def _call(app, headers: list[tuple[bytes, bytes]], path: str = MCP_PATH):
     """Drive an ASGI app once and collect the status and body it produces."""
     sent: list[dict] = []
     scope = {
         "type": "http",
-        "path": MCP_PATH,
+        "path": path,
         "headers": headers,
         "method": "POST",
     }
@@ -59,9 +59,7 @@ async def _downstream(scope, receive, send):
 
 
 def test_unapproved_origin_is_refused():
-    status, body = _run(
-        _origin_guard(_downstream), [(b"origin", b"https://audit-origin.invalid")]
-    )
+    status, body = _run(_origin_guard(_downstream), [(b"origin", b"https://audit-origin.invalid")])
     assert status == 403
     assert json.loads(body)["error"]["message"] == "Origin not allowed"
 
@@ -84,6 +82,23 @@ def test_absent_origin_passes_through():
     status, body = _run(_origin_guard(_downstream), [])
     assert status == 200
     assert json.loads(body)["reached"] == MCP_PATH
+
+
+def test_alias_paths_are_guarded_too():
+    """`/`, `/api/index*` are rewritten onto `/mcp`, so the guard must run after the rewrite.
+
+    Composed the other way round — guard outside, rewrite inside — the guard tests the *raw* path,
+    which never starts with `/mcp`, so every alias reaches the protocol unguarded.
+    """
+    from mcp_server.asgi import wrap_mcp_middleware
+
+    for alias in ("/", "/api/index", "/api/index.py", "/api/index/"):
+        status, _ = _run(
+            wrap_mcp_middleware(_downstream),
+            [(b"origin", b"https://audit-origin.invalid")],
+            alias,
+        )
+        assert status == 403, f"{alias} reached the application with a foreign Origin"
 
 
 def test_configured_origin_is_honoured(monkeypatch):

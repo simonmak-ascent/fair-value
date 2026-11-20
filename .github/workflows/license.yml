@@ -1,0 +1,45 @@
+name: license
+
+# Removed by `chore(ci): prune to build, test and release (#45)` and restored 2026-11-20. Both inputs
+# it needs — `.github/scripts/check-licenses.py` and `.github/scripts/make-sbom.py` — survived the
+# pruning with no caller, so production licence policy and the CycloneDX SBOM had silently stopped.
+# Action majors follow the rest of this repository (checkout@v7, setup-python@v7, upload-artifact@v7).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  license:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install production dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m pip install pip-licenses
+
+      - name: Production licence inventory
+        run: pip-licenses --format=json > licenses.json
+
+      - name: Enforce licence policy
+        run: python .github/scripts/check-licenses.py licenses.json
+
+      - name: Build SBOM (CycloneDX)
+        run: python .github/scripts/make-sbom.py licenses.json sbom.cdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v7
+        with:
+          name: fair-value-sbom
+          path: sbom.cdx.json

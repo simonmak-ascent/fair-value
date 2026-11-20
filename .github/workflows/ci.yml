@@ -16,6 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # deploy-digest.yml runs deploy/container/rollout.sh from this checkout, so a vendored copy that
+      # has drifted from apg-infra is not inert — it is the script that performs the next deploy. It
+      # was two minors stale on 2026-11-20 while nothing noticed; this makes the bytes a gate.
+      - name: Vendored deploy tooling matches its pinned checksums
+        run: cd deploy/container && sha256sum -c SHA256SUMS
+
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
