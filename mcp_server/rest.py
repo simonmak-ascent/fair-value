@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import Any, List
 
+from src.output.result import error as _error
+
 from . import docs as docs_mod
 from . import method_spec as ms
 from .engine import dispatch
@@ -69,19 +71,19 @@ def build_rest_routes() -> List[Any]:
     async def help_tool(request: Any) -> Any:
         tool = request.path_params["tool"]
         if tool not in ms.tools():
-            return _json({"status": "error", "error": f"unknown tool '{tool}'"}, 404)
+            return _json(_error("UNKNOWN_TOOL", f"unknown tool '{tool}'"), 404)
         return _json({"api_version": API_VERSION, "help": docs_mod.tool_help(tool)})
 
     async def calculate(request: Any) -> Any:
         tool = request.path_params["tool"]
         if tool not in ms.tools():
-            return _json({"status": "error", "error": f"unknown tool '{tool}'"}, 404)
+            return _json(_error("UNKNOWN_TOOL", f"unknown tool '{tool}'"), 404)
         try:
             body = await request.json()
         except Exception:  # noqa: BLE001 - treat any parse failure as a bad request
-            return _json({"status": "error", "error": "invalid JSON body"}, 400)
+            return _json(_error("INVALID_ARGUMENT", "invalid JSON body"), 400)
         if not isinstance(body, dict):
-            return _json({"status": "error", "error": "body must be a JSON object"}, 400)
+            return _json(_error("INVALID_ARGUMENT", "body must be a JSON object"), 400)
         result = dispatch(tool, body)
         return _json(result, 200 if result.get("status") == "ok" else 400)
 

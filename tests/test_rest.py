@@ -72,9 +72,48 @@ def test_errors():
             content="not json",
             headers={"content-type": "application/json"},
         )
+        # The two `calculate`-route guards are separate branches from the parse failure above, and
+        # each used to emit its own string shape — cover them or a revert of either stays green.
+        post_unknown = client.post("/v1/calculate/no_such_tool", json={"method": "x"})
+        not_an_object = client.post("/v1/calculate/calculate_dcf", json=[1, 2, 3])
     assert unknown.status_code == 404
     assert bad_method.status_code == 400
     assert not_json.status_code == 400
+    assert post_unknown.status_code == 404
+    assert not_an_object.status_code == 400
+
+    # Transport-level failures must carry the same envelope shape as the engine's, not a bare
+    # string in `error`: a client branches on `error.code` and cannot do that when it is a string.
+    for res in (unknown, bad_method, not_json, post_unknown, not_an_object):
+        body = res.json()
+        assert body["status"] == "error"
+        assert isinstance(body["error"], dict), (
+            f"{res.request.url} returned error={body['error']!r}"
+        )
+        assert body["error"]["code"]
+        assert "disclaimer" in body
+
+
+def test_non_finite_result_is_a_typed_400_not_a_500():
+    """The live 500 reproduced over the wire: `/v1/calculate` must answer with an envelope."""
+    with _client() as client:
+        res = client.post(
+            "/v1/calculate/calculate_option",
+            json={
+                "method": "binomial_american",
+                "spot": 100.0,
+                "strike": 100.0,
+                "maturity": 1.0,
+                "risk_free": 0.05,
+                "volatility": 1000.0,
+                "option_type": "call",
+                "steps": 100,
+            },
+        )
+    assert res.status_code == 400, res.text[:200]
+    body = res.json()
+    assert body["status"] == "error"
+    assert body["error"]["code"] == "COMPUTATION_ERROR"
 
 
 def test_openapi_and_docs():
