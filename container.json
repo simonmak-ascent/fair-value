@@ -46,7 +46,7 @@
       "dataClass": "RDS",
       "wave": 1,
       "owner": "simonmak-ascent",
-      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. The image recreates /usr/bin/python3.12 because the copied venv's console scripts point at it and python:3.12-slim keeps python under /usr/local/bin; without that link every entrypoint fails with a misleading 'not found'. TCP health: GET /mcp answers 405 by design.",
+      "notes": "uvicorn serving mcp_server.asgi:app on 8011, reached by the /mcp* and /v1/* split rule. Base image python:3.11-slim, so python lives at /usr/local/bin/python3.11 — which is the shebang the console scripts carry — and there is no /usr/bin/python at all. Checked inside the running container on 2026-11-20, which is how the previous note's '/usr/bin/python3.12 symlink' claim was shown to describe a build that never existed. TCP health: GET /mcp answers 405 by design.",
       "cmd": [
         "sh",
         "-c",
