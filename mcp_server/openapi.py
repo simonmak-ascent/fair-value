@@ -115,7 +115,13 @@ def build_openapi() -> Dict[str, Any]:
                     },
                     "responses": {
                         "200": {"description": "Result envelope"},
-                        "400": {"description": "Invalid method, inputs or body"},
+                        "400": {
+                            "description": (
+                                "Any non-ok result: invalid method, inputs or body, a computation "
+                                "that cannot produce a number, or an unimplemented method; branch "
+                                "on error.code"
+                            )
+                        },
                         "404": {"description": "Unknown tool"},
                     },
                 }
