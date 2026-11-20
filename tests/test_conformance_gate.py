@@ -8,8 +8,8 @@ sys.path.insert(0, str(_ROOT))
 sys.path.insert(0, str(_ROOT / "scripts"))
 
 import check_conformance as gate  # noqa: E402
-from mcp_server import method_spec as ms  # noqa: E402
-from mcp_server import standards as std  # noqa: E402
+from src.mcp import method_spec as ms  # noqa: E402
+from src.mcp import standards as std  # noqa: E402
 
 
 def test_coverage_report_shape():

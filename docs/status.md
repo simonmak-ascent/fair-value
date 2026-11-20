@@ -11,15 +11,15 @@ deterministic-first envelope (`value` + `statistics` + `citations`), and a
 conformance gate enforces standard citations in CI. The previous
 sibling-delegation model was retired.
 
-## Success (as of 2026-10-04)
+## Success (numbers measured 2026-11-20)
 
 | Area | Result |
 |------|--------|
 | Tools / methods | 14 tools, 135 methods |
 | Implemented | 133/135 (2 deferred: `finite_difference`, `quantlib`) |
 | Standards citations | 120/135 methods, **0 orphan clauses** |
-| Lint / types | ruff clean; mypy clean (21 files) |
-| Tests | 312 passed, 0 skipped (CI, with QuantLib); 306 passed, 6 skipped without |
+| Lint / types | ruff clean; mypy clean (22 files) |
+| Tests | 331 passed, 2 skipped (with QuantLib) — the two skips are the hosted E2E tests, which need `FAIR_VALUE_E2E_URL`; without QuantLib a further 6 parity tests skip |
 | Conformance | `14 tools; 133/135 implemented, 2 deferred; citations 120/135, 0 orphan clauses` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |
@@ -27,7 +27,7 @@ sibling-delegation model was retired.
 ### Redesign (A-001 … A-012)
 
 - **A-001 — dual-standard taxonomy** (`standards/taxonomy.json`,
-  `mcp_server/standards.py`): one clause per IVS/IFRS rule, mapped from methods;
+  `src/mcp/standards.py`): one clause per IVS/IFRS rule, mapped from methods;
   `citations_for` / `methods_for` / `coverage_report`; clause ids like
   `IVS.103.A20`, `IFRS.13.62`, `IVS.500.A10`.
 - **A-002 — verbatim corpus** (`standards/source/*.md`, `standards/provenance.json`):
@@ -40,16 +40,16 @@ sibling-delegation model was retired.
 - **A-005 — conformance gate** (`scripts/check_conformance.py`): taxonomy/corpus
   validation, coverage ratchet, orphan check, and an absolute
   `CITATION_EXEMPT` check (only the sector KPIs may be uncited).
-- **A-006 — transparency docs** (`mcp_server/docs.py`, `scripts/gen_docs.py`):
+- **A-006 — transparency docs** (`src/mcp/docs.py`, `scripts/gen_docs.py`):
   `-help` records and a generated method reference.
-- **A-007 — REST API** (`mcp_server/rest.py`): `/v1/…`, served with MCP by the
+- **A-007 — REST API** (`src/mcp/rest.py`): `/v1/…`, served with MCP by the
   ASGI app.
 - **A-008 — surface boundary**: report review (a document-audit capability, not a
   valuation calculation) was extracted to the `valuation-report-review` service.
 - **A-009 — deterministic-first**: `monte_carlo` requires a `seed` and returns a
   reproducible distribution.
 - **A-010 — duplicate-method guard** (none currently).
-- **A-011 — OpenAPI** (`mcp_server/openapi.py`): no new dependency.
+- **A-011 — OpenAPI** (`src/mcp/openapi.py`): no new dependency.
 - **A-012 — versioning** (`standards/versions.json`, `standards/CHANGELOG.md`).
 - **A-013 — DB persistence**: deliberately out of scope (WON'T).
 
@@ -74,12 +74,13 @@ optional engine (CI installs QuantLib), it can be enabled behind a handler
 guarded by `QUANTLIB_AVAILABLE`.
 
 ### P2 — Release & deployment
-Version lockstep is ready (`pyproject.toml` ↔ `server.json`, both `0.2.6`).
-Release is tag-triggered (`release.yml` → PyPI → MCP Registry); the hosted ASGI
-app (MCP + REST) is deployed on Vercel. Tag `v0.2.6` cut; the MCP Registry remote
-is the dedicated `/mcp` endpoint.
+Version lockstep is ready (`pyproject.toml` ↔ `server.json`, both `0.2.7`).
+Release is tag-triggered (`release.yml` → PyPI → MCP Registry). The hosted ASGI
+app (MCP + REST) runs as two digest-pinned containers — `fair-value` on 3101 and
+`fair-value-mcp` on 8011 — built by `image.yml` and rolled out by
+`deploy-digest.yml`; the MCP Registry remote is the dedicated `/mcp` endpoint.
 
 ### P3 — Docs & examples
 Method reference is generated (`scripts/gen_docs.py`); worked HK examples live in
-`examples/hk_examples.py` and render in [Examples](examples.md). Keep
+`docs/examples/hk_examples.py` and render in [Examples](examples.md). Keep
 `valuation://methods` / `valuation://standards` as the source of truth.

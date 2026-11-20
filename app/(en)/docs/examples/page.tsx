@@ -37,7 +37,7 @@ export default function ExamplesPage() {
         </table>
       </div>
       <Prose>
-        <p>The examples live in <code>examples/hk_examples.py</code> and are exercised by the test suite, so they stay in step with the registry.</p>
+        <p>The examples live in <code>docs/examples/hk_examples.py</code> and are exercised by the test suite, so they stay in step with the registry.</p>
       </Prose>
     </div>
   );

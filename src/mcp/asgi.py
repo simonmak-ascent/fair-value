@@ -5,13 +5,13 @@ Both share the same registry/engine.
 
 Usage (ASGI servers / serverless platforms):
 
-    uvicorn mcp_server.asgi:app --host 0.0.0.0 --port 8000
+    uvicorn src.mcp.asgi:app --host 0.0.0.0 --port 8000
 
-On Vercel the Next.js frontage owns ``/`` and rewrites ``/mcp`` and ``/v1/*`` to
-the Python function (``api/index.py``); Vercel preserves the request path, so the
-same routing applies. A normalize middleware maps a bare function path
-(``/`` or ``/api/index*``) onto ``/mcp`` so direct function invocations also
-reach MCP.
+The balancer sends ``/`` and ``/docs/*`` to the Next.js frontage and ``/mcp`` and
+``/v1/*`` here, preserving the request path. A normalize middleware maps a bare
+function path (``/`` or ``/api/index*``) onto ``/mcp``, so a request that reaches
+this app directly — a probe, a test, a client pointed at the container port — also
+lands on MCP rather than a 404.
 
 ``app`` is ``None`` only when the optional ``fastmcp`` dependency is absent, so
 importing this module never raises for the base install.

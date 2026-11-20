@@ -1,7 +1,7 @@
 """Canonical MCP tool surface for fair-value.
 
 The surface is **derived from the method-spec registry**
-(:mod:`mcp_server.method_spec`): each registered ``calculate_*`` tool becomes
+(:mod:`src.mcp.method_spec`): each registered ``calculate_*`` tool becomes
 one MCP tool whose input schema, method enum, per-parameter descriptions, and
 required sets come from the registry — never restated by hand. Import is
 side-effect free: no ``fastmcp`` import, no network, no handler execution.

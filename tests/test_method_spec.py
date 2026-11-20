@@ -5,8 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server import aliases as al
-from mcp_server import method_spec as ms
+from src.mcp import aliases as al
+from src.mcp import method_spec as ms
 
 
 def test_seed_tools_registered():

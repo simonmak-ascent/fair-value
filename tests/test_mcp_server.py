@@ -8,8 +8,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 
-from mcp_server import server as srv
-from mcp_server import tool_surface as ts
+from src.mcp import server as srv
+from src.mcp import tool_surface as ts
 
 
 def test_module_imports_and_flag_is_bool():
@@ -97,7 +97,7 @@ def test_build_server_tool_call_roundtrip():
 def test_server_reports_package_version():
     import asyncio
 
-    import mcp_server
+    from src import mcp
     from fastmcp import Client
 
     server = srv.build_server()
@@ -107,4 +107,4 @@ def test_server_reports_package_version():
             return client.server_info
 
     info = asyncio.run(go())
-    assert info.version == mcp_server.__version__
+    assert info.version == mcp.__version__

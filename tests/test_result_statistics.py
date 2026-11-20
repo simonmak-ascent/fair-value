@@ -94,8 +94,8 @@ def test_missing_statistics_fields_detects_incomplete():
 
 
 def test_engine_dispatch_attaches_registry_metadata():
-    from mcp_server import method_spec  # noqa: F401 - import attaches the taxonomy
-    from mcp_server.engine import dispatch
+    from src.mcp import method_spec  # noqa: F401 - import attaches the taxonomy
+    from src.mcp.engine import dispatch
 
     res = dispatch(
         "calculate_dcf",

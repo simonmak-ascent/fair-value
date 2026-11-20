@@ -15,11 +15,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from mcp_server import method_spec as ms
-from mcp_server import standards as std
-from mcp_server import tool_surface as ts
-from mcp_server.deferred import DEFERRED
-from mcp_server.engine import is_implemented
+from src.mcp import method_spec as ms
+from src.mcp import standards as std
+from src.mcp import tool_surface as ts
+from src.mcp.deferred import DEFERRED
+from src.mcp.engine import is_implemented
 
 ROOT = Path(__file__).resolve().parent.parent
 BASELINE_PATH = ROOT / "standards" / "coverage-baseline.json"

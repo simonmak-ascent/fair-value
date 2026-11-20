@@ -18,10 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from mcp_server import docs as mdocs  # noqa: E402
-from mcp_server import method_spec as ms  # noqa: E402
-from mcp_server import standards as std  # noqa: E402
-from mcp_server.deferred import deferred_method_ids  # noqa: E402
+from src.mcp import docs as mdocs  # noqa: E402
+from src.mcp import method_spec as ms  # noqa: E402
+from src.mcp import standards as std  # noqa: E402
+from src.mcp.deferred import deferred_method_ids  # noqa: E402
 
 OUT = ROOT / "data" / "catalog.json"
 
@@ -96,7 +96,7 @@ def build() -> dict:
     total = coverage["total_methods"]
     return {
         "surface_version": catalog["surface_version"],
-        "generated_from": "mcp_server.method_spec + standards.taxonomy",
+        "generated_from": "src.mcp.method_spec + standards.taxonomy",
         "counts": {
             "tools": catalog["tool_count"],
             "methods": total,

@@ -1,9 +1,9 @@
 # Methods
 
 The canonical, machine-readable version of this catalogue is served by the MCP
-server at `valuation://methods` (see `mcp_server/catalog.py`); the standards
+server at `valuation://methods` (see `src/mcp/catalog.py`); the standards
 taxonomy is served at `valuation://standards`. Both are derived from the
-method-spec registry (`mcp_server/method_spec.py` + `method_spec_seed.py`).
+method-spec registry (`src/mcp/method_spec.py` + `method_spec_seed.py`).
 
 Each `calculate_*` tool takes a required `method` plus exactly that method's
 inputs (no defaults). **135 methods are registered across 14 tools**; every

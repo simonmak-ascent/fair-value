@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server.engine import dispatch
+from src.mcp.engine import dispatch
 from src.derivatives.options import black_scholes_price
 from src.derivatives import structured_products as sp
 

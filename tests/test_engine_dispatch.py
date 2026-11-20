@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
 
-from mcp_server.engine import _non_finite, dispatch, is_implemented
+from src.mcp.engine import _non_finite, dispatch, is_implemented
 
 
 def test_valid_call_returns_ok_envelope():

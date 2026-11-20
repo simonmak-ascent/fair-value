@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server import catalog, prompts  # noqa: E402
-from mcp_server.server import register_prompts, register_resources  # noqa: E402
+from src.mcp import catalog, prompts  # noqa: E402
+from src.mcp.server import register_prompts, register_resources  # noqa: E402
 
 
 class _FakeServer:

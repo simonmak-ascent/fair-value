@@ -1,6 +1,6 @@
 {
   "surface_version": "3.0",
-  "generated_from": "mcp_server.method_spec + standards.taxonomy",
+  "generated_from": "src.mcp.method_spec + standards.taxonomy",
   "counts": {
     "tools": 14,
     "methods": 135,

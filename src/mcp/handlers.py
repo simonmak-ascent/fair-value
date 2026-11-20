@@ -1,8 +1,8 @@
 """Engine handlers for the method-spec surface.
 
 Each handler is pure, deterministic and network-free; it receives exactly the
-parameters declared in :mod:`mcp_server.method_spec` and returns a value (or a
-dict). :func:`mcp_server.engine.dispatch` validates arguments against the
+parameters declared in :mod:`src.mcp.method_spec` and returns a value (or a
+dict). :func:`mcp.engine.dispatch` validates arguments against the
 registry, calls the handler, and wraps the result in the shared envelope.
 
 Methods without a handler yet return ``NOT_IMPLEMENTED`` from dispatch (the

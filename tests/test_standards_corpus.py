@@ -10,9 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from mcp_server import method_spec, standards
-from mcp_server.method_spec import MethodSpec
-from mcp_server.standards import (
+from src.mcp import method_spec, standards
+from src.mcp.method_spec import MethodSpec
+from src.mcp.standards import (
     Taxonomy,
     TaxonomyError,
     citations_for,
@@ -199,7 +199,7 @@ def test_ias37_corpus_and_citation():
     text = clause_text(taxonomy, "IAS.37.36")["text"]
     assert "best estimate of the expenditure" in text
 
-    from mcp_server.engine import dispatch
+    from src.mcp.engine import dispatch
 
     res = dispatch(
         "calculate_actuarial_pv",

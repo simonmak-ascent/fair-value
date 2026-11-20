@@ -8,7 +8,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from mcp_server.engine import dispatch
+from src.mcp.engine import dispatch
 from src.valuation import loss_making as lm
 
 

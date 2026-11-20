@@ -49,14 +49,14 @@ def test_recoverable_amount_is_the_higher():
 
 
 def test_registered_and_dispatched_with_citations():
-    from mcp_server import method_spec
+    from src.mcp import method_spec
 
     assert method_spec.get("calculate_residual", "relief_from_royalty") is not None
     assert method_spec.get("calculate_residual", "mpeem") is not None
     assert method_spec.get("calculate_residual", "with_without") is not None
     assert method_spec.get("calculate_residual", "recoverable_amount") is not None
 
-    from mcp_server.engine import dispatch
+    from src.mcp.engine import dispatch
 
     res = dispatch(
         "calculate_residual",
@@ -106,7 +106,7 @@ def test_development_residual():
 
 
 def test_new_asset_methods_dispatch_with_citations():
-    from mcp_server.engine import dispatch
+    from src.mcp.engine import dispatch
 
     res = dispatch(
         "calculate_residual",

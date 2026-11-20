@@ -48,7 +48,7 @@ jobs:
       - name: Unit tests with coverage
         run: >
           python -m pytest
-          --cov=src --cov=mcp_server --cov=valuation_engine
+          --cov=src --cov=src.mcp --cov=valuation_engine
           --cov-report=term-missing
 
       - name: Registry + surface conformance
@@ -62,7 +62,7 @@ jobs:
       - name: Install + server-build smoke
         run: |
           pip install .
-          python -c "import mcp_server.server as s; assert s.FASTMCP_AVAILABLE, 'fastmcp not installed'; s.build_server(); print('server build smoke ok')"
+          python -c "import src.mcp.server as s; assert s.FASTMCP_AVAILABLE, 'fastmcp not installed'; s.build_server(); print('server build smoke ok')"
 
       - name: Build sdist + wheel
         run: |

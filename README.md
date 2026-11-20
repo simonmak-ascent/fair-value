@@ -88,7 +88,7 @@ inputs, and governing clauses.
 
 ## REST API
 
-The same core is exposed at `/v1` (served next to MCP by `mcp_server.asgi:app`):
+The same core is exposed at `/v1` (served next to MCP by `src.mcp.asgi:app`):
 
 ```bash
 curl -s localhost:8000/v1/health
@@ -105,7 +105,7 @@ Endpoints: `/v1/health`, `/v1/tools`, `/v1/methods`, `/v1/standards`,
 
 The hosted domain serves a Next.js frontage — landing, complete docs, methods
 catalogue (one page per method), standards browser, and an API playground —
-alongside the MCP/REST function in one Vercel project. It is data-driven: the
+as a separate digest-pinned container from the MCP/REST service. It is data-driven: the
 catalogue is generated from the registry at build time
 (`scripts/gen_web_data.py` → `data/catalog.json`).
 
@@ -116,8 +116,8 @@ pnpm build        # prebuild regenerates data/catalog.json
 pnpm typecheck && pnpm lint
 ```
 
-Routing: `/` and `/docs/*` are Next.js; `/mcp` and `/v1/*` are rewritten to the
-Python function (`api/index.py`). The frontage is localized — `en` at `/`,
+Routing: `/` and `/docs/*` are Next.js; `/mcp` and `/v1/*` are routed by the
+balancer to `fair-value-mcp` (`src.mcp.asgi:app`). The frontage is localized — `en` at `/`,
 `zh` at `/zh`, `hk` at `/hk` — via per-locale root layouts with hreflang.
 
 ## Quick Start (Python)
@@ -162,7 +162,7 @@ src/
 ├── credit_risk/            # ECL, PD/LGD, CVA/DVA
 ├── derivatives/            # options, swaps, convertible bonds, structured products, fixed income
 └── output/                 # shared result envelope (value + statistics + citations)
-mcp_server/
+src/mcp/
 ├── method_spec.py + method_spec_seed.py   # single source of truth for tools/methods
 ├── standards.py                           # taxonomy loader, citations, coverage
 ├── tool_surface.py · engine.py · handlers.py · server.py

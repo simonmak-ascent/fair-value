@@ -9,7 +9,7 @@ export default function HostingPage() {
       <DocsHeader
         eyebrow="Operate"
         title="Hosting"
-        description="The server runs over stdio by default and Streamable HTTP with --http. The public frontage and API deploy on Vercel."
+        description="The server runs over stdio by default and Streamable HTTP with --http. The public frontage and API run as two digest-pinned containers."
       />
       <Prose>
         <h2>Hosted (zero install)</h2>
@@ -18,8 +18,9 @@ export default function HostingPage() {
           <li><code>https://fair-value.ascent-partners.com/v1/…</code> — REST API</li>
         </ul>
         <p>
-          Deployed from <code>api/index.py</code> (the MCP + REST ASGI app) with the Next.js frontage
-          in the same Vercel project. The MCP endpoint moved from the domain root to <code>/mcp</code>.
+          Two containers, both pinned by digest: the Next.js frontage on <code>3101</code> and
+          <code>src.mcp.asgi</code> under uvicorn on <code>8011</code>. MCP is served at{" "}
+          <code>/mcp</code> and REST at <code>/v1</code>; there is no <code>/api</code> path.
         </p>
 
         <h2>Docker</h2>
@@ -28,16 +29,13 @@ export default function HostingPage() {
         label="shell"
         code={`docker build -t fair-value-mcp .
 docker run --rm -p 8000:8000 fair-value-mcp
-# MCP endpoint: http://localhost:8000/mcp
-
-# docker compose
-SENTRY_DSN="" docker compose up --build`}
+# MCP endpoint: http://localhost:8000/mcp`}
       />
 
       <Prose>
         <h2>Self-host (uvicorn)</h2>
       </Prose>
-      <CodeBlock label="shell" code={`uvicorn mcp_server.asgi:app --host 0.0.0.0 --port 8000`} />
+      <CodeBlock label="shell" code={`uvicorn src.mcp.asgi:app --host 0.0.0.0 --port 8000`} />
 
       <Prose>
         <h2>Configuration</h2>

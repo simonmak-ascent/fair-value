@@ -14,7 +14,7 @@ httpx = pytest.importorskip("httpx")  # noqa: F841 - TestClient dependency
 def _client():
     from starlette.testclient import TestClient
 
-    from mcp_server.asgi import create_app
+    from src.mcp.asgi import create_app
 
     app = create_app()
     return TestClient(app)
