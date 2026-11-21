@@ -70,7 +70,7 @@ ignore_missing_imports = true
 warn_unused_ignores = false
 # Analyse imported legacy modules, but only report errors for the modules we own.
 follow_imports = "silent"
-files = ["src/mcp", "valuation_engine.py", "src/output"]
+files = ["src/mcp", "src/data", "valuation_engine.py", "src/output"]
 
 [tool.pytest.ini_options]
 # Folded here from a root `pytest.ini` on 2026-11-20: one config file per tool, and pytest reads

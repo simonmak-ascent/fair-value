@@ -18,8 +18,8 @@ sibling-delegation model was retired.
 | Tools / methods | 14 tools, 135 methods |
 | Implemented | 133/135 (2 deferred: `finite_difference`, `quantlib`) |
 | Standards citations | 120/135 methods, **0 orphan clauses** |
-| Lint / types | ruff clean; mypy clean (22 files) |
-| Tests | 331 passed, 2 skipped (with QuantLib) — the two skips are the hosted E2E tests, which need `FAIR_VALUE_E2E_URL`; without QuantLib a further 6 parity tests skip |
+| Lint / types | ruff clean; mypy clean (24 files) |
+| Tests | 344 passed, 2 skipped (with QuantLib) — the two skips are the hosted E2E tests, which need `FAIR_VALUE_E2E_URL`; without QuantLib a further 6 parity tests skip |
 | Conformance | `14 tools; 133/135 implemented, 2 deferred; citations 120/135, 0 orphan clauses` |
 | TDQS overall | **~4.4–4.5 A** (was 3.6 A) |
 | TDQS mean tool | **4.7** (min 4.3) |

@@ -29,7 +29,7 @@ Every result carries `citations` resolved from `standards/taxonomy.json`, whose 
 verbatim in `standards/source/`. Citations are returned, never invented. A method with no clause
 carries empty `citations` (`{"ivs": [], "ifrs": []}`); `scripts/check_conformance.py` fails the build
 on an uncited method outside its sector-KPI exemption, and on any regression past
-`standards/coverage-baseline.json` (15 methods are uncited today, all of them sector KPIs).
+`standards/coverage-baseline.json` (15 of the 135 are uncited today, all of them sector KPIs).
 
 ### IVS 2025
 
@@ -103,6 +103,39 @@ Failures are typed, never raised: `INVALID_ARGUMENT`, `COMPUTATION_ERROR`, `NOT_
 `INVALID_ARGUMENT` on the MCP/REST surface. Branch on `error.code`, never on the message.
 
 ## Inputs
+
+### From Yahoo Finance
+
+Market data is acquired by `apdb-etl`, the estate's Yahoo ingester (`yahoo-finance2`). It requests `assetProfile`, `summaryDetail`, `price`, `quoteType`,
+`financialData`, `defaultKeyStatistics`, `calendarEvents` and `majorHoldersBreakdown`.
+`src/data/yahoo.py` maps that payload onto method inputs:
+
+```python
+from src.data.yahoo import capm_inputs, dcf_inputs, trailing_free_cash_flow
+
+rate = dispatch("calculate_discount_rate",
+                capm_inputs(summary, risk_free=0.0425, market_return=0.09))
+dcf  = dispatch("calculate_dcf", dcf_inputs(projected_flows, discount_rate=rate["value"]))
+```
+
+What Yahoo contributes, and what it does not — the distinction matters because the second column is
+where a plausible number would otherwise acquire a citation it did not earn:
+
+| Yahoo supplies | the caller supplies |
+|---|---|
+| ticker, name, currency, sector, industry (`price`, `assetProfile`) | projected cash flows for a DCF |
+| `financialData.freeCashflow` — one trailing-twelve-month scalar | EBITDA and the peer multiple |
+| `defaultKeyStatistics.beta`, when reported | the risk-free rate and the equity risk premium |
+
+There is deliberately **no** reported cash-flow series: `yahoo-finance2`'s own guidance is that the
+quote-summary statement modules "provide little data" since late 2024, and `financialData.freeCashflow`
+is a single trailing figure. Feeding trailing cash flow to `calculate_dcf` would return the present
+value of the past under a `formula_ref` that says "PV of projected FCFF".
+
+A missing field raises `MissingProviderData`. Nothing is defaulted: a zero in a valuation input is
+indistinguishable from a measured one once it is inside the envelope.
+
+### Supplied explicitly
 
 The computation path performs no network or database I/O. Every input is supplied explicitly by the
 caller; market data and reference prices come from `apdb-etl`, which is a separate service. The only
