@@ -9,9 +9,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
-from src.mcp.method_spec import methods_resource
+# Every other script here puts the repository root on the path; this one did not, so the command in
+# AGENTS.md and in this docstring failed with `ModuleNotFoundError: No module named 'src'` unless the
+# caller happened to export PYTHONPATH.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from src.mcp.method_spec import methods_resource  # noqa: E402
 
 OUT = Path(__file__).resolve().parent.parent / "standards" / "methods-resource-baseline.json"
 

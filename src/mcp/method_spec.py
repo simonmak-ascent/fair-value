@@ -23,9 +23,6 @@ def _i(desc: str) -> Dict[str, Any]:
     return {"type": "integer", "description": desc}
 
 
-def _s(desc: str) -> Dict[str, Any]:
-    return {"type": "string", "description": desc}
-
 
 def _nums(desc: str) -> Dict[str, Any]:
     return {"type": "array", "items": {"type": "number"}, "description": desc}
@@ -345,8 +342,6 @@ PARAMS: Dict[str, Dict[str, Any]] = {
     "investment": _n("Amount invested (VC method)."),
     "terminal_value": _n("Exit/terminal value (VC method)."),
     # Orthogonal
-    "file_path": _s("Path to the report (.xlsx/.xls/.pdf/.docx/image)."),
-    "ticker": _s("Equity ticker, e.g. '9988.HK'."),
 }
 
 
