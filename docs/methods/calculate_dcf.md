@@ -44,7 +44,7 @@ flowchart TD
 
 per-year FCFF plus a terminal value
 
-**Formula:** IVS 105 income approach; PV of projected FCFF
+**Formula:** IVS 103 income approach; PV of projected FCFF
 
 **Approach:** income  
 **Solution:** closed_form
