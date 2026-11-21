@@ -2012,7 +2012,7 @@
       "tool": "calculate_dcf",
       "method": "dcf",
       "summary": "per-year FCFF plus a terminal value",
-      "formula_ref": "IVS 105 income approach; PV of projected FCFF",
+      "formula_ref": "IVS 103 income approach; PV of projected FCFF",
       "approach": "income",
       "solution_type": "closed_form",
       "standards": [

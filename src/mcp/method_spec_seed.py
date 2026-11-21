@@ -72,7 +72,7 @@ _DCF = (
         "dcf",
         "per-year FCFF plus a terminal value",
         ("cash_flows", "discount_rate"),
-        "IVS 105 income approach; PV of projected FCFF",
+        "IVS 103 income approach; PV of projected FCFF",
         ("IVS 2025", "IFRS 13"),
     ),
     MethodSpec(
