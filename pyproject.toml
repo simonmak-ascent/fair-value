@@ -28,7 +28,13 @@ dependencies = [
 
 [project.optional-dependencies]
 # MCP server dependencies (A-004) — never required for the base library.
-mcp = ["fastmcp>=4.0.10"]
+# The image runs `pip install ".[mcp]"` (Dockerfile:7) and never installs requirements.txt,
+# so this extra — not requirements.txt — decides the shipped client. The floor tracks the exact
+# version CI pins (requirements-dev.txt); the ceiling is what stops a breaking major, since with a
+# bare floor pip resolves 4.2.4 today and 5.x the moment it lands, untested. The floor also cannot
+# go below 4.x: `client.server_info` (tests/test_mcp_server.py:107) is a FastMCP 4 property — 3.x
+# exposes only `client.initialize_result.serverInfo`.
+mcp = ["fastmcp>=4.2.3,<5"]
 # Optional analysis backends.
 quant = ["QuantLib-Python>=1.18"]
 docs = ["mkdocs"]
