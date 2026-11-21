@@ -3,7 +3,7 @@
     {
       "name": "fair-value",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:a3921f116f3bfe2df3ecc15c1974940bff8a4b234420c5469ac6f5140671ab56",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:e4dd8926712db9718e3fcadc538e0b3813a1fa9c1c469729a082ecc4a3852ff5",
       "port": 3101,
       "hosts": [
         "fair-value.ascent-partners.com"
@@ -27,7 +27,7 @@
     {
       "name": "fair-value-mcp",
       "repo": "simonmak-ascent/fair-value",
-      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:f28c74f3eb86f74e7b37128c12733d933ed16adb94ab7ede975c480c7d489041",
+      "image": "ghcr.io/simonmak-ascent/fair-value@sha256:5e745a5920bb0bee701bfb1d6341029dfe404efdcdc19cbcfd5bedc3782522d3",
       "port": 8011,
       "hosts": [
         "fair-value.ascent-partners.com"
