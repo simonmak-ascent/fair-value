@@ -1,3 +1,8 @@
+> **Historical design brief.** This was the prompt for the v0 landing-page design, not a
+> description of the service. The figures it quotes (16 tools, 138 methods) are from that
+> time. `SKILL.md` is the current capability statement — see it for the live surface, since a
+> count restated here would drift exactly as these did. Nothing here is generated or checked.
+
 You are designing a **dark-first, high-data-intensity developer frontage** for `fair-value` — a valuation MCP server + REST API for Ascent Partners Group (Hong Kong). It is NOT the corporate marketing site; it is a technical documentation + API product surface. Think "Bloomberg terminal meets a modern API docs site".
 
 ## Design tokens (CANONICAL — never invent values outside this list)

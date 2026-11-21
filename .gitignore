@@ -57,6 +57,27 @@ constitution.md
 vdd/
 specs/
 
+# Local planning and verification artefacts — internal, never committed or published.
+# `TASKS.md` is the plan gate's execution list (see its own header): shipping is refused until it
+# reports complete, so it is a control, not a note. The rest are working documents — a handover and
+# a local harness — that describe a session rather than the library.
+TASKS.md
+PLAN.md
+HANDOVER.md
+docs/plan.md
+.audit/
+.verify/
+
+# Test *output* (the suite itself is tracked — CI runs it).
+# `.pytest_cache/`, `.coverage` and `htmlcov/` are already ignored under Python above — listing them
+# again would mean deleting a line in two places to track one artefact.
+.coverage.*
+coverage.xml
+test-results/
+playwright-report/
+.mypy_cache/
+.ruff_cache/
+
 # Next.js frontage
 node_modules/
 .next/
