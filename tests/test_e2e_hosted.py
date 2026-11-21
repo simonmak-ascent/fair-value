@@ -192,5 +192,12 @@ def test_rest_end_to_end():
     assert code == 200
     assert json.loads(body)["status"] == "ok"
 
+    # Content, not just transport. Until 2026-11-21 the response could contradict itself — citations
+    # naming the income approach while formula_ref named the model-fit clause — and this suite passed
+    # on `status == "ok"`, so every automated gate missed it. Now it would fail.
+    dcf = json.loads(body)
+    assert dcf["formula_ref"].startswith("IVS 103"), dcf["formula_ref"]
+    assert "IVS.103.A20" in dcf["citations"]["ivs"], dcf["citations"]
+
     code, body = _rest("/v1/openapi.json")
     assert code == 200 and '"openapi"' in body
