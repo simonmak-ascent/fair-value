@@ -2,234 +2,133 @@
 
 ## Overview
 
-Professional financial valuation system for OpenCode that performs valuations according to IAS/IFRS and IVS standards.
+Turn a valuation question into a validated number: choose a method, supply its exact inputs, and
+read the result out of a shared envelope that carries the formula, the assumptions, the statistics
+and the IVS/IFRS clauses it satisfies.
+
+This repository is a **pure computation library** plus the MCP server and REST API that expose it.
+It holds **14 `calculate_*` tools covering 135 methods**. It does not fetch market data and does not
+review reports — see [Out of scope](#out-of-scope).
 
 ## Trigger Conditions
 
-Use this skill when user requests:
+Use it when a request needs a computed valuation figure or a modelled metric, for example:
 
-- "Value [company] using DCF/NAV/CCA"
-- "Review valuation report at [file]"
-- "Validate Excel model at [path]"
-- "Calculate fair value per IFRS 13"
-- "Extract fair value from [PDF]"
-- "Check if assumptions are reasonable"
-- "Price options/swaps for [instrument]"
-- "Calculate WACC using FF5"
-- "Run KMV credit analysis"
-- Any valuation, derivatives, or credit risk calculation
+- "What is this company worth on a DCF / NAV / comparable-multiples basis?"
+- "What discount rate should I use — CAPM, build-up, country risk, currency-adjusted?"
+- "Price this option, warrant, convertible or structured product."
+- "What is the expected credit loss under HKFRS 9, or the PD from a structural model?"
+- "Apply a DLOM / control premium, or measure a residual / IFRS 13 adjustment."
+- "What are the sector KPIs for a SaaS or marketplace business?"
+
+Do not use it for data acquisition, precedent-transaction search, or document review.
 
 ## Standards Compliance
 
+Every result carries `citations` resolved from `standards/taxonomy.json`, whose clause text is
+verbatim in `standards/source/`. Citations are returned, never invented. A method with no clause
+carries empty `citations` (`{"ivs": [], "ifrs": []}`); `scripts/check_conformance.py` fails the build
+on an uncited method outside its sector-KPI exemption, and on any regression past
+`standards/coverage-baseline.json` (15 methods are uncited today, all of them sector KPIs).
+
 ### IVS 2025
-- IVS 100: General Concepts
-- IVS 200: Assets
-- IVS 210: Intangible Assets
-- IVS 300: Business and Business Interests
-- IVS 400: Financial Instruments
+
+Income, market and cost approaches under IVS 103, the IVS 105 model-fit requirement, and the
+IVS 500 financial-instrument clauses.
 
 ### IFRS Standards
-- IFRS 13: Fair Value Measurement
-- IAS 36: Impairment of Assets
-- IAS 38: Intangible Assets
-- HKFRS 9: Financial Instruments
-- IFRS 9: Financial Instruments
+
+IFRS 13 fair value (hierarchy, DLOM/DLOC, highest and best use), IFRS 9 / HKFRS 9 impairment,
+IAS 19 and IAS 37 provisions, IFRS 17 insurance contracts.
 
 ## Capabilities
 
-### 1. Valuation Methods
+Fourteen tools, 135 methods. The tool is the entry point; the `method` argument selects the
+computation. `GET /v1/help/{tool}` returns the exact inputs each method requires.
 
-#### DCF (Discounted Cash Flow)
-- Fama-French 5-Factor cost of equity
-- KMV cost of debt
-- Multi-stage projections
-- Gordon growth & exit multiple terminal value
+| tool | what it covers | methods | examples |
+|---|---|---|---|
+| `calculate_dcf` | Discounted cash flow valuation | 10 | `dcf`, `npv`, `annuity`, `lease_pv` |
+| `calculate_market_multiple` | Market multiples and comparable pricing | 11 | `ev_ebitda`, `ev_arr`, `ddm`, `cap_rate` |
+| `calculate_residual` | IFRS measurement, residual income, non-financial fair value | 22 | `goodwill`, `development_residual`, `debt_waterfall` |
+| `calculate_discount_rate` | Cost of capital and discount rates | 9 | `capm`, `build_up`, `country_risk`, `esg` |
+| `calculate_fair_value_adjustment` | IFRS 13 adjustments | 6 | `dlom`, `dloc`, `control_premium`, `hierarchy_level` |
+| `calculate_sector_metrics` | Sector-specific operating metrics | 15 | `arr`, `cac`, `gmv_multiple`, `break_even` |
+| `calculate_expected_value` | Probability-weighted value | 6 | `decision_tree`, `monte_carlo`, `football_field` |
+| `calculate_loss_making_company` | Pre-profit and distressed companies | 7 | `margin_ramp_dcf`, `distressed_waterfall`, `merton_equity` |
+| `calculate_option` | Options and warrants | 9 | `black_scholes`, `binomial_american`, `barrier_first_passage` |
+| `calculate_convertible_bond` | Convertible and exchangeable bonds | 5 | `lattice_tsf`, `lsmc`, `lattice_intensity` |
+| `calculate_structured_product` | Structured products | 13 | `autocallable`, `cbbc`, `accumulator`, `cfd` |
+| `calculate_fixed_income` | Fixed income and term structure | 9 | `bond_price`, `duration`, `convexity`, `discount_factor` |
+| `calculate_credit_loss` | Credit loss and impairment | 8 | `ecl_12m`, `ecl_lifetime`, `cva_dva`, `cumulative_pd` |
+| `calculate_actuarial_pv` | Actuarial present value | 5 | `ifrs17_gmm`, `ifrs17_paa`, `ias19_puc`, `ias37_provision` |
 
-#### NAV (Net Asset Value)
-- Listed securities at fair value
-- Unlisted assets at appraised value
-- Receivables with ECL adjustment
-- Minority discount application
-
-#### CCA (Comparable Company Analysis)
-- P/E, EV/EBITDA, P/B multiples
-- Peer selection criteria
-- Median multiple application
-
-#### Sensitivity Analysis
-- Two-way sensitivity tables
-- Tornado analysis
-- Scenario modeling
-
-### 2. Cost of Capital
-
-#### Fama-French 5-Factor Model
-- Market factor (RMRF)
-- Size factor (SMB)
-- Value factor (HML)
-- Profitability factor (RMW)
-- Investment factor (CMA)
-
-#### KMV Structural Model
-- Asset value estimation
-- Asset volatility calculation
-- Distance to default
-- Expected default frequency (EDF)
-- Cost of debt derivation
-
-#### WACC Calculation
-- Capital structure from balance sheet
-- Tax effect on debt
-- Sector-specific weights
-
-### 3. Derivatives Pricing (via QuantLib)
-
-#### Options
-- Black-Scholes-Merton (European)
-- Binomial tree (American)
-- Monte Carlo simulation
-- Garman-Kohlhagen (FX options)
-- Greeks calculation (Delta, Gamma, Theta, Vega, Rho)
-
-#### Swaps
-- Interest rate swaps
-- Currency swaps
-- Basis swaps
-
-#### Convertible Bonds
-- Straight bond value
-- Conversion value
-- Option-adjusted spread
-
-#### Futures
-- Forward/futures pricing
-- Cost of carry model
-
-### 4. Credit Risk
-
-#### HKFRS 9 ECL
-- 12-month and lifetime PD
-- Exposure at Default (EAD)
-- Loss Given Default (LGD)
-- Forward-looking adjustments
-
-#### PD Estimation
-- Rating-based PD mapping
-- KMV EDF conversion
-- Statistical default models
-
-### 5. Report Review
-
-#### Excel Model Review
-- Model methodology validation
-- Formula correctness (NPV, WACC, Terminal Value)
-- Calculation accuracy
-- Data source verification
-- Assumption reasonableness
-- Comparison with market data
-
-#### Document Review
-- PDF text/table extraction
-- Fair value extraction
-- Methodology identification
-- Standards compliance check
-
-#### Image Review
-- OCR extraction
-- Table detection
-- Valuation data parsing
-
-## Supported Markets
-
-| Market | Code Format | Example |
-|--------|-------------|---------|
-| US | SYMBOL | AAPL, MSFT, GOOGL |
-| HK | CODE.HK | 0700.HK, 9988.HK |
-| CN | CODE.SH/SZ | 600519.SH, 000001.SZ |
-| JP | CODE.T | 7203.T, 9432.T |
+Two convertible-bond methods are registered but deliberately unimplemented and listed in
+`src/mcp/deferred.py`: `quantlib` and `finite_difference`. Those return a typed `NOT_IMPLEMENTED`
+error, not a wrong number.
 
 ## Usage Examples
 
-### Valuation
+### A valuation figure
 
 ```
-User: "Value Alibaba (9988.HK) using DCF with 5-year projection"
-System: Run DCF with FF5 cost of equity, KMV cost of debt
-
-User: "Calculate NAV for investment holding company"
-System: Value listed securities at market, apply ECL to receivables
-
-User: "Perform CCA for Tencent vs peers"
-System: Calculate median multiples from peer group
+calculate_dcf(method="dcf", cash_flows=[100, 110, 121], discount_rate=0.10)
+→ {"status":"ok", "method":"calculate_dcf.dcf", "value":…, "statistics":{…},
+   "citations":{"ivs":["IVS.103.A20"],"ifrs":["IFRS.13.62"]}, …}
 ```
 
-### Report Review
+Over HTTP: `POST /v1/calculate/calculate_dcf` with `{"method":"dcf", …}`.
+Over MCP: `tools/call` with `{"name":"calculate_dcf","arguments":{…}}`.
+
+### A cost of capital
 
 ```
-User: "Review valuation report at /path/to/model.xlsx"
-System: Analyze Excel model, validate formulas, check assumptions
-
-User: "Extract fair value from /path/to/report.pdf"
-System: Parse PDF, extract fair value, verify methodology
-
-User: "Validate DCF formulas in valuation.xlsx"
-System: Check NPV, WACC, terminal value formulas
+calculate_discount_rate(method="capm", risk_free=0.04, beta=1.2, market_return=0.09)
 ```
 
-### Derivatives
+### A credit loss
 
 ```
-User: "Price call option on AAPL with strike $150, 1 year maturity"
-System: Use Black-Scholes via QuantLib
-
-User: "Value interest rate swap, 10M notional, 5 years"
-System: Calculate fixed vs floating leg values
+calculate_credit_loss(method="ecl_12m", ead=1_000_000, pd=0.02, lgd=0.45)
 ```
 
 ## Output
 
-### Generated Files
-- PDF valuation report → `~/docgen_output/`
-- Excel model → `~/docgen_output/`
-- Review findings → `~/docgen_output/`
+Every result uses one envelope (`src/output/result.py`): `status`, `method`, `ticker`, `value`, `assumptions`,
+`formula_ref`, `data_timestamp`, `steps`, `statistics`, `solution_type`, `citations`, `disclaimer`.
+Stochastic methods (`solution_type="simulation"`) take a seed and return summary statistics.
 
-### Report Sections (IVS Compliant)
-1. Scope of engagement
-2. Valuation basis and definition of fair value
-3. Valuation premise
-4. Methodology selection and justification
-5. Data quality and sources
-6. Valuation calculations
-7. Assumptions and limitations
-8. Sensitivity analysis
-9. Certification and compliance statement
+Failures are typed, never raised: `INVALID_ARGUMENT`, `COMPUTATION_ERROR`, `NOT_IMPLEMENTED`,
+`UNKNOWN_TOOL`, and a missing input returns `MISSING_INPUT` on `valuation_engine.run_valuation` but
+`INVALID_ARGUMENT` on the MCP/REST surface. Branch on `error.code`, never on the message.
 
-## Data Sources
+## Inputs
 
-| Data Type | Source |
-|-----------|--------|
-| Stock prices | Provided as cited inputs by apdb-etl |
-| Financial statements | Yahoo Finance |
-| FF factors | Kenneth French Data Library |
-| Market data | Provided as cited inputs by apdb-etl |
-| Economic data | pandas-datareader |
+The computation path performs no network or database I/O. Every input is supplied explicitly by the
+caller; market data and reference prices come from `apdb-etl`, which is a separate service. The only
+outbound HTTP in the Python package and the served API is the hosted end-to-end test
+(`tests/test_e2e_hosted.py`) and the Swagger UI asset URLs that `/v1/docs` emits. The frontage fetches
+Google Fonts at build time — a concern of the web app, not of this engine.
 
-## Error Handling
+Missing inputs are never synthesised — the call returns a typed error naming what it wanted.
 
-- Input validation for all parameters
-- Graceful degradation when data unavailable
-- Clear error messages
-- Fallback to conservative assumptions
+## Out of scope
+
+These belong to other repositories and are **not** available here:
+
+| capability | owner |
+|---|---|
+| Market data, reference prices, ETL | `apdb-etl` |
+| Excel model review, document review, image review | `valuation-report-review` |
+| Precedent transactions and deal screening | not in this estate |
+
+An earlier version of this file listed report review and market-data sources as capabilities of this
+package. It does not have them, and an agent that trusted it would have called tools that do not
+exist.
 
 ## Limitations
 
-- KMV requires equity volatility
-- Convertible bond pricing simplified
-- Forward-looking ECL requires macro data
-
-## Notes
-
-- All valuations are estimates for reference only
-- Not investment advice
-- Professional valuations require expert judgment
-- Check local regulatory requirements
+- Results are estimates; assumptions travel in the envelope and are not defaults to be trusted.
+- Convertible-bond methods need a credit spread; `quantlib` also needs the optional engine.
+- Two convertible methods are unimplemented (see above).
+- Not investment advice.

@@ -201,9 +201,11 @@ CI and deployment run through the APG workbench pipeline.
 ## Requirements
 
 - Python 3.10+
-- pandas, numpy, scipy, python-dateutil
-- fastmcp (MCP extra), openpyxl, pdfplumber, python-docx
-- QuantLib, pandas_datareader, pytesseract/easyocr (all optional, with native fallbacks)
+- numpy, scipy, pandas, python-dateutil
+- fastmcp (MCP server and the hosted ASGI entrypoint)
+- optional (`requirements-optional.txt`): QuantLib for derivatives parity, statsmodels, scikit-learn,
+  requests (nothing in the package imports it)
+  Document parsing and report review belong to the `valuation-report-review` service, not here.
 
 ## Documentation
 
